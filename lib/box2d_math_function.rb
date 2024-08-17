@@ -1,4 +1,3 @@
-Error parsing translation unit.
 # Ruby-Box2D : Yet another Box2D wrapper for Ruby
 #
 # * https://github.com/vaiorabbit/box2d-bindings
@@ -20,17 +19,362 @@ module Box2D
 
   # Struct
 
+  class Vec2 < FFI::Struct
+    layout(
+      :x, :float,
+      :y, :float,
+    )
+    def x = self[:x]
+    def x=(v) self[:x] = v end
+    def y = self[:y]
+    def y=(v) self[:y] = v end
+    def self.create_as(_x_, _y_)
+      instance = b2Vec2.new
+      instance[:x] = _x_
+      instance[:y] = _y_
+      instance
+    end
+  end
+
+  class Rot < FFI::Struct
+    layout(
+      :c, :float,
+      :s, :float,
+    )
+    def c = self[:c]
+    def c=(v) self[:c] = v end
+    def s = self[:s]
+    def s=(v) self[:s] = v end
+    def self.create_as(_c_, _s_)
+      instance = b2Rot.new
+      instance[:c] = _c_
+      instance[:s] = _s_
+      instance
+    end
+  end
+
+  class Transform < FFI::Struct
+    layout(
+      :p, Vec2,
+      :q, Rot,
+    )
+    def p = self[:p]
+    def p=(v) self[:p] = v end
+    def q = self[:q]
+    def q=(v) self[:q] = v end
+    def self.create_as(_p_, _q_)
+      instance = b2Transform.new
+      instance[:p] = _p_
+      instance[:q] = _q_
+      instance
+    end
+  end
+
+  class Mat22 < FFI::Struct
+    layout(
+      :cx, Vec2,
+      :cy, Vec2,
+    )
+    def cx = self[:cx]
+    def cx=(v) self[:cx] = v end
+    def cy = self[:cy]
+    def cy=(v) self[:cy] = v end
+    def self.create_as(_cx_, _cy_)
+      instance = b2Mat22.new
+      instance[:cx] = _cx_
+      instance[:cy] = _cy_
+      instance
+    end
+  end
+
+  class AABB < FFI::Struct
+    layout(
+      :lowerBound, Vec2,
+      :upperBound, Vec2,
+    )
+    def lowerBound = self[:lowerBound]
+    def lowerBound=(v) self[:lowerBound] = v end
+    def upperBound = self[:upperBound]
+    def upperBound=(v) self[:upperBound] = v end
+    def self.create_as(_lowerBound_, _upperBound_)
+      instance = b2AABB.new
+      instance[:lowerBound] = _lowerBound_
+      instance[:upperBound] = _upperBound_
+      instance
+    end
+  end
+
 
   # Function
 
-  def self.setup_math_function_symbols(output_error = false)
+  def self.setup_math_functions_symbols(output_error = false)
     symbols = [
+      :b2MinFloat,
+      :b2MaxFloat,
+      :b2AbsFloat,
+      :b2ClampFloat,
+      :b2MinInt,
+      :b2MaxInt,
+      :b2AbsInt,
+      :b2ClampInt,
+      :b2Dot,
+      :b2Cross,
+      :b2CrossVS,
+      :b2CrossSV,
+      :b2LeftPerp,
+      :b2RightPerp,
+      :b2Add,
+      :b2Sub,
+      :b2Neg,
+      :b2Lerp,
+      :b2Mul,
+      :b2MulSV,
+      :b2MulAdd,
+      :b2MulSub,
+      :b2Abs,
+      :b2Min,
+      :b2Max,
+      :b2Clamp,
+      :b2Length,
+      :b2LengthSquared,
+      :b2Distance,
+      :b2DistanceSquared,
+      :b2MakeRot,
+      :b2NormalizeRot,
+      :b2IsNormalized,
+      :b2NLerp,
+      :b2IntegrateRotation,
+      :b2ComputeAngularVelocity,
+      :b2Rot_GetAngle,
+      :b2Rot_GetXAxis,
+      :b2Rot_GetYAxis,
+      :b2MulRot,
+      :b2InvMulRot,
+      :b2RelativeAngle,
+      :b2UnwindAngle,
+      :b2RotateVector,
+      :b2InvRotateVector,
+      :b2TransformPoint,
+      :b2InvTransformPoint,
+      :b2MulTransforms,
+      :b2InvMulTransforms,
+      :b2MulMV,
+      :b2GetInverse22,
+      :b2Solve22,
+      :b2AABB_Contains,
+      :b2AABB_Center,
+      :b2AABB_Extents,
+      :b2AABB_Union,
+      :b2IsValid,
+      :b2Vec2_IsValid,
+      :b2Rot_IsValid,
+      :b2AABB_IsValid,
+      :b2Normalize,
+      :b2NormalizeChecked,
+      :b2GetLengthAndNormalize,
+      :b2SetLengthUnitsPerMeter,
+      :b2GetLengthUnitsPerMeter,
     ]
     apis = {
+      :b2MinFloat => :MinFloat,
+      :b2MaxFloat => :MaxFloat,
+      :b2AbsFloat => :AbsFloat,
+      :b2ClampFloat => :ClampFloat,
+      :b2MinInt => :MinInt,
+      :b2MaxInt => :MaxInt,
+      :b2AbsInt => :AbsInt,
+      :b2ClampInt => :ClampInt,
+      :b2Dot => :Dot,
+      :b2Cross => :Cross,
+      :b2CrossVS => :CrossVS,
+      :b2CrossSV => :CrossSV,
+      :b2LeftPerp => :LeftPerp,
+      :b2RightPerp => :RightPerp,
+      :b2Add => :Add,
+      :b2Sub => :Sub,
+      :b2Neg => :Neg,
+      :b2Lerp => :Lerp,
+      :b2Mul => :Mul,
+      :b2MulSV => :MulSV,
+      :b2MulAdd => :MulAdd,
+      :b2MulSub => :MulSub,
+      :b2Abs => :Abs,
+      :b2Min => :Min,
+      :b2Max => :Max,
+      :b2Clamp => :Clamp,
+      :b2Length => :Length,
+      :b2LengthSquared => :LengthSquared,
+      :b2Distance => :Distance,
+      :b2DistanceSquared => :DistanceSquared,
+      :b2MakeRot => :MakeRot,
+      :b2NormalizeRot => :NormalizeRot,
+      :b2IsNormalized => :IsNormalized,
+      :b2NLerp => :NLerp,
+      :b2IntegrateRotation => :IntegrateRotation,
+      :b2ComputeAngularVelocity => :ComputeAngularVelocity,
+      :b2Rot_GetAngle => :Rot_GetAngle,
+      :b2Rot_GetXAxis => :Rot_GetXAxis,
+      :b2Rot_GetYAxis => :Rot_GetYAxis,
+      :b2MulRot => :MulRot,
+      :b2InvMulRot => :InvMulRot,
+      :b2RelativeAngle => :RelativeAngle,
+      :b2UnwindAngle => :UnwindAngle,
+      :b2RotateVector => :RotateVector,
+      :b2InvRotateVector => :InvRotateVector,
+      :b2TransformPoint => :TransformPoint,
+      :b2InvTransformPoint => :InvTransformPoint,
+      :b2MulTransforms => :MulTransforms,
+      :b2InvMulTransforms => :InvMulTransforms,
+      :b2MulMV => :MulMV,
+      :b2GetInverse22 => :GetInverse22,
+      :b2Solve22 => :Solve22,
+      :b2AABB_Contains => :AABB_Contains,
+      :b2AABB_Center => :AABB_Center,
+      :b2AABB_Extents => :AABB_Extents,
+      :b2AABB_Union => :AABB_Union,
+      :b2IsValid => :IsValid,
+      :b2Vec2_IsValid => :Vec2_IsValid,
+      :b2Rot_IsValid => :Rot_IsValid,
+      :b2AABB_IsValid => :AABB_IsValid,
+      :b2Normalize => :Normalize,
+      :b2NormalizeChecked => :NormalizeChecked,
+      :b2GetLengthAndNormalize => :GetLengthAndNormalize,
+      :b2SetLengthUnitsPerMeter => :SetLengthUnitsPerMeter,
+      :b2GetLengthUnitsPerMeter => :GetLengthUnitsPerMeter,
     }
     args = {
+      :b2MinFloat => [:float, :float],
+      :b2MaxFloat => [:float, :float],
+      :b2AbsFloat => [:float],
+      :b2ClampFloat => [:float, :float, :float],
+      :b2MinInt => [:int, :int],
+      :b2MaxInt => [:int, :int],
+      :b2AbsInt => [:int],
+      :b2ClampInt => [:int, :int, :int],
+      :b2Dot => [Vec2.by_value, Vec2.by_value],
+      :b2Cross => [Vec2.by_value, Vec2.by_value],
+      :b2CrossVS => [Vec2.by_value, :float],
+      :b2CrossSV => [:float, Vec2.by_value],
+      :b2LeftPerp => [Vec2.by_value],
+      :b2RightPerp => [Vec2.by_value],
+      :b2Add => [Vec2.by_value, Vec2.by_value],
+      :b2Sub => [Vec2.by_value, Vec2.by_value],
+      :b2Neg => [Vec2.by_value],
+      :b2Lerp => [Vec2.by_value, Vec2.by_value, :float],
+      :b2Mul => [Vec2.by_value, Vec2.by_value],
+      :b2MulSV => [:float, Vec2.by_value],
+      :b2MulAdd => [Vec2.by_value, :float, Vec2.by_value],
+      :b2MulSub => [Vec2.by_value, :float, Vec2.by_value],
+      :b2Abs => [Vec2.by_value],
+      :b2Min => [Vec2.by_value, Vec2.by_value],
+      :b2Max => [Vec2.by_value, Vec2.by_value],
+      :b2Clamp => [Vec2.by_value, Vec2.by_value, Vec2.by_value],
+      :b2Length => [Vec2.by_value],
+      :b2LengthSquared => [Vec2.by_value],
+      :b2Distance => [Vec2.by_value, Vec2.by_value],
+      :b2DistanceSquared => [Vec2.by_value, Vec2.by_value],
+      :b2MakeRot => [:float],
+      :b2NormalizeRot => [Rot.by_value],
+      :b2IsNormalized => [Rot.by_value],
+      :b2NLerp => [Rot.by_value, Rot.by_value, :float],
+      :b2IntegrateRotation => [Rot.by_value, :float],
+      :b2ComputeAngularVelocity => [Rot.by_value, Rot.by_value, :float],
+      :b2Rot_GetAngle => [Rot.by_value],
+      :b2Rot_GetXAxis => [Rot.by_value],
+      :b2Rot_GetYAxis => [Rot.by_value],
+      :b2MulRot => [Rot.by_value, Rot.by_value],
+      :b2InvMulRot => [Rot.by_value, Rot.by_value],
+      :b2RelativeAngle => [Rot.by_value, Rot.by_value],
+      :b2UnwindAngle => [:float],
+      :b2RotateVector => [Rot.by_value, Vec2.by_value],
+      :b2InvRotateVector => [Rot.by_value, Vec2.by_value],
+      :b2TransformPoint => [Transform.by_value, const b2Vec2],
+      :b2InvTransformPoint => [Transform.by_value, const b2Vec2],
+      :b2MulTransforms => [Transform.by_value, Transform.by_value],
+      :b2InvMulTransforms => [Transform.by_value, Transform.by_value],
+      :b2MulMV => [Mat22.by_value, Vec2.by_value],
+      :b2GetInverse22 => [Mat22.by_value],
+      :b2Solve22 => [Mat22.by_value, Vec2.by_value],
+      :b2AABB_Contains => [AABB.by_value, AABB.by_value],
+      :b2AABB_Center => [AABB.by_value],
+      :b2AABB_Extents => [AABB.by_value],
+      :b2AABB_Union => [AABB.by_value, AABB.by_value],
+      :b2IsValid => [:float],
+      :b2Vec2_IsValid => [Vec2.by_value],
+      :b2Rot_IsValid => [Rot.by_value],
+      :b2AABB_IsValid => [AABB.by_value],
+      :b2Normalize => [Vec2.by_value],
+      :b2NormalizeChecked => [Vec2.by_value],
+      :b2GetLengthAndNormalize => [:pointer, Vec2.by_value],
+      :b2SetLengthUnitsPerMeter => [:float],
+      :b2GetLengthUnitsPerMeter => [],
     }
     retvals = {
+      :b2MinFloat => :float,
+      :b2MaxFloat => :float,
+      :b2AbsFloat => :float,
+      :b2ClampFloat => :float,
+      :b2MinInt => :int,
+      :b2MaxInt => :int,
+      :b2AbsInt => :int,
+      :b2ClampInt => :int,
+      :b2Dot => :float,
+      :b2Cross => :float,
+      :b2CrossVS => b2Vec2,
+      :b2CrossSV => b2Vec2,
+      :b2LeftPerp => b2Vec2,
+      :b2RightPerp => b2Vec2,
+      :b2Add => b2Vec2,
+      :b2Sub => b2Vec2,
+      :b2Neg => b2Vec2,
+      :b2Lerp => b2Vec2,
+      :b2Mul => b2Vec2,
+      :b2MulSV => b2Vec2,
+      :b2MulAdd => b2Vec2,
+      :b2MulSub => b2Vec2,
+      :b2Abs => b2Vec2,
+      :b2Min => b2Vec2,
+      :b2Max => b2Vec2,
+      :b2Clamp => b2Vec2,
+      :b2Length => :float,
+      :b2LengthSquared => :float,
+      :b2Distance => :float,
+      :b2DistanceSquared => :float,
+      :b2MakeRot => b2Rot,
+      :b2NormalizeRot => b2Rot,
+      :b2IsNormalized => :int,
+      :b2NLerp => b2Rot,
+      :b2IntegrateRotation => b2Rot,
+      :b2ComputeAngularVelocity => :float,
+      :b2Rot_GetAngle => :float,
+      :b2Rot_GetXAxis => b2Vec2,
+      :b2Rot_GetYAxis => b2Vec2,
+      :b2MulRot => b2Rot,
+      :b2InvMulRot => b2Rot,
+      :b2RelativeAngle => :float,
+      :b2UnwindAngle => :float,
+      :b2RotateVector => b2Vec2,
+      :b2InvRotateVector => b2Vec2,
+      :b2TransformPoint => b2Vec2,
+      :b2InvTransformPoint => b2Vec2,
+      :b2MulTransforms => b2Transform,
+      :b2InvMulTransforms => b2Transform,
+      :b2MulMV => b2Vec2,
+      :b2GetInverse22 => b2Mat22,
+      :b2Solve22 => b2Vec2,
+      :b2AABB_Contains => :int,
+      :b2AABB_Center => b2Vec2,
+      :b2AABB_Extents => b2Vec2,
+      :b2AABB_Union => b2AABB,
+      :b2IsValid => :int,
+      :b2Vec2_IsValid => :int,
+      :b2Rot_IsValid => :int,
+      :b2AABB_IsValid => :int,
+      :b2Normalize => b2Vec2,
+      :b2NormalizeChecked => b2Vec2,
+      :b2GetLengthAndNormalize => b2Vec2,
+      :b2SetLengthUnitsPerMeter => :void,
+      :b2GetLengthUnitsPerMeter => :float,
     }
     symbols.each do |sym|
       begin

@@ -171,31 +171,15 @@ def generate_structunion(ctx, indent = "", struct_prefix="", struct_postfix=""):
                 args_with_self = ', '.join(args_name_list)
                 args_without_self = ', '.join(args_name_list[1:])
                 print(indent + "  def %s(%s) = %s(%s)" % (method_name[0].lower() + method_name[1:], args_without_self, func_name, args_with_self), file = sys.stdout)
-                if method_name == 'Init':
-                    # Print instance creator methods
-                    print(indent + "  def self.create()", file = sys.stdout)
-                    print(indent + "    instance = %s.new" % (struct_name), file = sys.stdout)
-                    print(indent + "    %s(instance)" % (func_name), file = sys.stdout)
-                    print(indent + "    instance", file = sys.stdout)
-                    print(indent + "  end", file = sys.stdout)
-                    creator_methods_generated = True
-                if method_name == 'InitAs':
-                    # Print instance creator methods
-                    print(indent + "  def self.create_as(%s)" % (args_without_self) , file = sys.stdout)
-                    print(indent + "    instance = %s.new" % (struct_name), file = sys.stdout)
-                    print(indent + "    %s(instance, %s)" % (func_name, args_without_self), file = sys.stdout)
-                    print(indent + "    instance", file = sys.stdout)
-                    print(indent + "  end", file = sys.stdout)
-                    creator_methods_generated = True
-        if not creator_methods_generated:
-            # Print instance creator methods
-            args_name_list = list(map((lambda f: '_' + str(f.element_name) + '_'), struct_info.fields))
-            print(indent + "  def self.create_as(%s)" % (', '.join(args_name_list)) , file = sys.stdout)
-            print(indent + "    instance = %s.new" % (struct_name), file = sys.stdout)
-            for field in struct_info.fields:
-                print(indent + "    instance[:%s] = _%s_" % (field.element_name, field.element_name) , file = sys.stdout)
-            print(indent + "    instance", file = sys.stdout)
-            print(indent + "  end", file = sys.stdout)
+
+        # Print instance creator methods
+        args_name_list = list(map((lambda f: '_' + str(f.element_name) + '_'), struct_info.fields))
+        print(indent + "  def self.create_as(%s)" % (', '.join(args_name_list)) , file = sys.stdout)
+        print(indent + "    instance = %s.new" % (struct_name), file = sys.stdout)
+        for field in struct_info.fields:
+            print(indent + "    instance[:%s] = _%s_" % (field.element_name, field.element_name) , file = sys.stdout)
+        print(indent + "    instance", file = sys.stdout)
+        print(indent + "  end", file = sys.stdout)
 
         print(indent + "end\n", file = sys.stdout)
     if struct_postfix != "":
