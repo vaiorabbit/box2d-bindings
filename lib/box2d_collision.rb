@@ -13,11 +13,11 @@ module Box2D
 
   # Enum
 
-  b2_toiStateUnknown = 0
-  b2_toiStateFailed = 1
-  b2_toiStateOverlapped = 2
-  b2_toiStateHit = 3
-  b2_toiStateSeparated = 4
+  TOIState_toiStateUnknown = 0
+  TOIState_toiStateFailed = 1
+  TOIState_toiStateOverlapped = 2
+  TOIState_toiStateHit = 3
+  TOIState_toiStateSeparated = 4
 
   # Typedef
 
@@ -927,52 +927,52 @@ module Box2D
     }
     retvals = {
       :b2IsValidRay => :int,
-      :b2MakePolygon => b2Polygon,
-      :b2MakeOffsetPolygon => b2Polygon,
-      :b2MakeSquare => b2Polygon,
-      :b2MakeBox => b2Polygon,
-      :b2MakeRoundedBox => b2Polygon,
-      :b2MakeOffsetBox => b2Polygon,
-      :b2TransformPolygon => b2Polygon,
-      :b2ComputeCircleMass => b2MassData,
-      :b2ComputeCapsuleMass => b2MassData,
-      :b2ComputePolygonMass => b2MassData,
-      :b2ComputeCircleAABB => b2AABB,
-      :b2ComputeCapsuleAABB => b2AABB,
-      :b2ComputePolygonAABB => b2AABB,
-      :b2ComputeSegmentAABB => b2AABB,
+      :b2MakePolygon => Polygon.by_value,
+      :b2MakeOffsetPolygon => Polygon.by_value,
+      :b2MakeSquare => Polygon.by_value,
+      :b2MakeBox => Polygon.by_value,
+      :b2MakeRoundedBox => Polygon.by_value,
+      :b2MakeOffsetBox => Polygon.by_value,
+      :b2TransformPolygon => Polygon.by_value,
+      :b2ComputeCircleMass => MassData.by_value,
+      :b2ComputeCapsuleMass => MassData.by_value,
+      :b2ComputePolygonMass => MassData.by_value,
+      :b2ComputeCircleAABB => AABB.by_value,
+      :b2ComputeCapsuleAABB => AABB.by_value,
+      :b2ComputePolygonAABB => AABB.by_value,
+      :b2ComputeSegmentAABB => AABB.by_value,
       :b2PointInCircle => :int,
       :b2PointInCapsule => :int,
       :b2PointInPolygon => :int,
-      :b2RayCastCircle => b2CastOutput,
-      :b2RayCastCapsule => b2CastOutput,
-      :b2RayCastSegment => b2CastOutput,
-      :b2RayCastPolygon => b2CastOutput,
-      :b2ShapeCastCircle => b2CastOutput,
-      :b2ShapeCastCapsule => b2CastOutput,
-      :b2ShapeCastSegment => b2CastOutput,
-      :b2ShapeCastPolygon => b2CastOutput,
-      :b2ComputeHull => b2Hull,
+      :b2RayCastCircle => CastOutput.by_value,
+      :b2RayCastCapsule => CastOutput.by_value,
+      :b2RayCastSegment => CastOutput.by_value,
+      :b2RayCastPolygon => CastOutput.by_value,
+      :b2ShapeCastCircle => CastOutput.by_value,
+      :b2ShapeCastCapsule => CastOutput.by_value,
+      :b2ShapeCastSegment => CastOutput.by_value,
+      :b2ShapeCastPolygon => CastOutput.by_value,
+      :b2ComputeHull => Hull.by_value,
       :b2ValidateHull => :int,
-      :b2SegmentDistance => b2SegmentDistanceResult,
-      :b2ShapeDistance => b2DistanceOutput,
-      :b2ShapeCast => b2CastOutput,
-      :b2MakeProxy => b2DistanceProxy,
-      :b2GetSweepTransform => b2Transform,
-      :b2TimeOfImpact => b2TOIOutput,
-      :b2CollideCircles => b2Manifold,
-      :b2CollideCapsuleAndCircle => b2Manifold,
-      :b2CollideSegmentAndCircle => b2Manifold,
-      :b2CollidePolygonAndCircle => b2Manifold,
-      :b2CollideCapsules => b2Manifold,
-      :b2CollideSegmentAndCapsule => b2Manifold,
-      :b2CollidePolygonAndCapsule => b2Manifold,
-      :b2CollidePolygons => b2Manifold,
-      :b2CollideSegmentAndPolygon => b2Manifold,
-      :b2CollideSmoothSegmentAndCircle => b2Manifold,
-      :b2CollideSmoothSegmentAndCapsule => b2Manifold,
-      :b2CollideSmoothSegmentAndPolygon => b2Manifold,
-      :b2DynamicTree_Create => b2DynamicTree,
+      :b2SegmentDistance => SegmentDistanceResult.by_value,
+      :b2ShapeDistance => DistanceOutput.by_value,
+      :b2ShapeCast => CastOutput.by_value,
+      :b2MakeProxy => DistanceProxy.by_value,
+      :b2GetSweepTransform => Transform.by_value,
+      :b2TimeOfImpact => TOIOutput.by_value,
+      :b2CollideCircles => Manifold.by_value,
+      :b2CollideCapsuleAndCircle => Manifold.by_value,
+      :b2CollideSegmentAndCircle => Manifold.by_value,
+      :b2CollidePolygonAndCircle => Manifold.by_value,
+      :b2CollideCapsules => Manifold.by_value,
+      :b2CollideSegmentAndCapsule => Manifold.by_value,
+      :b2CollidePolygonAndCapsule => Manifold.by_value,
+      :b2CollidePolygons => Manifold.by_value,
+      :b2CollideSegmentAndPolygon => Manifold.by_value,
+      :b2CollideSmoothSegmentAndCircle => Manifold.by_value,
+      :b2CollideSmoothSegmentAndCapsule => Manifold.by_value,
+      :b2CollideSmoothSegmentAndPolygon => Manifold.by_value,
+      :b2DynamicTree_Create => DynamicTree.by_value,
       :b2DynamicTree_Destroy => :void,
       :b2DynamicTree_CreateProxy => :int,
       :b2DynamicTree_DestroyProxy => :void,
@@ -991,7 +991,7 @@ module Box2D
       :b2DynamicTree_ShiftOrigin => :void,
       :b2DynamicTree_GetByteCount => :int,
       :b2DynamicTree_GetUserData => :int,
-      :b2DynamicTree_GetAABB => b2AABB,
+      :b2DynamicTree_GetAABB => AABB.by_value,
     }
     symbols.each do |sym|
       begin

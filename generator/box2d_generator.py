@@ -94,9 +94,9 @@ def generate_macrodefine(ctx, indent = ""):
     for macro_name, macro_value in ctx.decl_macros.items():
         if macro_value != None:
             macro_api_name = ""
-            match_obj = re.match(r"^SDL_(.+)", macro_name)
+            match_obj = re.match(r"^B2_(.+)", macro_name)
             if match_obj:
-                # Remove prefix 'SDL_' from name
+                # Remove prefix 'B2_' from name
                 macro_api_name = match_obj.group(1)
             else:
                 macro_api_name = macro_name
@@ -107,7 +107,7 @@ def generate_enum(ctx, indent = ""):
         if enum_value != None:
             for enum in enum_value:
                 enum_api_name = ""
-                match_obj = re.match(r"^SDL_(.+)", enum[0])
+                match_obj = re.match(r"^b2_(.+)", enum[0])
                 if match_obj:
                     # Remove prefix 'SDL_' from name
                     enum_api_name = match_obj.group(1)
@@ -224,7 +224,7 @@ def generate_function(ctx, indent = "", setup_method_name = ""):
         if func_info == None:
             continue
         retval_str = str(func_info.retval.type_kind)
-        if re.match(r"^SDL_", retval_str): # For functions that return SDL structs by value
+        if re.match(r"^b2", retval_str): # For functions that return SDL structs by value
             retval_str = func_info.retval.type_api_name + ".by_value"
         print(indent + "    :%s => %s," % (func_info.original_name, retval_str), file = sys.stdout)
     print(indent + "  }", file = sys.stdout)

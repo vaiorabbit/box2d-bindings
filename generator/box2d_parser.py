@@ -486,10 +486,18 @@ def collect_decl_enum(ctx, cursor):
 
     ctx.collection_mode = ParseContext.Decl_Enum
     val = []
+    match_obj = re.match(r"^b2(.+)", cursor.spelling)
+    enum_prefix = ""
+    if match_obj:
+        # Remove prefix 'b2' from struct name and capitalize first character
+        enum_prefix = match_obj.group(1)[0].upper() + match_obj.group(1)[1:]
+    else:
+        enum_prefix = cursor.spelling
+
     ctx.push()
     for child in cursor.get_children():
         if child.kind == CursorKind.ENUM_CONSTANT_DECL:
-            pair = (child.displayname, child.enum_value)
+            pair = (enum_prefix + "_" + re.match(r"^b2_(.+)", child.displayname).group(1), child.enum_value)
             val.append(pair)
     ctx.pop()
     ctx.add_decl_enum(name=cursor.displayname, values=val)
