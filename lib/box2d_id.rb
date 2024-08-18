@@ -29,7 +29,7 @@ module Box2D
     def revision = self[:revision]
     def revision=(v) self[:revision] = v end
     def self.create_as(_index1_, _revision_)
-      instance = b2WorldId.new
+      instance = WorldId.new
       instance[:index1] = _index1_
       instance[:revision] = _revision_
       instance
@@ -49,7 +49,7 @@ module Box2D
     def revision = self[:revision]
     def revision=(v) self[:revision] = v end
     def self.create_as(_index1_, _world0_, _revision_)
-      instance = b2BodyId.new
+      instance = BodyId.new
       instance[:index1] = _index1_
       instance[:world0] = _world0_
       instance[:revision] = _revision_
@@ -70,7 +70,7 @@ module Box2D
     def revision = self[:revision]
     def revision=(v) self[:revision] = v end
     def self.create_as(_index1_, _world0_, _revision_)
-      instance = b2ShapeId.new
+      instance = ShapeId.new
       instance[:index1] = _index1_
       instance[:world0] = _world0_
       instance[:revision] = _revision_
@@ -91,7 +91,7 @@ module Box2D
     def revision = self[:revision]
     def revision=(v) self[:revision] = v end
     def self.create_as(_index1_, _world0_, _revision_)
-      instance = b2JointId.new
+      instance = JointId.new
       instance[:index1] = _index1_
       instance[:world0] = _world0_
       instance[:revision] = _revision_
@@ -112,7 +112,7 @@ module Box2D
     def revision = self[:revision]
     def revision=(v) self[:revision] = v end
     def self.create_as(_index1_, _world0_, _revision_)
-      instance = b2ChainId.new
+      instance = ChainId.new
       instance[:index1] = _index1_
       instance[:world0] = _world0_
       instance[:revision] = _revision_

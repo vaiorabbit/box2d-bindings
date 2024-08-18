@@ -91,7 +91,7 @@ module Box2D
     def radius = self[:radius]
     def radius=(v) self[:radius] = v end
     def self.create_as(_center_, _radius_)
-      instance = b2Circle.new
+      instance = Circle.new
       instance[:center] = _center_
       instance[:radius] = _radius_
       instance
@@ -111,7 +111,7 @@ module Box2D
     def radius = self[:radius]
     def radius=(v) self[:radius] = v end
     def self.create_as(_center1_, _center2_, _radius_)
-      instance = b2Capsule.new
+      instance = Capsule.new
       instance[:center1] = _center1_
       instance[:center2] = _center2_
       instance[:radius] = _radius_
@@ -132,7 +132,7 @@ module Box2D
     def indexB = self[:indexB]
     def indexB=(v) self[:indexB] = v end
     def self.create_as(_count_, _indexA_, _indexB_)
-      instance = b2DistanceCache.new
+      instance = DistanceCache.new
       instance[:count] = _count_
       instance[:indexA] = _indexA_
       instance[:indexB] = _indexB_
@@ -159,7 +159,7 @@ module Box2D
     def count = self[:count]
     def count=(v) self[:count] = v end
     def self.create_as(_vertices_, _normals_, _centroid_, _radius_, _count_)
-      instance = b2Polygon.new
+      instance = Polygon.new
       instance[:vertices] = _vertices_
       instance[:normals] = _normals_
       instance[:centroid] = _centroid_
@@ -179,7 +179,7 @@ module Box2D
     def point2 = self[:point2]
     def point2=(v) self[:point2] = v end
     def self.create_as(_point1_, _point2_)
-      instance = b2Segment.new
+      instance = Segment.new
       instance[:point1] = _point1_
       instance[:point2] = _point2_
       instance
@@ -202,7 +202,7 @@ module Box2D
     def chainId = self[:chainId]
     def chainId=(v) self[:chainId] = v end
     def self.create_as(_ghost1_, _segment_, _ghost2_, _chainId_)
-      instance = b2SmoothSegment.new
+      instance = SmoothSegment.new
       instance[:ghost1] = _ghost1_
       instance[:segment] = _segment_
       instance[:ghost2] = _ghost2_
@@ -221,7 +221,7 @@ module Box2D
     def count = self[:count]
     def count=(v) self[:count] = v end
     def self.create_as(_points_, _count_)
-      instance = b2Hull.new
+      instance = Hull.new
       instance[:points] = _points_
       instance[:count] = _count_
       instance
@@ -241,7 +241,7 @@ module Box2D
     def maxFraction = self[:maxFraction]
     def maxFraction=(v) self[:maxFraction] = v end
     def self.create_as(_origin_, _translation_, _maxFraction_)
-      instance = b2RayCastInput.new
+      instance = RayCastInput.new
       instance[:origin] = _origin_
       instance[:translation] = _translation_
       instance[:maxFraction] = _maxFraction_
@@ -268,7 +268,7 @@ module Box2D
     def maxFraction = self[:maxFraction]
     def maxFraction=(v) self[:maxFraction] = v end
     def self.create_as(_points_, _count_, _radius_, _translation_, _maxFraction_)
-      instance = b2ShapeCastInput.new
+      instance = ShapeCastInput.new
       instance[:points] = _points_
       instance[:count] = _count_
       instance[:radius] = _radius_
@@ -297,7 +297,7 @@ module Box2D
     def hit = self[:hit]
     def hit=(v) self[:hit] = v end
     def self.create_as(_normal_, _point_, _fraction_, _iterations_, _hit_)
-      instance = b2CastOutput.new
+      instance = CastOutput.new
       instance[:normal] = _normal_
       instance[:point] = _point_
       instance[:fraction] = _fraction_
@@ -320,7 +320,7 @@ module Box2D
     def rotationalInertia = self[:rotationalInertia]
     def rotationalInertia=(v) self[:rotationalInertia] = v end
     def self.create_as(_mass_, _center_, _rotationalInertia_)
-      instance = b2MassData.new
+      instance = MassData.new
       instance[:mass] = _mass_
       instance[:center] = _center_
       instance[:rotationalInertia] = _rotationalInertia_
@@ -347,7 +347,7 @@ module Box2D
     def distanceSquared = self[:distanceSquared]
     def distanceSquared=(v) self[:distanceSquared] = v end
     def self.create_as(_closest1_, _closest2_, _fraction1_, _fraction2_, _distanceSquared_)
-      instance = b2SegmentDistanceResult.new
+      instance = SegmentDistanceResult.new
       instance[:closest1] = _closest1_
       instance[:closest2] = _closest2_
       instance[:fraction1] = _fraction1_
@@ -370,7 +370,7 @@ module Box2D
     def radius = self[:radius]
     def radius=(v) self[:radius] = v end
     def self.create_as(_points_, _count_, _radius_)
-      instance = b2DistanceProxy.new
+      instance = DistanceProxy.new
       instance[:points] = _points_
       instance[:count] = _count_
       instance[:radius] = _radius_
@@ -397,7 +397,7 @@ module Box2D
     def useRadii = self[:useRadii]
     def useRadii=(v) self[:useRadii] = v end
     def self.create_as(_proxyA_, _proxyB_, _transformA_, _transformB_, _useRadii_)
-      instance = b2DistanceInput.new
+      instance = DistanceInput.new
       instance[:proxyA] = _proxyA_
       instance[:proxyB] = _proxyB_
       instance[:transformA] = _transformA_
@@ -426,7 +426,7 @@ module Box2D
     def simplexCount = self[:simplexCount]
     def simplexCount=(v) self[:simplexCount] = v end
     def self.create_as(_pointA_, _pointB_, _distance_, _iterations_, _simplexCount_)
-      instance = b2DistanceOutput.new
+      instance = DistanceOutput.new
       instance[:pointA] = _pointA_
       instance[:pointB] = _pointB_
       instance[:distance] = _distance_
@@ -458,7 +458,7 @@ module Box2D
     def indexB = self[:indexB]
     def indexB=(v) self[:indexB] = v end
     def self.create_as(_wA_, _wB_, _w_, _a_, _indexA_, _indexB_)
-      instance = b2SimplexVertex.new
+      instance = SimplexVertex.new
       instance[:wA] = _wA_
       instance[:wB] = _wB_
       instance[:w] = _w_
@@ -485,7 +485,7 @@ module Box2D
     def count = self[:count]
     def count=(v) self[:count] = v end
     def self.create_as(_v1_, _v2_, _v3_, _count_)
-      instance = b2Simplex.new
+      instance = Simplex.new
       instance[:v1] = _v1_
       instance[:v2] = _v2_
       instance[:v3] = _v3_
@@ -516,7 +516,7 @@ module Box2D
     def maxFraction = self[:maxFraction]
     def maxFraction=(v) self[:maxFraction] = v end
     def self.create_as(_proxyA_, _proxyB_, _transformA_, _transformB_, _translationB_, _maxFraction_)
-      instance = b2ShapeCastPairInput.new
+      instance = ShapeCastPairInput.new
       instance[:proxyA] = _proxyA_
       instance[:proxyB] = _proxyB_
       instance[:transformA] = _transformA_
@@ -546,7 +546,7 @@ module Box2D
     def q2 = self[:q2]
     def q2=(v) self[:q2] = v end
     def self.create_as(_localCenter_, _c1_, _c2_, _q1_, _q2_)
-      instance = b2Sweep.new
+      instance = Sweep.new
       instance[:localCenter] = _localCenter_
       instance[:c1] = _c1_
       instance[:c2] = _c2_
@@ -575,7 +575,7 @@ module Box2D
     def tMax = self[:tMax]
     def tMax=(v) self[:tMax] = v end
     def self.create_as(_proxyA_, _proxyB_, _sweepA_, _sweepB_, _tMax_)
-      instance = b2TOIInput.new
+      instance = TOIInput.new
       instance[:proxyA] = _proxyA_
       instance[:proxyB] = _proxyB_
       instance[:sweepA] = _sweepA_
@@ -595,7 +595,7 @@ module Box2D
     def t = self[:t]
     def t=(v) self[:t] = v end
     def self.create_as(_state_, _t_)
-      instance = b2TOIOutput.new
+      instance = TOIOutput.new
       instance[:state] = _state_
       instance[:t] = _t_
       instance
@@ -636,7 +636,7 @@ module Box2D
     def persisted = self[:persisted]
     def persisted=(v) self[:persisted] = v end
     def self.create_as(_point_, _anchorA_, _anchorB_, _separation_, _normalImpulse_, _tangentImpulse_, _maxNormalImpulse_, _normalVelocity_, _id_, _persisted_)
-      instance = b2ManifoldPoint.new
+      instance = ManifoldPoint.new
       instance[:point] = _point_
       instance[:anchorA] = _anchorA_
       instance[:anchorB] = _anchorB_
@@ -664,7 +664,7 @@ module Box2D
     def pointCount = self[:pointCount]
     def pointCount=(v) self[:pointCount] = v end
     def self.create_as(_points_, _normal_, _pointCount_)
-      instance = b2Manifold.new
+      instance = Manifold.new
       instance[:points] = _points_
       instance[:normal] = _normal_
       instance[:pointCount] = _pointCount_
@@ -709,7 +709,7 @@ module Box2D
     def rebuildCapacity = self[:rebuildCapacity]
     def rebuildCapacity=(v) self[:rebuildCapacity] = v end
     def self.create_as(_nodes_, _root_, _nodeCount_, _nodeCapacity_, _freeList_, _proxyCount_, _leafIndices_, _leafBoxes_, _leafCenters_, _binIndices_, _rebuildCapacity_)
-      instance = b2DynamicTree.new
+      instance = DynamicTree.new
       instance[:nodes] = _nodes_
       instance[:root] = _root_
       instance[:nodeCount] = _nodeCount_

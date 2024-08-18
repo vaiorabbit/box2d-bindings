@@ -175,7 +175,7 @@ def generate_structunion(ctx, indent = "", struct_prefix="", struct_postfix=""):
         # Print instance creator methods
         args_name_list = list(map((lambda f: '_' + str(f.element_name) + '_'), struct_info.fields))
         print(indent + "  def self.create_as(%s)" % (', '.join(args_name_list)) , file = sys.stdout)
-        print(indent + "    instance = %s.new" % (struct_name), file = sys.stdout)
+        print(indent + "    instance = %s.new" % (struct_name.removeprefix('b2')), file = sys.stdout)
         for field in struct_info.fields:
             print(indent + "    instance[:%s] = _%s_" % (field.element_name, field.element_name) , file = sys.stdout)
         print(indent + "    instance", file = sys.stdout)

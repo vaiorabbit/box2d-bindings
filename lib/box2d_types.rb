@@ -224,7 +224,7 @@ module Box2D
     def hit = self[:hit]
     def hit=(v) self[:hit] = v end
     def self.create_as(_shapeId_, _point_, _normal_, _fraction_, _hit_)
-      instance = b2RayResult.new
+      instance = RayResult.new
       instance[:shapeId] = _shapeId_
       instance[:point] = _point_
       instance[:normal] = _normal_
@@ -286,7 +286,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_gravity_, _restitutionThreshold_, _contactPushoutVelocity_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _jointHertz_, _jointDampingRatio_, _maximumLinearVelocity_, _enableSleep_, _enableContinous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _internalValue_)
-      instance = b2WorldDef.new
+      instance = WorldDef.new
       instance[:gravity] = _gravity_
       instance[:restitutionThreshold] = _restitutionThreshold_
       instance[:contactPushoutVelocity] = _contactPushoutVelocity_
@@ -365,7 +365,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_type_, _position_, _rotation_, _linearVelocity_, _angularVelocity_, _linearDamping_, _angularDamping_, _gravityScale_, _sleepThreshold_, _userData_, _enableSleep_, _isAwake_, _fixedRotation_, _isBullet_, _isEnabled_, _automaticMass_, _allowFastRotation_, _internalValue_)
-      instance = b2BodyDef.new
+      instance = BodyDef.new
       instance[:type] = _type_
       instance[:position] = _position_
       instance[:rotation] = _rotation_
@@ -401,7 +401,7 @@ module Box2D
     def groupIndex = self[:groupIndex]
     def groupIndex=(v) self[:groupIndex] = v end
     def self.create_as(_categoryBits_, _maskBits_, _groupIndex_)
-      instance = b2Filter.new
+      instance = Filter.new
       instance[:categoryBits] = _categoryBits_
       instance[:maskBits] = _maskBits_
       instance[:groupIndex] = _groupIndex_
@@ -419,7 +419,7 @@ module Box2D
     def maskBits = self[:maskBits]
     def maskBits=(v) self[:maskBits] = v end
     def self.create_as(_categoryBits_, _maskBits_)
-      instance = b2QueryFilter.new
+      instance = QueryFilter.new
       instance[:categoryBits] = _categoryBits_
       instance[:maskBits] = _maskBits_
       instance
@@ -469,7 +469,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_userData_, _friction_, _restitution_, _density_, _filter_, _customColor_, _isSensor_, _enableSensorEvents_, _enableContactEvents_, _enableHitEvents_, _enablePreSolveEvents_, _forceContactCreation_, _internalValue_)
-      instance = b2ShapeDef.new
+      instance = ShapeDef.new
       instance[:userData] = _userData_
       instance[:friction] = _friction_
       instance[:restitution] = _restitution_
@@ -515,7 +515,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_userData_, _points_, _count_, _friction_, _restitution_, _filter_, _isLoop_, _internalValue_)
-      instance = b2ChainDef.new
+      instance = ChainDef.new
       instance[:userData] = _userData_
       instance[:points] = _points_
       instance[:count] = _count_
@@ -598,7 +598,7 @@ module Box2D
     def continuous = self[:continuous]
     def continuous=(v) self[:continuous] = v end
     def self.create_as(_step_, _pairs_, _collide_, _solve_, _buildIslands_, _solveConstraints_, _prepareTasks_, _solverTasks_, _prepareConstraints_, _integrateVelocities_, _warmStart_, _solveVelocities_, _integratePositions_, _relaxVelocities_, _applyRestitution_, _storeImpulses_, _finalizeBodies_, _splitIslands_, _sleepIslands_, _hitEvents_, _broadphase_, _continuous_)
-      instance = b2Profile.new
+      instance = Profile.new
       instance[:step] = _step_
       instance[:pairs] = _pairs_
       instance[:collide] = _collide_
@@ -665,7 +665,7 @@ module Box2D
     def colorCounts = self[:colorCounts]
     def colorCounts=(v) self[:colorCounts] = v end
     def self.create_as(_staticBodyCount_, _bodyCount_, _shapeCount_, _contactCount_, _jointCount_, _islandCount_, _stackUsed_, _staticTreeHeight_, _treeHeight_, _byteCount_, _taskCount_, _colorCounts_)
-      instance = b2Counters.new
+      instance = Counters.new
       instance[:staticBodyCount] = _staticBodyCount_
       instance[:bodyCount] = _bodyCount_
       instance[:shapeCount] = _shapeCount_
@@ -737,7 +737,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_bodyIdA_, _bodyIdB_, _localAnchorA_, _localAnchorB_, _length_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _minLength_, _maxLength_, _enableMotor_, _maxMotorForce_, _motorSpeed_, _collideConnected_, _userData_, _internalValue_)
-      instance = b2DistanceJointDef.new
+      instance = DistanceJointDef.new
       instance[:bodyIdA] = _bodyIdA_
       instance[:bodyIdB] = _bodyIdB_
       instance[:localAnchorA] = _localAnchorA_
@@ -793,7 +793,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_bodyIdA_, _bodyIdB_, _linearOffset_, _angularOffset_, _maxForce_, _maxTorque_, _correctionFactor_, _collideConnected_, _userData_, _internalValue_)
-      instance = b2MotorJointDef.new
+      instance = MotorJointDef.new
       instance[:bodyIdA] = _bodyIdA_
       instance[:bodyIdB] = _bodyIdB_
       instance[:linearOffset] = _linearOffset_
@@ -839,7 +839,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_bodyIdA_, _bodyIdB_, _target_, _hertz_, _dampingRatio_, _maxForce_, _collideConnected_, _userData_, _internalValue_)
-      instance = b2MouseJointDef.new
+      instance = MouseJointDef.new
       instance[:bodyIdA] = _bodyIdA_
       instance[:bodyIdB] = _bodyIdB_
       instance[:target] = _target_
@@ -911,7 +911,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_bodyIdA_, _bodyIdB_, _localAnchorA_, _localAnchorB_, _localAxisA_, _referenceAngle_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _lowerTranslation_, _upperTranslation_, _enableMotor_, _maxMotorForce_, _motorSpeed_, _collideConnected_, _userData_, _internalValue_)
-      instance = b2PrismaticJointDef.new
+      instance = PrismaticJointDef.new
       instance[:bodyIdA] = _bodyIdA_
       instance[:bodyIdB] = _bodyIdB_
       instance[:localAnchorA] = _localAnchorA_
@@ -992,7 +992,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_bodyIdA_, _bodyIdB_, _localAnchorA_, _localAnchorB_, _referenceAngle_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _lowerAngle_, _upperAngle_, _enableMotor_, _maxMotorTorque_, _motorSpeed_, _drawSize_, _collideConnected_, _userData_, _internalValue_)
-      instance = b2RevoluteJointDef.new
+      instance = RevoluteJointDef.new
       instance[:bodyIdA] = _bodyIdA_
       instance[:bodyIdB] = _bodyIdB_
       instance[:localAnchorA] = _localAnchorA_
@@ -1055,7 +1055,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_bodyIdA_, _bodyIdB_, _localAnchorA_, _localAnchorB_, _referenceAngle_, _linearHertz_, _angularHertz_, _linearDampingRatio_, _angularDampingRatio_, _collideConnected_, _userData_, _internalValue_)
-      instance = b2WeldJointDef.new
+      instance = WeldJointDef.new
       instance[:bodyIdA] = _bodyIdA_
       instance[:bodyIdB] = _bodyIdB_
       instance[:localAnchorA] = _localAnchorA_
@@ -1127,7 +1127,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_bodyIdA_, _bodyIdB_, _localAnchorA_, _localAnchorB_, _localAxisA_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _lowerTranslation_, _upperTranslation_, _enableMotor_, _maxMotorTorque_, _motorSpeed_, _collideConnected_, _userData_, _internalValue_)
-      instance = b2WheelJointDef.new
+      instance = WheelJointDef.new
       instance[:bodyIdA] = _bodyIdA_
       instance[:bodyIdB] = _bodyIdB_
       instance[:localAnchorA] = _localAnchorA_
@@ -1159,7 +1159,7 @@ module Box2D
     def visitorShapeId = self[:visitorShapeId]
     def visitorShapeId=(v) self[:visitorShapeId] = v end
     def self.create_as(_sensorShapeId_, _visitorShapeId_)
-      instance = b2SensorBeginTouchEvent.new
+      instance = SensorBeginTouchEvent.new
       instance[:sensorShapeId] = _sensorShapeId_
       instance[:visitorShapeId] = _visitorShapeId_
       instance
@@ -1176,7 +1176,7 @@ module Box2D
     def visitorShapeId = self[:visitorShapeId]
     def visitorShapeId=(v) self[:visitorShapeId] = v end
     def self.create_as(_sensorShapeId_, _visitorShapeId_)
-      instance = b2SensorEndTouchEvent.new
+      instance = SensorEndTouchEvent.new
       instance[:sensorShapeId] = _sensorShapeId_
       instance[:visitorShapeId] = _visitorShapeId_
       instance
@@ -1199,7 +1199,7 @@ module Box2D
     def endCount = self[:endCount]
     def endCount=(v) self[:endCount] = v end
     def self.create_as(_beginEvents_, _endEvents_, _beginCount_, _endCount_)
-      instance = b2SensorEvents.new
+      instance = SensorEvents.new
       instance[:beginEvents] = _beginEvents_
       instance[:endEvents] = _endEvents_
       instance[:beginCount] = _beginCount_
@@ -1218,7 +1218,7 @@ module Box2D
     def shapeIdB = self[:shapeIdB]
     def shapeIdB=(v) self[:shapeIdB] = v end
     def self.create_as(_shapeIdA_, _shapeIdB_)
-      instance = b2ContactBeginTouchEvent.new
+      instance = ContactBeginTouchEvent.new
       instance[:shapeIdA] = _shapeIdA_
       instance[:shapeIdB] = _shapeIdB_
       instance
@@ -1235,7 +1235,7 @@ module Box2D
     def shapeIdB = self[:shapeIdB]
     def shapeIdB=(v) self[:shapeIdB] = v end
     def self.create_as(_shapeIdA_, _shapeIdB_)
-      instance = b2ContactEndTouchEvent.new
+      instance = ContactEndTouchEvent.new
       instance[:shapeIdA] = _shapeIdA_
       instance[:shapeIdB] = _shapeIdB_
       instance
@@ -1261,7 +1261,7 @@ module Box2D
     def approachSpeed = self[:approachSpeed]
     def approachSpeed=(v) self[:approachSpeed] = v end
     def self.create_as(_shapeIdA_, _shapeIdB_, _point_, _normal_, _approachSpeed_)
-      instance = b2ContactHitEvent.new
+      instance = ContactHitEvent.new
       instance[:shapeIdA] = _shapeIdA_
       instance[:shapeIdB] = _shapeIdB_
       instance[:point] = _point_
@@ -1293,7 +1293,7 @@ module Box2D
     def hitCount = self[:hitCount]
     def hitCount=(v) self[:hitCount] = v end
     def self.create_as(_beginEvents_, _endEvents_, _hitEvents_, _beginCount_, _endCount_, _hitCount_)
-      instance = b2ContactEvents.new
+      instance = ContactEvents.new
       instance[:beginEvents] = _beginEvents_
       instance[:endEvents] = _endEvents_
       instance[:hitEvents] = _hitEvents_
@@ -1320,7 +1320,7 @@ module Box2D
     def fellAsleep = self[:fellAsleep]
     def fellAsleep=(v) self[:fellAsleep] = v end
     def self.create_as(_transform_, _bodyId_, _userData_, _fellAsleep_)
-      instance = b2BodyMoveEvent.new
+      instance = BodyMoveEvent.new
       instance[:transform] = _transform_
       instance[:bodyId] = _bodyId_
       instance[:userData] = _userData_
@@ -1339,7 +1339,7 @@ module Box2D
     def moveCount = self[:moveCount]
     def moveCount=(v) self[:moveCount] = v end
     def self.create_as(_moveEvents_, _moveCount_)
-      instance = b2BodyEvents.new
+      instance = BodyEvents.new
       instance[:moveEvents] = _moveEvents_
       instance[:moveCount] = _moveCount_
       instance
@@ -1359,7 +1359,7 @@ module Box2D
     def manifold = self[:manifold]
     def manifold=(v) self[:manifold] = v end
     def self.create_as(_shapeIdA_, _shapeIdB_, _manifold_)
-      instance = b2ContactData.new
+      instance = ContactData.new
       instance[:shapeIdA] = _shapeIdA_
       instance[:shapeIdB] = _shapeIdB_
       instance[:manifold] = _manifold_
@@ -1440,7 +1440,7 @@ module Box2D
     def context = self[:context]
     def context=(v) self[:context] = v end
     def self.create_as(_DrawPolygon_, _DrawSolidPolygon_, _DrawCircle_, _DrawSolidCircle_, _DrawCapsule_, _DrawSolidCapsule_, _DrawSegment_, _DrawTransform_, _DrawPoint_, _DrawString_, _drawingBounds_, _useDrawingBounds_, _drawShapes_, _drawJoints_, _drawJointExtras_, _drawAABBs_, _drawMass_, _drawContacts_, _drawGraphColors_, _drawContactNormals_, _drawContactImpulses_, _drawFrictionImpulses_, _context_)
-      instance = b2DebugDraw.new
+      instance = DebugDraw.new
       instance[:DrawPolygon] = _DrawPolygon_
       instance[:DrawSolidPolygon] = _DrawSolidPolygon_
       instance[:DrawCircle] = _DrawCircle_

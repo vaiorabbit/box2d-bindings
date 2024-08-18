@@ -29,7 +29,7 @@ module Box2D
     def y = self[:y]
     def y=(v) self[:y] = v end
     def self.create_as(_x_, _y_)
-      instance = b2Vec2.new
+      instance = Vec2.new
       instance[:x] = _x_
       instance[:y] = _y_
       instance
@@ -46,7 +46,7 @@ module Box2D
     def s = self[:s]
     def s=(v) self[:s] = v end
     def self.create_as(_c_, _s_)
-      instance = b2Rot.new
+      instance = Rot.new
       instance[:c] = _c_
       instance[:s] = _s_
       instance
@@ -63,7 +63,7 @@ module Box2D
     def q = self[:q]
     def q=(v) self[:q] = v end
     def self.create_as(_p_, _q_)
-      instance = b2Transform.new
+      instance = Transform.new
       instance[:p] = _p_
       instance[:q] = _q_
       instance
@@ -80,7 +80,7 @@ module Box2D
     def cy = self[:cy]
     def cy=(v) self[:cy] = v end
     def self.create_as(_cx_, _cy_)
-      instance = b2Mat22.new
+      instance = Mat22.new
       instance[:cx] = _cx_
       instance[:cy] = _cy_
       instance
@@ -97,7 +97,7 @@ module Box2D
     def upperBound = self[:upperBound]
     def upperBound=(v) self[:upperBound] = v end
     def self.create_as(_lowerBound_, _upperBound_)
-      instance = b2AABB.new
+      instance = AABB.new
       instance[:lowerBound] = _lowerBound_
       instance[:upperBound] = _upperBound_
       instance

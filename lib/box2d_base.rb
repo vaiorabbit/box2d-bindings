@@ -35,7 +35,7 @@ module Box2D
     def revision = self[:revision]
     def revision=(v) self[:revision] = v end
     def self.create_as(_major_, _minor_, _revision_)
-      instance = b2Version.new
+      instance = Version.new
       instance[:major] = _major_
       instance[:minor] = _minor_
       instance[:revision] = _revision_
@@ -53,7 +53,7 @@ module Box2D
     def start_usec = self[:start_usec]
     def start_usec=(v) self[:start_usec] = v end
     def self.create_as(_start_sec_, _start_usec_)
-      instance = b2Timer.new
+      instance = Timer.new
       instance[:start_sec] = _start_sec_
       instance[:start_usec] = _start_usec_
       instance
