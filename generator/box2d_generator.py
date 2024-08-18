@@ -109,7 +109,7 @@ def generate_enum(ctx, indent = ""):
                 enum_api_name = ""
                 match_obj = re.match(r"^b2_(.+)", enum[0])
                 if match_obj:
-                    # Remove prefix 'SDL_' from name
+                    # Remove prefix 'b2_' from name
                     enum_api_name = match_obj.group(1)
                 else:
                     enum_api_name = enum[0]
@@ -211,7 +211,7 @@ def generate_function(ctx, indent = "", setup_method_name = ""):
             # Get Ruby FFI arguments
             args_ctype_list = list(map((lambda t: str(t.type_kind)), func_info.args))
 
-            # Remove leading 'SDL_' string and add ".by_value" to struct arguments (e.g.: Color -> Color.by_value)
+            # Remove leading 'b2' string and add ".by_value" to struct arguments (e.g.: Color -> Color.by_value)
             arg_is_record = lambda arg: box2d_parser.query_box2d_cindex_mapping_entry_exists(arg) and box2d_parser.get_box2d_cindex_mapping_value(arg) == "TypeKind.RECORD"
             args_ctype_list = list(map((lambda arg: re.sub('^b2', '', arg) + ".by_value" if arg_is_record(arg) else arg), args_ctype_list))
 

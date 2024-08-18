@@ -640,13 +640,13 @@ def collect_decl_function(ctx, cursor):
     for arg in args:
         arg_info = ArgumentInfo()
         arg_info.original_name = arg.spelling
-        match_obj = re.match(r"^b2(.+)", arg_info.original_name)
+        arg_info.api_name = arg.spelling
+        # Remove prefix 'const' from type name
+        match_obj = re.match(r"^const (.+)", arg.type.spelling)
         if match_obj:
-            # Remove prefix 'SDL_' from name
-            arg_info.api_name = match_obj.group(1)
+            arg_info.type_name = match_obj.group(1)
         else:
-            arg_info.api_name = arg_info.original_name
-        arg_info.type_name = arg.type.spelling
+            arg_info.type_name = arg.type.spelling
         arg_info.type_kind = arg.type.get_canonical().kind
         func_info.args.append(arg_info)
 
