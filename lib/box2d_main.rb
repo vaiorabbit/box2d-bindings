@@ -22,7 +22,7 @@ module Box2D
 
   # Function
 
-  def self.setup_box2d_symbols(output_error = false)
+  def self.setup_main_symbols(output_error = false)
     symbols = [
       :b2CreateWorld,
       :b2DestroyWorld,

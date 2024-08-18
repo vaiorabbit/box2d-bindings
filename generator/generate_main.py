@@ -7,4 +7,4 @@ if __name__ == "__main__":
 
     box2d_generator.sanitize(ctx)
     box2d_generator.generate(ctx,
-                             setup_method_name = 'box2d')
+                             setup_method_name = 'main')
