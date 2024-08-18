@@ -5,6 +5,7 @@
 require 'ffi'
 require_relative 'box2d_base.rb'
 require_relative 'box2d_math_functions.rb'
+require_relative 'box2d_math_functions_helper.rb'
 require_relative 'box2d_id.rb'
 require_relative 'box2d_collision.rb'
 require_relative 'box2d_types.rb'

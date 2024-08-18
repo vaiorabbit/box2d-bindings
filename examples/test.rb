@@ -2,11 +2,6 @@ require_relative 'util/setup_dll'
 
 # Ref.: box2d/test/test_world.c
 
-# TODO
-def b2Rot_GetAngle(q)
-  return Math.atan2(q.s, q.c)
-end
-
 if __FILE__ == $PROGRAM_NAME
   # Construct a world object, which will hold and simulate the rigid bodies.
   worldDef = Box2D::DefaultWorldDef()
@@ -74,7 +69,7 @@ if __FILE__ == $PROGRAM_NAME
     position = Box2D::Body_GetPosition(bodyId)
     rotation = Box2D::Body_GetRotation(bodyId)
 
-    printf("%4.2f %4.2f %4.2f\n", position.x, position.y, b2Rot_GetAngle(rotation))
+    printf("%4.2f %4.2f %4.2f\n", position.x, position.y, Box2D::Rot_GetAngle(rotation))
   end
 
   # When the world destructor is called, all bodies and joints are freed. This can
