@@ -10,6 +10,7 @@ module Box2D
   extend FFI::Library
   # Define/Macro
 
+  HASH_INIT = 5381
 
   # Enum
 
@@ -75,6 +76,7 @@ module Box2D
       :b2GetMillisecondsAndReset,
       :b2SleepMilliseconds,
       :b2Yield,
+      :b2Hash,
     ]
     apis = {
       :b2SetAllocator => :SetAllocator,
@@ -87,6 +89,7 @@ module Box2D
       :b2GetMillisecondsAndReset => :GetMillisecondsAndReset,
       :b2SleepMilliseconds => :SleepMilliseconds,
       :b2Yield => :Yield,
+      :b2Hash => :Hash,
     }
     args = {
       :b2SetAllocator => [:pointer, :pointer],
@@ -99,6 +102,7 @@ module Box2D
       :b2GetMillisecondsAndReset => [:pointer],
       :b2SleepMilliseconds => [:int],
       :b2Yield => [],
+      :b2Hash => [:uint, :pointer, :int],
     }
     retvals = {
       :b2SetAllocator => :void,
@@ -111,6 +115,7 @@ module Box2D
       :b2GetMillisecondsAndReset => :float,
       :b2SleepMilliseconds => :void,
       :b2Yield => :void,
+      :b2Hash => :uint,
     }
     symbols.each do |sym|
       begin

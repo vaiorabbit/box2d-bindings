@@ -36,6 +36,23 @@ module Box2D
     end
   end
 
+  class CosSin < FFI::Struct
+    layout(
+      :cosine, :float,
+      :sine, :float,
+    )
+    def cosine = self[:cosine]
+    def cosine=(v) self[:cosine] = v end
+    def sine = self[:sine]
+    def sine=(v) self[:sine] = v end
+    def self.create_as(_cosine_, _sine_)
+      instance = CosSin.new
+      instance[:cosine] = _cosine_
+      instance[:sine] = _sine_
+      instance
+    end
+  end
+
   class Rot < FFI::Struct
     layout(
       :c, :float,
@@ -109,6 +126,7 @@ module Box2D
 
   def self.setup_math_functions_symbols(output_error = false)
     symbols = [
+      :b2Atan2,
       :b2MinFloat,
       :b2MaxFloat,
       :b2AbsFloat,
@@ -136,14 +154,17 @@ module Box2D
       :b2Max,
       :b2Clamp,
       :b2Length,
-      :b2LengthSquared,
       :b2Distance,
-      :b2DistanceSquared,
-      :b2MakeRot,
+      :b2Normalize,
+      :b2GetLengthAndNormalize,
       :b2NormalizeRot,
+      :b2IntegrateRotation,
+      :b2LengthSquared,
+      :b2DistanceSquared,
+      :b2ComputeCosSin,
+      :b2MakeRot,
       :b2IsNormalized,
       :b2NLerp,
-      :b2IntegrateRotation,
       :b2ComputeAngularVelocity,
       :b2Rot_GetXAxis,
       :b2Rot_GetYAxis,
@@ -151,6 +172,7 @@ module Box2D
       :b2InvMulRot,
       :b2RelativeAngle,
       :b2UnwindAngle,
+      :b2UnwindLargeAngle,
       :b2RotateVector,
       :b2InvRotateVector,
       :b2TransformPoint,
@@ -168,13 +190,11 @@ module Box2D
       :b2Vec2_IsValid,
       :b2Rot_IsValid,
       :b2AABB_IsValid,
-      :b2Normalize,
-      :b2NormalizeChecked,
-      :b2GetLengthAndNormalize,
       :b2SetLengthUnitsPerMeter,
       :b2GetLengthUnitsPerMeter,
     ]
     apis = {
+      :b2Atan2 => :Atan2,
       :b2MinFloat => :MinFloat,
       :b2MaxFloat => :MaxFloat,
       :b2AbsFloat => :AbsFloat,
@@ -202,14 +222,17 @@ module Box2D
       :b2Max => :Max,
       :b2Clamp => :Clamp,
       :b2Length => :Length,
-      :b2LengthSquared => :LengthSquared,
       :b2Distance => :Distance,
-      :b2DistanceSquared => :DistanceSquared,
-      :b2MakeRot => :MakeRot,
+      :b2Normalize => :Normalize,
+      :b2GetLengthAndNormalize => :GetLengthAndNormalize,
       :b2NormalizeRot => :NormalizeRot,
+      :b2IntegrateRotation => :IntegrateRotation,
+      :b2LengthSquared => :LengthSquared,
+      :b2DistanceSquared => :DistanceSquared,
+      :b2ComputeCosSin => :ComputeCosSin,
+      :b2MakeRot => :MakeRot,
       :b2IsNormalized => :IsNormalized,
       :b2NLerp => :NLerp,
-      :b2IntegrateRotation => :IntegrateRotation,
       :b2ComputeAngularVelocity => :ComputeAngularVelocity,
       :b2Rot_GetXAxis => :Rot_GetXAxis,
       :b2Rot_GetYAxis => :Rot_GetYAxis,
@@ -217,6 +240,7 @@ module Box2D
       :b2InvMulRot => :InvMulRot,
       :b2RelativeAngle => :RelativeAngle,
       :b2UnwindAngle => :UnwindAngle,
+      :b2UnwindLargeAngle => :UnwindLargeAngle,
       :b2RotateVector => :RotateVector,
       :b2InvRotateVector => :InvRotateVector,
       :b2TransformPoint => :TransformPoint,
@@ -234,13 +258,11 @@ module Box2D
       :b2Vec2_IsValid => :Vec2_IsValid,
       :b2Rot_IsValid => :Rot_IsValid,
       :b2AABB_IsValid => :AABB_IsValid,
-      :b2Normalize => :Normalize,
-      :b2NormalizeChecked => :NormalizeChecked,
-      :b2GetLengthAndNormalize => :GetLengthAndNormalize,
       :b2SetLengthUnitsPerMeter => :SetLengthUnitsPerMeter,
       :b2GetLengthUnitsPerMeter => :GetLengthUnitsPerMeter,
     }
     args = {
+      :b2Atan2 => [:float, :float],
       :b2MinFloat => [:float, :float],
       :b2MaxFloat => [:float, :float],
       :b2AbsFloat => [:float],
@@ -268,14 +290,17 @@ module Box2D
       :b2Max => [Vec2.by_value, Vec2.by_value],
       :b2Clamp => [Vec2.by_value, Vec2.by_value, Vec2.by_value],
       :b2Length => [Vec2.by_value],
-      :b2LengthSquared => [Vec2.by_value],
       :b2Distance => [Vec2.by_value, Vec2.by_value],
-      :b2DistanceSquared => [Vec2.by_value, Vec2.by_value],
-      :b2MakeRot => [:float],
+      :b2Normalize => [Vec2.by_value],
+      :b2GetLengthAndNormalize => [:pointer, Vec2.by_value],
       :b2NormalizeRot => [Rot.by_value],
+      :b2IntegrateRotation => [Rot.by_value, :float],
+      :b2LengthSquared => [Vec2.by_value],
+      :b2DistanceSquared => [Vec2.by_value, Vec2.by_value],
+      :b2ComputeCosSin => [:float],
+      :b2MakeRot => [:float],
       :b2IsNormalized => [Rot.by_value],
       :b2NLerp => [Rot.by_value, Rot.by_value, :float],
-      :b2IntegrateRotation => [Rot.by_value, :float],
       :b2ComputeAngularVelocity => [Rot.by_value, Rot.by_value, :float],
       :b2Rot_GetXAxis => [Rot.by_value],
       :b2Rot_GetYAxis => [Rot.by_value],
@@ -283,6 +308,7 @@ module Box2D
       :b2InvMulRot => [Rot.by_value, Rot.by_value],
       :b2RelativeAngle => [Rot.by_value, Rot.by_value],
       :b2UnwindAngle => [:float],
+      :b2UnwindLargeAngle => [:float],
       :b2RotateVector => [Rot.by_value, Vec2.by_value],
       :b2InvRotateVector => [Rot.by_value, Vec2.by_value],
       :b2TransformPoint => [Transform.by_value, Vec2.by_value],
@@ -300,13 +326,11 @@ module Box2D
       :b2Vec2_IsValid => [Vec2.by_value],
       :b2Rot_IsValid => [Rot.by_value],
       :b2AABB_IsValid => [AABB.by_value],
-      :b2Normalize => [Vec2.by_value],
-      :b2NormalizeChecked => [Vec2.by_value],
-      :b2GetLengthAndNormalize => [:pointer, Vec2.by_value],
       :b2SetLengthUnitsPerMeter => [:float],
       :b2GetLengthUnitsPerMeter => [],
     }
     retvals = {
+      :b2Atan2 => :float,
       :b2MinFloat => :float,
       :b2MaxFloat => :float,
       :b2AbsFloat => :float,
@@ -334,14 +358,17 @@ module Box2D
       :b2Max => Vec2.by_value,
       :b2Clamp => Vec2.by_value,
       :b2Length => :float,
-      :b2LengthSquared => :float,
       :b2Distance => :float,
-      :b2DistanceSquared => :float,
-      :b2MakeRot => Rot.by_value,
+      :b2Normalize => Vec2.by_value,
+      :b2GetLengthAndNormalize => Vec2.by_value,
       :b2NormalizeRot => Rot.by_value,
+      :b2IntegrateRotation => Rot.by_value,
+      :b2LengthSquared => :float,
+      :b2DistanceSquared => :float,
+      :b2ComputeCosSin => CosSin.by_value,
+      :b2MakeRot => Rot.by_value,
       :b2IsNormalized => :int,
       :b2NLerp => Rot.by_value,
-      :b2IntegrateRotation => Rot.by_value,
       :b2ComputeAngularVelocity => :float,
       :b2Rot_GetXAxis => Vec2.by_value,
       :b2Rot_GetYAxis => Vec2.by_value,
@@ -349,6 +376,7 @@ module Box2D
       :b2InvMulRot => Rot.by_value,
       :b2RelativeAngle => :float,
       :b2UnwindAngle => :float,
+      :b2UnwindLargeAngle => :float,
       :b2RotateVector => Vec2.by_value,
       :b2InvRotateVector => Vec2.by_value,
       :b2TransformPoint => Vec2.by_value,
@@ -366,9 +394,6 @@ module Box2D
       :b2Vec2_IsValid => :int,
       :b2Rot_IsValid => :int,
       :b2AABB_IsValid => :int,
-      :b2Normalize => Vec2.by_value,
-      :b2NormalizeChecked => Vec2.by_value,
-      :b2GetLengthAndNormalize => Vec2.by_value,
       :b2SetLengthUnitsPerMeter => :void,
       :b2GetLengthUnitsPerMeter => :float,
     }

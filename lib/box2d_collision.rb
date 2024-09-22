@@ -186,7 +186,7 @@ module Box2D
     end
   end
 
-  class SmoothSegment < FFI::Struct
+  class ChainSegment < FFI::Struct
     layout(
       :ghost1, Vec2,
       :segment, Segment,
@@ -202,7 +202,7 @@ module Box2D
     def chainId = self[:chainId]
     def chainId=(v) self[:chainId] = v end
     def self.create_as(_ghost1_, _segment_, _ghost2_, _chainId_)
-      instance = SmoothSegment.new
+      instance = ChainSegment.new
       instance[:ghost1] = _ghost1_
       instance[:segment] = _segment_
       instance[:ghost2] = _ghost2_
@@ -773,9 +773,9 @@ module Box2D
       :b2CollidePolygonAndCapsule,
       :b2CollidePolygons,
       :b2CollideSegmentAndPolygon,
-      :b2CollideSmoothSegmentAndCircle,
-      :b2CollideSmoothSegmentAndCapsule,
-      :b2CollideSmoothSegmentAndPolygon,
+      :b2CollideChainSegmentAndCircle,
+      :b2CollideChainSegmentAndCapsule,
+      :b2CollideChainSegmentAndPolygon,
       :b2DynamicTree_Create,
       :b2DynamicTree_Destroy,
       :b2DynamicTree_CreateProxy,
@@ -841,9 +841,9 @@ module Box2D
       :b2CollidePolygonAndCapsule => :CollidePolygonAndCapsule,
       :b2CollidePolygons => :CollidePolygons,
       :b2CollideSegmentAndPolygon => :CollideSegmentAndPolygon,
-      :b2CollideSmoothSegmentAndCircle => :CollideSmoothSegmentAndCircle,
-      :b2CollideSmoothSegmentAndCapsule => :CollideSmoothSegmentAndCapsule,
-      :b2CollideSmoothSegmentAndPolygon => :CollideSmoothSegmentAndPolygon,
+      :b2CollideChainSegmentAndCircle => :CollideChainSegmentAndCircle,
+      :b2CollideChainSegmentAndCapsule => :CollideChainSegmentAndCapsule,
+      :b2CollideChainSegmentAndPolygon => :CollideChainSegmentAndPolygon,
       :b2DynamicTree_Create => :DynamicTree_Create,
       :b2DynamicTree_Destroy => :DynamicTree_Destroy,
       :b2DynamicTree_CreateProxy => :DynamicTree_CreateProxy,
@@ -872,7 +872,7 @@ module Box2D
       :b2MakeSquare => [:float],
       :b2MakeBox => [:float, :float],
       :b2MakeRoundedBox => [:float, :float, :float],
-      :b2MakeOffsetBox => [:float, :float, Vec2.by_value, :float],
+      :b2MakeOffsetBox => [:float, :float, Vec2.by_value, Rot.by_value],
       :b2TransformPolygon => [Transform.by_value, :pointer],
       :b2ComputeCircleMass => [:pointer, :float],
       :b2ComputeCapsuleMass => [:pointer, :float],
@@ -909,18 +909,18 @@ module Box2D
       :b2CollidePolygonAndCapsule => [:pointer, Transform.by_value, :pointer, Transform.by_value],
       :b2CollidePolygons => [:pointer, Transform.by_value, :pointer, Transform.by_value],
       :b2CollideSegmentAndPolygon => [:pointer, Transform.by_value, :pointer, Transform.by_value],
-      :b2CollideSmoothSegmentAndCircle => [:pointer, Transform.by_value, :pointer, Transform.by_value],
-      :b2CollideSmoothSegmentAndCapsule => [:pointer, Transform.by_value, :pointer, Transform.by_value, :pointer],
-      :b2CollideSmoothSegmentAndPolygon => [:pointer, Transform.by_value, :pointer, Transform.by_value, :pointer],
+      :b2CollideChainSegmentAndCircle => [:pointer, Transform.by_value, :pointer, Transform.by_value],
+      :b2CollideChainSegmentAndCapsule => [:pointer, Transform.by_value, :pointer, Transform.by_value, :pointer],
+      :b2CollideChainSegmentAndPolygon => [:pointer, Transform.by_value, :pointer, Transform.by_value, :pointer],
       :b2DynamicTree_Create => [],
       :b2DynamicTree_Destroy => [:pointer],
-      :b2DynamicTree_CreateProxy => [:pointer, AABB.by_value, :uint, :int],
+      :b2DynamicTree_CreateProxy => [:pointer, AABB.by_value, :ulong_long, :int],
       :b2DynamicTree_DestroyProxy => [:pointer, :int],
       :b2DynamicTree_MoveProxy => [:pointer, :int, AABB.by_value],
       :b2DynamicTree_EnlargeProxy => [:pointer, :int, AABB.by_value],
-      :b2DynamicTree_Query => [:pointer, AABB.by_value, :uint, :pointer, :pointer],
-      :b2DynamicTree_RayCast => [:pointer, :pointer, :uint, :pointer, :pointer],
-      :b2DynamicTree_ShapeCast => [:pointer, :pointer, :uint, :pointer, :pointer],
+      :b2DynamicTree_Query => [:pointer, AABB.by_value, :ulong_long, :pointer, :pointer],
+      :b2DynamicTree_RayCast => [:pointer, :pointer, :ulong_long, :pointer, :pointer],
+      :b2DynamicTree_ShapeCast => [:pointer, :pointer, :ulong_long, :pointer, :pointer],
       :b2DynamicTree_Validate => [:pointer],
       :b2DynamicTree_GetHeight => [:pointer],
       :b2DynamicTree_GetMaxBalance => [:pointer],
@@ -977,9 +977,9 @@ module Box2D
       :b2CollidePolygonAndCapsule => Manifold.by_value,
       :b2CollidePolygons => Manifold.by_value,
       :b2CollideSegmentAndPolygon => Manifold.by_value,
-      :b2CollideSmoothSegmentAndCircle => Manifold.by_value,
-      :b2CollideSmoothSegmentAndCapsule => Manifold.by_value,
-      :b2CollideSmoothSegmentAndPolygon => Manifold.by_value,
+      :b2CollideChainSegmentAndCircle => Manifold.by_value,
+      :b2CollideChainSegmentAndCapsule => Manifold.by_value,
+      :b2CollideChainSegmentAndPolygon => Manifold.by_value,
       :b2DynamicTree_Create => DynamicTree.by_value,
       :b2DynamicTree_Destroy => :void,
       :b2DynamicTree_CreateProxy => :int,

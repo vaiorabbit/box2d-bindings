@@ -21,7 +21,7 @@ module Box2D
   ShapeType_capsuleShape = 1
   ShapeType_segmentShape = 2
   ShapeType_polygonShape = 3
-  ShapeType_smoothSegmentShape = 4
+  ShapeType_chainSegmentShape = 4
   ShapeType_shapeTypeCount = 5
   JointType_distanceJoint = 0
   JointType_motorJoint = 1
@@ -32,7 +32,6 @@ module Box2D
   JointType_wheelJoint = 6
   HexColor_colorAliceBlue = 15792383
   HexColor_colorAntiqueWhite = 16444375
-  HexColor_colorAqua = 65535
   HexColor_colorAquamarine = 8388564
   HexColor_colorAzure = 15794175
   HexColor_colorBeige = 16119260
@@ -75,7 +74,6 @@ module Box2D
   HexColor_colorFirebrick = 11674146
   HexColor_colorFloralWhite = 16775920
   HexColor_colorForestGreen = 2263842
-  HexColor_colorFuchsia = 16711935
   HexColor_colorGainsboro = 14474460
   HexColor_colorGhostWhite = 16316671
   HexColor_colorGold = 16766720
@@ -117,7 +115,6 @@ module Box2D
   HexColor_colorLightSlateGray = 7833753
   HexColor_colorLightSteelBlue = 11584734
   HexColor_colorLightYellow = 16777184
-  HexColor_colorLime = 65280
   HexColor_colorLimeGreen = 3329330
   HexColor_colorLinen = 16445670
   HexColor_colorMagenta = 16711935
@@ -136,7 +133,6 @@ module Box2D
   HexColor_colorMistyRose = 16770273
   HexColor_colorMoccasin = 16770229
   HexColor_colorNavajoWhite = 16768685
-  HexColor_colorNavy = 128
   HexColor_colorNavyBlue = 128
   HexColor_colorOldLace = 16643558
   HexColor_colorOlive = 8421376
@@ -246,7 +242,7 @@ module Box2D
       :jointDampingRatio, :float,
       :maximumLinearVelocity, :float,
       :enableSleep, :int,
-      :enableContinous, :int,
+      :enableContinuous, :int,
       :workerCount, :int,
       :enqueueTask, :pointer,
       :finishTask, :pointer,
@@ -273,8 +269,8 @@ module Box2D
     def maximumLinearVelocity=(v) self[:maximumLinearVelocity] = v end
     def enableSleep = self[:enableSleep]
     def enableSleep=(v) self[:enableSleep] = v end
-    def enableContinous = self[:enableContinous]
-    def enableContinous=(v) self[:enableContinous] = v end
+    def enableContinuous = self[:enableContinuous]
+    def enableContinuous=(v) self[:enableContinuous] = v end
     def workerCount = self[:workerCount]
     def workerCount=(v) self[:workerCount] = v end
     def enqueueTask = self[:enqueueTask]
@@ -285,7 +281,7 @@ module Box2D
     def userTaskContext=(v) self[:userTaskContext] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_gravity_, _restitutionThreshold_, _contactPushoutVelocity_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _jointHertz_, _jointDampingRatio_, _maximumLinearVelocity_, _enableSleep_, _enableContinous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _internalValue_)
+    def self.create_as(_gravity_, _restitutionThreshold_, _contactPushoutVelocity_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _jointHertz_, _jointDampingRatio_, _maximumLinearVelocity_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _internalValue_)
       instance = WorldDef.new
       instance[:gravity] = _gravity_
       instance[:restitutionThreshold] = _restitutionThreshold_
@@ -297,7 +293,7 @@ module Box2D
       instance[:jointDampingRatio] = _jointDampingRatio_
       instance[:maximumLinearVelocity] = _maximumLinearVelocity_
       instance[:enableSleep] = _enableSleep_
-      instance[:enableContinous] = _enableContinous_
+      instance[:enableContinuous] = _enableContinuous_
       instance[:workerCount] = _workerCount_
       instance[:enqueueTask] = _enqueueTask_
       instance[:finishTask] = _finishTask_
@@ -390,8 +386,8 @@ module Box2D
 
   class Filter < FFI::Struct
     layout(
-      :categoryBits, :uint,
-      :maskBits, :uint,
+      :categoryBits, :ulong_long,
+      :maskBits, :ulong_long,
       :groupIndex, :int,
     )
     def categoryBits = self[:categoryBits]
@@ -411,8 +407,8 @@ module Box2D
 
   class QueryFilter < FFI::Struct
     layout(
-      :categoryBits, :uint,
-      :maskBits, :uint,
+      :categoryBits, :ulong_long,
+      :maskBits, :ulong_long,
     )
     def categoryBits = self[:categoryBits]
     def categoryBits=(v) self[:categoryBits] = v end
@@ -627,7 +623,6 @@ module Box2D
 
   class Counters < FFI::Struct
     layout(
-      :staticBodyCount, :int,
       :bodyCount, :int,
       :shapeCount, :int,
       :contactCount, :int,
@@ -640,8 +635,6 @@ module Box2D
       :taskCount, :int,
       :colorCounts, [:int, 12],
     )
-    def staticBodyCount = self[:staticBodyCount]
-    def staticBodyCount=(v) self[:staticBodyCount] = v end
     def bodyCount = self[:bodyCount]
     def bodyCount=(v) self[:bodyCount] = v end
     def shapeCount = self[:shapeCount]
@@ -664,9 +657,8 @@ module Box2D
     def taskCount=(v) self[:taskCount] = v end
     def colorCounts = self[:colorCounts]
     def colorCounts=(v) self[:colorCounts] = v end
-    def self.create_as(_staticBodyCount_, _bodyCount_, _shapeCount_, _contactCount_, _jointCount_, _islandCount_, _stackUsed_, _staticTreeHeight_, _treeHeight_, _byteCount_, _taskCount_, _colorCounts_)
+    def self.create_as(_bodyCount_, _shapeCount_, _contactCount_, _jointCount_, _islandCount_, _stackUsed_, _staticTreeHeight_, _treeHeight_, _byteCount_, _taskCount_, _colorCounts_)
       instance = Counters.new
-      instance[:staticBodyCount] = _staticBodyCount_
       instance[:bodyCount] = _bodyCount_
       instance[:shapeCount] = _shapeCount_
       instance[:contactCount] = _contactCount_
@@ -1373,7 +1365,6 @@ module Box2D
       :DrawSolidPolygon, :pointer,
       :DrawCircle, :pointer,
       :DrawSolidCircle, :pointer,
-      :DrawCapsule, :pointer,
       :DrawSolidCapsule, :pointer,
       :DrawSegment, :pointer,
       :DrawTransform, :pointer,
@@ -1401,8 +1392,6 @@ module Box2D
     def DrawCircle=(v) self[:DrawCircle] = v end
     def DrawSolidCircle = self[:DrawSolidCircle]
     def DrawSolidCircle=(v) self[:DrawSolidCircle] = v end
-    def DrawCapsule = self[:DrawCapsule]
-    def DrawCapsule=(v) self[:DrawCapsule] = v end
     def DrawSolidCapsule = self[:DrawSolidCapsule]
     def DrawSolidCapsule=(v) self[:DrawSolidCapsule] = v end
     def DrawSegment = self[:DrawSegment]
@@ -1439,13 +1428,12 @@ module Box2D
     def drawFrictionImpulses=(v) self[:drawFrictionImpulses] = v end
     def context = self[:context]
     def context=(v) self[:context] = v end
-    def self.create_as(_DrawPolygon_, _DrawSolidPolygon_, _DrawCircle_, _DrawSolidCircle_, _DrawCapsule_, _DrawSolidCapsule_, _DrawSegment_, _DrawTransform_, _DrawPoint_, _DrawString_, _drawingBounds_, _useDrawingBounds_, _drawShapes_, _drawJoints_, _drawJointExtras_, _drawAABBs_, _drawMass_, _drawContacts_, _drawGraphColors_, _drawContactNormals_, _drawContactImpulses_, _drawFrictionImpulses_, _context_)
+    def self.create_as(_DrawPolygon_, _DrawSolidPolygon_, _DrawCircle_, _DrawSolidCircle_, _DrawSolidCapsule_, _DrawSegment_, _DrawTransform_, _DrawPoint_, _DrawString_, _drawingBounds_, _useDrawingBounds_, _drawShapes_, _drawJoints_, _drawJointExtras_, _drawAABBs_, _drawMass_, _drawContacts_, _drawGraphColors_, _drawContactNormals_, _drawContactImpulses_, _drawFrictionImpulses_, _context_)
       instance = DebugDraw.new
       instance[:DrawPolygon] = _DrawPolygon_
       instance[:DrawSolidPolygon] = _DrawSolidPolygon_
       instance[:DrawCircle] = _DrawCircle_
       instance[:DrawSolidCircle] = _DrawSolidCircle_
-      instance[:DrawCapsule] = _DrawCapsule_
       instance[:DrawSolidCapsule] = _DrawSolidCapsule_
       instance[:DrawSegment] = _DrawSegment_
       instance[:DrawTransform] = _DrawTransform_
@@ -1486,6 +1474,7 @@ module Box2D
       :b2DefaultRevoluteJointDef,
       :b2DefaultWeldJointDef,
       :b2DefaultWheelJointDef,
+      :b2DefaultDebugDraw,
     ]
     apis = {
       :b2DefaultWorldDef => :DefaultWorldDef,
@@ -1501,6 +1490,7 @@ module Box2D
       :b2DefaultRevoluteJointDef => :DefaultRevoluteJointDef,
       :b2DefaultWeldJointDef => :DefaultWeldJointDef,
       :b2DefaultWheelJointDef => :DefaultWheelJointDef,
+      :b2DefaultDebugDraw => :DefaultDebugDraw,
     }
     args = {
       :b2DefaultWorldDef => [],
@@ -1516,6 +1506,7 @@ module Box2D
       :b2DefaultRevoluteJointDef => [],
       :b2DefaultWeldJointDef => [],
       :b2DefaultWheelJointDef => [],
+      :b2DefaultDebugDraw => [],
     }
     retvals = {
       :b2DefaultWorldDef => WorldDef.by_value,
@@ -1531,6 +1522,7 @@ module Box2D
       :b2DefaultRevoluteJointDef => RevoluteJointDef.by_value,
       :b2DefaultWeldJointDef => WeldJointDef.by_value,
       :b2DefaultWheelJointDef => WheelJointDef.by_value,
+      :b2DefaultDebugDraw => DebugDraw.by_value,
     }
     symbols.each do |sym|
       begin
