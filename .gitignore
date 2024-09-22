@@ -1,2 +1,2 @@
-box2d_dll/build_*
+box2d_dll/build*
 __pycache__
