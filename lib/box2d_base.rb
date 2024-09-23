@@ -46,13 +46,17 @@ module Box2D
 
   class Timer < FFI::Struct
     layout(
-      :start, :long_long,
+      :start_sec, :ulong_long,
+      :start_usec, :ulong_long,
     )
-    def start = self[:start]
-    def start=(v) self[:start] = v end
-    def self.create_as(_start_)
+    def start_sec = self[:start_sec]
+    def start_sec=(v) self[:start_sec] = v end
+    def start_usec = self[:start_usec]
+    def start_usec=(v) self[:start_usec] = v end
+    def self.create_as(_start_sec_, _start_usec_)
       instance = Timer.new
-      instance[:start] = _start_
+      instance[:start_sec] = _start_sec_
+      instance[:start_usec] = _start_usec_
       instance
     end
   end

@@ -6,6 +6,7 @@ require 'ffi'
 require_relative 'box2d_base.rb'
 require_relative 'box2d_math_functions.rb'
 require_relative 'box2d_math_functions_helper.rb'
+require_relative 'box2d_math_inline_functions.rb'
 require_relative 'box2d_id.rb'
 require_relative 'box2d_collision.rb'
 require_relative 'box2d_types.rb'
@@ -35,6 +36,7 @@ module Box2D
   def self.setup_symbols(output_error = false)
     setup_base_symbols(output_error)
     setup_math_functions_symbols(output_error)
+    setup_math_inline_functions_symbols(output_error)
     setup_id_symbols(output_error)
     setup_collision_symbols(output_error)
     setup_types_symbols(output_error)
