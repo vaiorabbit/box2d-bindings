@@ -15,13 +15,13 @@ if box2d_bindings_gem_available?
 
   case RUBY_PLATFORM
   when /mswin|msys|mingw|cygwin/
-    Box2D.load_lib(shared_lib_path + 'libbox2d.dll', raygui_libpath: shared_lib_path + 'raygui.dll', physac_libpath: shared_lib_path + 'physac.dll')
+    Box2D.load_lib(shared_lib_path + 'libbox2d.dll')
   when /darwin/
     arch = RUBY_PLATFORM.split('-')[0]
-    Box2D.load_lib(shared_lib_path + "libbox2d.#{arch}.dylib", raygui_libpath: shared_lib_path + "raygui.#{arch}.dylib", physac_libpath: shared_lib_path + "physac.#{arch}.dylib")
+    Box2D.load_lib(shared_lib_path + "libbox2d.#{arch}.dylib")
   when /linux/
     arch = RUBY_PLATFORM.split('-')[0]
-    Box2D.load_lib(shared_lib_path + "libbox2d.#{arch}.so", raygui_libpath: shared_lib_path + "raygui.#{arch}.so", physac_libpath: shared_lib_path + "physac.#{arch}.so")
+    Box2D.load_lib(shared_lib_path + "libbox2d.#{arch}.so")
   else
     raise RuntimeError, "setup_dll.rb : Unknown OS: #{RUBY_PLATFORM}"
   end
@@ -31,13 +31,13 @@ else
 
   case RUBY_PLATFORM
   when /mswin|msys|mingw|cygwin/
-    Box2D.load_lib(Dir.pwd + '/../lib/' + 'libbox2d.dll', raygui_libpath: Dir.pwd + '/../lib/' + 'raygui.dll', physac_libpath: Dir.pwd + '/../lib/' + 'physac.dll')
+    Box2D.load_lib(Dir.pwd + '/../lib/' + 'libbox2d.dll')
   when /darwin/
     arch = RUBY_PLATFORM.split('-')[0]
-    Box2D.load_lib(Dir.pwd + '/../lib/' + "libbox2d.#{arch}.dylib", raygui_libpath: Dir.pwd + '/../lib/' + "raygui.#{arch}.dylib", physac_libpath: Dir.pwd + '/../lib/' + "physac.#{arch}.dylib")
+    Box2D.load_lib(Dir.pwd + '/../lib/' + "libbox2d.#{arch}.dylib")
   when /linux/
     arch = RUBY_PLATFORM.split('-')[0]
-    Box2D.load_lib(Dir.pwd + '/../lib/' + "libbox2d.#{arch}.so", raygui_libpath: Dir.pwd + '/../lib/' + "raygui.#{arch}.so", physac_libpath: Dir.pwd + '/../lib/' + "physac.#{arch}.so")
+    Box2D.load_lib(Dir.pwd + '/../lib/' + "libbox2d.#{arch}.so")
   else
     raise RuntimeError, "setup_dll.rb : Unknown OS: #{RUBY_PLATFORM}"
   end
