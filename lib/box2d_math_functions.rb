@@ -158,10 +158,10 @@ module Box2D
     retvals = {
       :b2Atan2 => :float,
       :b2ComputeCosSin => CosSin.by_value,
-      :b2IsValid => :bool,
-      :b2Vec2_IsValid => :bool,
-      :b2Rot_IsValid => :bool,
-      :b2AABB_IsValid => :bool,
+      :b2IsValid => :int,
+      :b2Vec2_IsValid => :int,
+      :b2Rot_IsValid => :int,
+      :b2AABB_IsValid => :int,
       :b2SetLengthUnitsPerMeter => :void,
       :b2GetLengthUnitsPerMeter => :float,
     }

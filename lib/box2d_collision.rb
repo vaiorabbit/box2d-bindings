@@ -284,7 +284,7 @@ module Box2D
       :point, Vec2,
       :fraction, :float,
       :iterations, :int,
-      :hit, :bool,
+      :hit, :int,
     )
     def normal = self[:normal]
     def normal=(v) self[:normal] = v end
@@ -384,7 +384,7 @@ module Box2D
       :proxyB, DistanceProxy,
       :transformA, Transform,
       :transformB, Transform,
-      :useRadii, :bool,
+      :useRadii, :int,
     )
     def proxyA = self[:proxyA]
     def proxyA=(v) self[:proxyA] = v end
@@ -613,7 +613,7 @@ module Box2D
       :maxNormalImpulse, :float,
       :normalVelocity, :float,
       :id, :ushort,
-      :persisted, :bool,
+      :persisted, :int,
     )
     def point = self[:point]
     def point=(v) self[:point] = v end
@@ -882,7 +882,7 @@ module Box2D
       :b2PointInPolygon => [Vec2.by_value, :pointer],
       :b2RayCastCircle => [:pointer, :pointer],
       :b2RayCastCapsule => [:pointer, :pointer],
-      :b2RayCastSegment => [:pointer, :pointer, :bool],
+      :b2RayCastSegment => [:pointer, :pointer, :int],
       :b2RayCastPolygon => [:pointer, :pointer],
       :b2ShapeCastCircle => [:pointer, :pointer],
       :b2ShapeCastCapsule => [:pointer, :pointer],
@@ -923,12 +923,12 @@ module Box2D
       :b2DynamicTree_GetAreaRatio => [:pointer],
       :b2DynamicTree_RebuildBottomUp => [:pointer],
       :b2DynamicTree_GetProxyCount => [:pointer],
-      :b2DynamicTree_Rebuild => [:pointer, :bool],
+      :b2DynamicTree_Rebuild => [:pointer, :int],
       :b2DynamicTree_ShiftOrigin => [:pointer, Vec2.by_value],
       :b2DynamicTree_GetByteCount => [:pointer],
     }
     retvals = {
-      :b2IsValidRay => :bool,
+      :b2IsValidRay => :int,
       :b2MakePolygon => Polygon.by_value,
       :b2MakeOffsetPolygon => Polygon.by_value,
       :b2MakeSquare => Polygon.by_value,
@@ -943,9 +943,9 @@ module Box2D
       :b2ComputeCapsuleAABB => AABB.by_value,
       :b2ComputePolygonAABB => AABB.by_value,
       :b2ComputeSegmentAABB => AABB.by_value,
-      :b2PointInCircle => :bool,
-      :b2PointInCapsule => :bool,
-      :b2PointInPolygon => :bool,
+      :b2PointInCircle => :int,
+      :b2PointInCapsule => :int,
+      :b2PointInPolygon => :int,
       :b2RayCastCircle => CastOutput.by_value,
       :b2RayCastCapsule => CastOutput.by_value,
       :b2RayCastSegment => CastOutput.by_value,
@@ -955,7 +955,7 @@ module Box2D
       :b2ShapeCastSegment => CastOutput.by_value,
       :b2ShapeCastPolygon => CastOutput.by_value,
       :b2ComputeHull => Hull.by_value,
-      :b2ValidateHull => :bool,
+      :b2ValidateHull => :int,
       :b2SegmentDistance => SegmentDistanceResult.by_value,
       :b2ShapeDistance => DistanceOutput.by_value,
       :b2ShapeCast => CastOutput.by_value,
