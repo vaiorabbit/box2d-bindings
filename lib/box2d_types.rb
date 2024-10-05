@@ -10,9 +10,15 @@ module Box2D
   extend FFI::Library
   # Define/Macro
 
+  DEFAULT_CATEGORY_BITS = 0x0001
 
   # Enum
 
+  MixingRule_mixAverage = 0
+  MixingRule_mixGeometricMean = 1
+  MixingRule_mixMultiply = 2
+  MixingRule_mixMinimum = 3
+  MixingRule_mixMaximum = 4
   BodyType_staticBody = 0
   BodyType_kinematicBody = 1
   BodyType_dynamicBody = 2
@@ -190,6 +196,7 @@ module Box2D
   typedef :pointer, :b2TaskCallback
   typedef :pointer, :b2EnqueueTaskCallback
   typedef :pointer, :b2FinishTaskCallback
+  typedef :int, :b2MixingRule
   typedef :int, :b2BodyType
   typedef :int, :b2ShapeType
   typedef :int, :b2JointType
@@ -207,7 +214,7 @@ module Box2D
       :point, Vec2,
       :normal, Vec2,
       :fraction, :float,
-      :hit, :int,
+      :hit, :bool,
     )
     def shapeId = self[:shapeId]
     def shapeId=(v) self[:shapeId] = v end
@@ -241,8 +248,10 @@ module Box2D
       :jointHertz, :float,
       :jointDampingRatio, :float,
       :maximumLinearVelocity, :float,
-      :enableSleep, :int,
-      :enableContinuous, :int,
+      :frictionMixingRule, :int,
+      :restitutionMixingRule, :int,
+      :enableSleep, :bool,
+      :enableContinuous, :bool,
       :workerCount, :int,
       :enqueueTask, :pointer,
       :finishTask, :pointer,
@@ -267,6 +276,10 @@ module Box2D
     def jointDampingRatio=(v) self[:jointDampingRatio] = v end
     def maximumLinearVelocity = self[:maximumLinearVelocity]
     def maximumLinearVelocity=(v) self[:maximumLinearVelocity] = v end
+    def frictionMixingRule = self[:frictionMixingRule]
+    def frictionMixingRule=(v) self[:frictionMixingRule] = v end
+    def restitutionMixingRule = self[:restitutionMixingRule]
+    def restitutionMixingRule=(v) self[:restitutionMixingRule] = v end
     def enableSleep = self[:enableSleep]
     def enableSleep=(v) self[:enableSleep] = v end
     def enableContinuous = self[:enableContinuous]
@@ -281,7 +294,7 @@ module Box2D
     def userTaskContext=(v) self[:userTaskContext] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_gravity_, _restitutionThreshold_, _contactPushoutVelocity_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _jointHertz_, _jointDampingRatio_, _maximumLinearVelocity_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _internalValue_)
+    def self.create_as(_gravity_, _restitutionThreshold_, _contactPushoutVelocity_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _jointHertz_, _jointDampingRatio_, _maximumLinearVelocity_, _frictionMixingRule_, _restitutionMixingRule_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _internalValue_)
       instance = WorldDef.new
       instance[:gravity] = _gravity_
       instance[:restitutionThreshold] = _restitutionThreshold_
@@ -292,6 +305,8 @@ module Box2D
       instance[:jointHertz] = _jointHertz_
       instance[:jointDampingRatio] = _jointDampingRatio_
       instance[:maximumLinearVelocity] = _maximumLinearVelocity_
+      instance[:frictionMixingRule] = _frictionMixingRule_
+      instance[:restitutionMixingRule] = _restitutionMixingRule_
       instance[:enableSleep] = _enableSleep_
       instance[:enableContinuous] = _enableContinuous_
       instance[:workerCount] = _workerCount_
@@ -315,13 +330,13 @@ module Box2D
       :gravityScale, :float,
       :sleepThreshold, :float,
       :userData, :pointer,
-      :enableSleep, :int,
-      :isAwake, :int,
-      :fixedRotation, :int,
-      :isBullet, :int,
-      :isEnabled, :int,
-      :automaticMass, :int,
-      :allowFastRotation, :int,
+      :enableSleep, :bool,
+      :isAwake, :bool,
+      :fixedRotation, :bool,
+      :isBullet, :bool,
+      :isEnabled, :bool,
+      :automaticMass, :bool,
+      :allowFastRotation, :bool,
       :internalValue, :int,
     )
     def type = self[:type]
@@ -430,12 +445,12 @@ module Box2D
       :density, :float,
       :filter, Filter,
       :customColor, :uint,
-      :isSensor, :int,
-      :enableSensorEvents, :int,
-      :enableContactEvents, :int,
-      :enableHitEvents, :int,
-      :enablePreSolveEvents, :int,
-      :forceContactCreation, :int,
+      :isSensor, :bool,
+      :enableSensorEvents, :bool,
+      :enableContactEvents, :bool,
+      :enableHitEvents, :bool,
+      :enablePreSolveEvents, :bool,
+      :forceContactCreation, :bool,
       :internalValue, :int,
     )
     def userData = self[:userData]
@@ -491,7 +506,8 @@ module Box2D
       :friction, :float,
       :restitution, :float,
       :filter, Filter,
-      :isLoop, :int,
+      :customColor, :uint,
+      :isLoop, :bool,
       :internalValue, :int,
     )
     def userData = self[:userData]
@@ -506,11 +522,13 @@ module Box2D
     def restitution=(v) self[:restitution] = v end
     def filter = self[:filter]
     def filter=(v) self[:filter] = v end
+    def customColor = self[:customColor]
+    def customColor=(v) self[:customColor] = v end
     def isLoop = self[:isLoop]
     def isLoop=(v) self[:isLoop] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_userData_, _points_, _count_, _friction_, _restitution_, _filter_, _isLoop_, _internalValue_)
+    def self.create_as(_userData_, _points_, _count_, _friction_, _restitution_, _filter_, _customColor_, _isLoop_, _internalValue_)
       instance = ChainDef.new
       instance[:userData] = _userData_
       instance[:points] = _points_
@@ -518,6 +536,7 @@ module Box2D
       instance[:friction] = _friction_
       instance[:restitution] = _restitution_
       instance[:filter] = _filter_
+      instance[:customColor] = _customColor_
       instance[:isLoop] = _isLoop_
       instance[:internalValue] = _internalValue_
       instance
@@ -681,16 +700,16 @@ module Box2D
       :localAnchorA, Vec2,
       :localAnchorB, Vec2,
       :length, :float,
-      :enableSpring, :int,
+      :enableSpring, :bool,
       :hertz, :float,
       :dampingRatio, :float,
-      :enableLimit, :int,
+      :enableLimit, :bool,
       :minLength, :float,
       :maxLength, :float,
-      :enableMotor, :int,
+      :enableMotor, :bool,
       :maxMotorForce, :float,
       :motorSpeed, :float,
-      :collideConnected, :int,
+      :collideConnected, :bool,
       :userData, :pointer,
       :internalValue, :int,
     )
@@ -760,7 +779,7 @@ module Box2D
       :maxForce, :float,
       :maxTorque, :float,
       :correctionFactor, :float,
-      :collideConnected, :int,
+      :collideConnected, :bool,
       :userData, :pointer,
       :internalValue, :int,
     )
@@ -808,7 +827,7 @@ module Box2D
       :hertz, :float,
       :dampingRatio, :float,
       :maxForce, :float,
-      :collideConnected, :int,
+      :collideConnected, :bool,
       :userData, :pointer,
       :internalValue, :int,
     )
@@ -853,16 +872,16 @@ module Box2D
       :localAnchorB, Vec2,
       :localAxisA, Vec2,
       :referenceAngle, :float,
-      :enableSpring, :int,
+      :enableSpring, :bool,
       :hertz, :float,
       :dampingRatio, :float,
-      :enableLimit, :int,
+      :enableLimit, :bool,
       :lowerTranslation, :float,
       :upperTranslation, :float,
-      :enableMotor, :int,
+      :enableMotor, :bool,
       :maxMotorForce, :float,
       :motorSpeed, :float,
-      :collideConnected, :int,
+      :collideConnected, :bool,
       :userData, :pointer,
       :internalValue, :int,
     )
@@ -933,17 +952,17 @@ module Box2D
       :localAnchorA, Vec2,
       :localAnchorB, Vec2,
       :referenceAngle, :float,
-      :enableSpring, :int,
+      :enableSpring, :bool,
       :hertz, :float,
       :dampingRatio, :float,
-      :enableLimit, :int,
+      :enableLimit, :bool,
       :lowerAngle, :float,
       :upperAngle, :float,
-      :enableMotor, :int,
+      :enableMotor, :bool,
       :maxMotorTorque, :float,
       :motorSpeed, :float,
       :drawSize, :float,
-      :collideConnected, :int,
+      :collideConnected, :bool,
       :userData, :pointer,
       :internalValue, :int,
     )
@@ -1018,7 +1037,7 @@ module Box2D
       :angularHertz, :float,
       :linearDampingRatio, :float,
       :angularDampingRatio, :float,
-      :collideConnected, :int,
+      :collideConnected, :bool,
       :userData, :pointer,
       :internalValue, :int,
     )
@@ -1071,16 +1090,16 @@ module Box2D
       :localAnchorA, Vec2,
       :localAnchorB, Vec2,
       :localAxisA, Vec2,
-      :enableSpring, :int,
+      :enableSpring, :bool,
       :hertz, :float,
       :dampingRatio, :float,
-      :enableLimit, :int,
+      :enableLimit, :bool,
       :lowerTranslation, :float,
       :upperTranslation, :float,
-      :enableMotor, :int,
+      :enableMotor, :bool,
       :maxMotorTorque, :float,
       :motorSpeed, :float,
-      :collideConnected, :int,
+      :collideConnected, :bool,
       :userData, :pointer,
       :internalValue, :int,
     )
@@ -1137,6 +1156,35 @@ module Box2D
       instance[:collideConnected] = _collideConnected_
       instance[:userData] = _userData_
       instance[:internalValue] = _internalValue_
+      instance
+    end
+  end
+
+  class ExplosionDef < FFI::Struct
+    layout(
+      :maskBits, :ulong_long,
+      :position, Vec2,
+      :radius, :float,
+      :falloff, :float,
+      :impulsePerLength, :float,
+    )
+    def maskBits = self[:maskBits]
+    def maskBits=(v) self[:maskBits] = v end
+    def position = self[:position]
+    def position=(v) self[:position] = v end
+    def radius = self[:radius]
+    def radius=(v) self[:radius] = v end
+    def falloff = self[:falloff]
+    def falloff=(v) self[:falloff] = v end
+    def impulsePerLength = self[:impulsePerLength]
+    def impulsePerLength=(v) self[:impulsePerLength] = v end
+    def self.create_as(_maskBits_, _position_, _radius_, _falloff_, _impulsePerLength_)
+      instance = ExplosionDef.new
+      instance[:maskBits] = _maskBits_
+      instance[:position] = _position_
+      instance[:radius] = _radius_
+      instance[:falloff] = _falloff_
+      instance[:impulsePerLength] = _impulsePerLength_
       instance
     end
   end
@@ -1204,15 +1252,19 @@ module Box2D
     layout(
       :shapeIdA, ShapeId,
       :shapeIdB, ShapeId,
+      :manifold, Manifold,
     )
     def shapeIdA = self[:shapeIdA]
     def shapeIdA=(v) self[:shapeIdA] = v end
     def shapeIdB = self[:shapeIdB]
     def shapeIdB=(v) self[:shapeIdB] = v end
-    def self.create_as(_shapeIdA_, _shapeIdB_)
+    def manifold = self[:manifold]
+    def manifold=(v) self[:manifold] = v end
+    def self.create_as(_shapeIdA_, _shapeIdB_, _manifold_)
       instance = ContactBeginTouchEvent.new
       instance[:shapeIdA] = _shapeIdA_
       instance[:shapeIdB] = _shapeIdB_
+      instance[:manifold] = _manifold_
       instance
     end
   end
@@ -1301,7 +1353,7 @@ module Box2D
       :transform, Transform,
       :bodyId, BodyId,
       :userData, :pointer,
-      :fellAsleep, :int,
+      :fellAsleep, :bool,
     )
     def transform = self[:transform]
     def transform=(v) self[:transform] = v end
@@ -1371,17 +1423,17 @@ module Box2D
       :DrawPoint, :pointer,
       :DrawString, :pointer,
       :drawingBounds, AABB,
-      :useDrawingBounds, :int,
-      :drawShapes, :int,
-      :drawJoints, :int,
-      :drawJointExtras, :int,
-      :drawAABBs, :int,
-      :drawMass, :int,
-      :drawContacts, :int,
-      :drawGraphColors, :int,
-      :drawContactNormals, :int,
-      :drawContactImpulses, :int,
-      :drawFrictionImpulses, :int,
+      :useDrawingBounds, :bool,
+      :drawShapes, :bool,
+      :drawJoints, :bool,
+      :drawJointExtras, :bool,
+      :drawAABBs, :bool,
+      :drawMass, :bool,
+      :drawContacts, :bool,
+      :drawGraphColors, :bool,
+      :drawContactNormals, :bool,
+      :drawContactImpulses, :bool,
+      :drawFrictionImpulses, :bool,
       :context, :pointer,
     )
     def DrawPolygon = self[:DrawPolygon]
@@ -1474,6 +1526,7 @@ module Box2D
       :b2DefaultRevoluteJointDef,
       :b2DefaultWeldJointDef,
       :b2DefaultWheelJointDef,
+      :b2DefaultExplosionDef,
       :b2DefaultDebugDraw,
     ]
     apis = {
@@ -1490,6 +1543,7 @@ module Box2D
       :b2DefaultRevoluteJointDef => :DefaultRevoluteJointDef,
       :b2DefaultWeldJointDef => :DefaultWeldJointDef,
       :b2DefaultWheelJointDef => :DefaultWheelJointDef,
+      :b2DefaultExplosionDef => :DefaultExplosionDef,
       :b2DefaultDebugDraw => :DefaultDebugDraw,
     }
     args = {
@@ -1506,6 +1560,7 @@ module Box2D
       :b2DefaultRevoluteJointDef => [],
       :b2DefaultWeldJointDef => [],
       :b2DefaultWheelJointDef => [],
+      :b2DefaultExplosionDef => [],
       :b2DefaultDebugDraw => [],
     }
     retvals = {
@@ -1522,6 +1577,7 @@ module Box2D
       :b2DefaultRevoluteJointDef => RevoluteJointDef.by_value,
       :b2DefaultWeldJointDef => WeldJointDef.by_value,
       :b2DefaultWheelJointDef => WheelJointDef.by_value,
+      :b2DefaultExplosionDef => ExplosionDef.by_value,
       :b2DefaultDebugDraw => DebugDraw.by_value,
     }
     symbols.each do |sym|

@@ -7,4 +7,6 @@
     , "B2_IS_NULL" : null
     , "B2_IS_NON_NULL" : null
     , "B2_ID_EQUALS" : null
+    , "B2_DEFAULT_CATEGORY_BITS" : "0x0001"
+    , "B2_DEFAULT_MASK_BITS" : null
 }
