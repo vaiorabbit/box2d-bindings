@@ -214,6 +214,8 @@ module Box2D
       :point, Vec2,
       :normal, Vec2,
       :fraction, :float,
+      :nodeVisits, :int,
+      :leafVisits, :int,
       :hit, :bool,
     )
     def shapeId = self[:shapeId]
@@ -224,14 +226,20 @@ module Box2D
     def normal=(v) self[:normal] = v end
     def fraction = self[:fraction]
     def fraction=(v) self[:fraction] = v end
+    def nodeVisits = self[:nodeVisits]
+    def nodeVisits=(v) self[:nodeVisits] = v end
+    def leafVisits = self[:leafVisits]
+    def leafVisits=(v) self[:leafVisits] = v end
     def hit = self[:hit]
     def hit=(v) self[:hit] = v end
-    def self.create_as(_shapeId_, _point_, _normal_, _fraction_, _hit_)
+    def self.create_as(_shapeId_, _point_, _normal_, _fraction_, _nodeVisits_, _leafVisits_, _hit_)
       instance = RayResult.new
       instance[:shapeId] = _shapeId_
       instance[:point] = _point_
       instance[:normal] = _normal_
       instance[:fraction] = _fraction_
+      instance[:nodeVisits] = _nodeVisits_
+      instance[:leafVisits] = _leafVisits_
       instance[:hit] = _hit_
       instance
     end
@@ -335,7 +343,6 @@ module Box2D
       :fixedRotation, :bool,
       :isBullet, :bool,
       :isEnabled, :bool,
-      :automaticMass, :bool,
       :allowFastRotation, :bool,
       :internalValue, :int,
     )
@@ -369,13 +376,11 @@ module Box2D
     def isBullet=(v) self[:isBullet] = v end
     def isEnabled = self[:isEnabled]
     def isEnabled=(v) self[:isEnabled] = v end
-    def automaticMass = self[:automaticMass]
-    def automaticMass=(v) self[:automaticMass] = v end
     def allowFastRotation = self[:allowFastRotation]
     def allowFastRotation=(v) self[:allowFastRotation] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_type_, _position_, _rotation_, _linearVelocity_, _angularVelocity_, _linearDamping_, _angularDamping_, _gravityScale_, _sleepThreshold_, _userData_, _enableSleep_, _isAwake_, _fixedRotation_, _isBullet_, _isEnabled_, _automaticMass_, _allowFastRotation_, _internalValue_)
+    def self.create_as(_type_, _position_, _rotation_, _linearVelocity_, _angularVelocity_, _linearDamping_, _angularDamping_, _gravityScale_, _sleepThreshold_, _userData_, _enableSleep_, _isAwake_, _fixedRotation_, _isBullet_, _isEnabled_, _allowFastRotation_, _internalValue_)
       instance = BodyDef.new
       instance[:type] = _type_
       instance[:position] = _position_
@@ -392,7 +397,6 @@ module Box2D
       instance[:fixedRotation] = _fixedRotation_
       instance[:isBullet] = _isBullet_
       instance[:isEnabled] = _isEnabled_
-      instance[:automaticMass] = _automaticMass_
       instance[:allowFastRotation] = _allowFastRotation_
       instance[:internalValue] = _internalValue_
       instance
@@ -451,6 +455,7 @@ module Box2D
       :enableHitEvents, :bool,
       :enablePreSolveEvents, :bool,
       :forceContactCreation, :bool,
+      :updateBodyMass, :bool,
       :internalValue, :int,
     )
     def userData = self[:userData]
@@ -477,9 +482,11 @@ module Box2D
     def enablePreSolveEvents=(v) self[:enablePreSolveEvents] = v end
     def forceContactCreation = self[:forceContactCreation]
     def forceContactCreation=(v) self[:forceContactCreation] = v end
+    def updateBodyMass = self[:updateBodyMass]
+    def updateBodyMass=(v) self[:updateBodyMass] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_userData_, _friction_, _restitution_, _density_, _filter_, _customColor_, _isSensor_, _enableSensorEvents_, _enableContactEvents_, _enableHitEvents_, _enablePreSolveEvents_, _forceContactCreation_, _internalValue_)
+    def self.create_as(_userData_, _friction_, _restitution_, _density_, _filter_, _customColor_, _isSensor_, _enableSensorEvents_, _enableContactEvents_, _enableHitEvents_, _enablePreSolveEvents_, _forceContactCreation_, _updateBodyMass_, _internalValue_)
       instance = ShapeDef.new
       instance[:userData] = _userData_
       instance[:friction] = _friction_
@@ -493,6 +500,7 @@ module Box2D
       instance[:enableHitEvents] = _enableHitEvents_
       instance[:enablePreSolveEvents] = _enablePreSolveEvents_
       instance[:forceContactCreation] = _forceContactCreation_
+      instance[:updateBodyMass] = _updateBodyMass_
       instance[:internalValue] = _internalValue_
       instance
     end

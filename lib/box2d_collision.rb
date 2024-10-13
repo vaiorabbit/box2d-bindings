@@ -725,6 +725,23 @@ module Box2D
     end
   end
 
+  class TreeStats < FFI::Struct
+    layout(
+      :nodeVisits, :int,
+      :leafVisits, :int,
+    )
+    def nodeVisits = self[:nodeVisits]
+    def nodeVisits=(v) self[:nodeVisits] = v end
+    def leafVisits = self[:leafVisits]
+    def leafVisits=(v) self[:leafVisits] = v end
+    def self.create_as(_nodeVisits_, _leafVisits_)
+      instance = TreeStats.new
+      instance[:nodeVisits] = _nodeVisits_
+      instance[:leafVisits] = _leafVisits_
+      instance
+    end
+  end
+
 
   # Function
 
@@ -980,9 +997,9 @@ module Box2D
       :b2DynamicTree_DestroyProxy => :void,
       :b2DynamicTree_MoveProxy => :void,
       :b2DynamicTree_EnlargeProxy => :void,
-      :b2DynamicTree_Query => :void,
-      :b2DynamicTree_RayCast => :void,
-      :b2DynamicTree_ShapeCast => :void,
+      :b2DynamicTree_Query => TreeStats.by_value,
+      :b2DynamicTree_RayCast => TreeStats.by_value,
+      :b2DynamicTree_ShapeCast => TreeStats.by_value,
       :b2DynamicTree_Validate => :void,
       :b2DynamicTree_GetHeight => :int,
       :b2DynamicTree_GetMaxBalance => :int,
