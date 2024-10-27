@@ -4,6 +4,7 @@
     "collision.h",
     "collision_inline.h",
     "id.h",
+    "id_inline.h",
     "math_functions.h",
     "math_inline_functions.h",
     "types.h"

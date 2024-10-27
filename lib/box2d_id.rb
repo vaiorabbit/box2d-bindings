@@ -78,27 +78,6 @@ module Box2D
     end
   end
 
-  class JointId < FFI::Struct
-    layout(
-      :index1, :int,
-      :world0, :ushort,
-      :revision, :ushort,
-    )
-    def index1 = self[:index1]
-    def index1=(v) self[:index1] = v end
-    def world0 = self[:world0]
-    def world0=(v) self[:world0] = v end
-    def revision = self[:revision]
-    def revision=(v) self[:revision] = v end
-    def self.create_as(_index1_, _world0_, _revision_)
-      instance = JointId.new
-      instance[:index1] = _index1_
-      instance[:world0] = _world0_
-      instance[:revision] = _revision_
-      instance
-    end
-  end
-
   class ChainId < FFI::Struct
     layout(
       :index1, :int,
@@ -113,6 +92,27 @@ module Box2D
     def revision=(v) self[:revision] = v end
     def self.create_as(_index1_, _world0_, _revision_)
       instance = ChainId.new
+      instance[:index1] = _index1_
+      instance[:world0] = _world0_
+      instance[:revision] = _revision_
+      instance
+    end
+  end
+
+  class JointId < FFI::Struct
+    layout(
+      :index1, :int,
+      :world0, :ushort,
+      :revision, :ushort,
+    )
+    def index1 = self[:index1]
+    def index1=(v) self[:index1] = v end
+    def world0 = self[:world0]
+    def world0=(v) self[:world0] = v end
+    def revision = self[:revision]
+    def revision=(v) self[:revision] = v end
+    def self.create_as(_index1_, _world0_, _revision_)
+      instance = JointId.new
       instance[:index1] = _index1_
       instance[:world0] = _world0_
       instance[:revision] = _revision_

@@ -32,10 +32,11 @@ module Box2D
   JointType_distanceJoint = 0
   JointType_motorJoint = 1
   JointType_mouseJoint = 2
-  JointType_prismaticJoint = 3
-  JointType_revoluteJoint = 4
-  JointType_weldJoint = 5
-  JointType_wheelJoint = 6
+  JointType_nullJoint = 3
+  JointType_prismaticJoint = 4
+  JointType_revoluteJoint = 5
+  JointType_weldJoint = 6
+  JointType_wheelJoint = 7
   HexColor_colorAliceBlue = 15792383
   HexColor_colorAntiqueWhite = 16444375
   HexColor_colorAquamarine = 8388564
@@ -264,6 +265,7 @@ module Box2D
       :enqueueTask, :pointer,
       :finishTask, :pointer,
       :userTaskContext, :pointer,
+      :userData, :pointer,
       :internalValue, :int,
     )
     def gravity = self[:gravity]
@@ -300,9 +302,11 @@ module Box2D
     def finishTask=(v) self[:finishTask] = v end
     def userTaskContext = self[:userTaskContext]
     def userTaskContext=(v) self[:userTaskContext] = v end
+    def userData = self[:userData]
+    def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_gravity_, _restitutionThreshold_, _contactPushoutVelocity_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _jointHertz_, _jointDampingRatio_, _maximumLinearVelocity_, _frictionMixingRule_, _restitutionMixingRule_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _internalValue_)
+    def self.create_as(_gravity_, _restitutionThreshold_, _contactPushoutVelocity_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _jointHertz_, _jointDampingRatio_, _maximumLinearVelocity_, _frictionMixingRule_, _restitutionMixingRule_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _userData_, _internalValue_)
       instance = WorldDef.new
       instance[:gravity] = _gravity_
       instance[:restitutionThreshold] = _restitutionThreshold_
@@ -321,6 +325,7 @@ module Box2D
       instance[:enqueueTask] = _enqueueTask_
       instance[:finishTask] = _finishTask_
       instance[:userTaskContext] = _userTaskContext_
+      instance[:userData] = _userData_
       instance[:internalValue] = _internalValue_
       instance
     end
@@ -454,7 +459,7 @@ module Box2D
       :enableContactEvents, :bool,
       :enableHitEvents, :bool,
       :enablePreSolveEvents, :bool,
-      :forceContactCreation, :bool,
+      :invokeContactCreation, :bool,
       :updateBodyMass, :bool,
       :internalValue, :int,
     )
@@ -480,13 +485,13 @@ module Box2D
     def enableHitEvents=(v) self[:enableHitEvents] = v end
     def enablePreSolveEvents = self[:enablePreSolveEvents]
     def enablePreSolveEvents=(v) self[:enablePreSolveEvents] = v end
-    def forceContactCreation = self[:forceContactCreation]
-    def forceContactCreation=(v) self[:forceContactCreation] = v end
+    def invokeContactCreation = self[:invokeContactCreation]
+    def invokeContactCreation=(v) self[:invokeContactCreation] = v end
     def updateBodyMass = self[:updateBodyMass]
     def updateBodyMass=(v) self[:updateBodyMass] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_userData_, _friction_, _restitution_, _density_, _filter_, _customColor_, _isSensor_, _enableSensorEvents_, _enableContactEvents_, _enableHitEvents_, _enablePreSolveEvents_, _forceContactCreation_, _updateBodyMass_, _internalValue_)
+    def self.create_as(_userData_, _friction_, _restitution_, _density_, _filter_, _customColor_, _isSensor_, _enableSensorEvents_, _enableContactEvents_, _enableHitEvents_, _enablePreSolveEvents_, _invokeContactCreation_, _updateBodyMass_, _internalValue_)
       instance = ShapeDef.new
       instance[:userData] = _userData_
       instance[:friction] = _friction_
@@ -499,7 +504,7 @@ module Box2D
       instance[:enableContactEvents] = _enableContactEvents_
       instance[:enableHitEvents] = _enableHitEvents_
       instance[:enablePreSolveEvents] = _enablePreSolveEvents_
-      instance[:forceContactCreation] = _forceContactCreation_
+      instance[:invokeContactCreation] = _invokeContactCreation_
       instance[:updateBodyMass] = _updateBodyMass_
       instance[:internalValue] = _internalValue_
       instance
@@ -866,6 +871,31 @@ module Box2D
       instance[:dampingRatio] = _dampingRatio_
       instance[:maxForce] = _maxForce_
       instance[:collideConnected] = _collideConnected_
+      instance[:userData] = _userData_
+      instance[:internalValue] = _internalValue_
+      instance
+    end
+  end
+
+  class NullJointDef < FFI::Struct
+    layout(
+      :bodyIdA, BodyId,
+      :bodyIdB, BodyId,
+      :userData, :pointer,
+      :internalValue, :int,
+    )
+    def bodyIdA = self[:bodyIdA]
+    def bodyIdA=(v) self[:bodyIdA] = v end
+    def bodyIdB = self[:bodyIdB]
+    def bodyIdB=(v) self[:bodyIdB] = v end
+    def userData = self[:userData]
+    def userData=(v) self[:userData] = v end
+    def internalValue = self[:internalValue]
+    def internalValue=(v) self[:internalValue] = v end
+    def self.create_as(_bodyIdA_, _bodyIdB_, _userData_, _internalValue_)
+      instance = NullJointDef.new
+      instance[:bodyIdA] = _bodyIdA_
+      instance[:bodyIdB] = _bodyIdB_
       instance[:userData] = _userData_
       instance[:internalValue] = _internalValue_
       instance
@@ -1530,6 +1560,7 @@ module Box2D
       :b2DefaultDistanceJointDef,
       :b2DefaultMotorJointDef,
       :b2DefaultMouseJointDef,
+      :b2DefaultNullJointDef,
       :b2DefaultPrismaticJointDef,
       :b2DefaultRevoluteJointDef,
       :b2DefaultWeldJointDef,
@@ -1547,6 +1578,7 @@ module Box2D
       :b2DefaultDistanceJointDef => :DefaultDistanceJointDef,
       :b2DefaultMotorJointDef => :DefaultMotorJointDef,
       :b2DefaultMouseJointDef => :DefaultMouseJointDef,
+      :b2DefaultNullJointDef => :DefaultNullJointDef,
       :b2DefaultPrismaticJointDef => :DefaultPrismaticJointDef,
       :b2DefaultRevoluteJointDef => :DefaultRevoluteJointDef,
       :b2DefaultWeldJointDef => :DefaultWeldJointDef,
@@ -1564,6 +1596,7 @@ module Box2D
       :b2DefaultDistanceJointDef => [],
       :b2DefaultMotorJointDef => [],
       :b2DefaultMouseJointDef => [],
+      :b2DefaultNullJointDef => [],
       :b2DefaultPrismaticJointDef => [],
       :b2DefaultRevoluteJointDef => [],
       :b2DefaultWeldJointDef => [],
@@ -1581,6 +1614,7 @@ module Box2D
       :b2DefaultDistanceJointDef => DistanceJointDef.by_value,
       :b2DefaultMotorJointDef => MotorJointDef.by_value,
       :b2DefaultMouseJointDef => MouseJointDef.by_value,
+      :b2DefaultNullJointDef => NullJointDef.by_value,
       :b2DefaultPrismaticJointDef => PrismaticJointDef.by_value,
       :b2DefaultRevoluteJointDef => RevoluteJointDef.by_value,
       :b2DefaultWeldJointDef => WeldJointDef.by_value,

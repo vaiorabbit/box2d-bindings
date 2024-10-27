@@ -7,6 +7,7 @@ require_relative 'box2d_base.rb'
 require_relative 'box2d_math_functions.rb'
 require_relative 'box2d_math_inline_functions.rb'
 require_relative 'box2d_id.rb'
+require_relative 'box2d_id_inline.rb'
 require_relative 'box2d_collision.rb'
 require_relative 'box2d_collision_inline.rb'
 require_relative 'box2d_types.rb'
@@ -38,6 +39,7 @@ module Box2D
     setup_math_functions_symbols(output_error)
     setup_math_inline_functions_symbols(output_error)
     setup_id_symbols(output_error)
+    setup_id_inline_symbols(output_error)
     setup_collision_symbols(output_error)
     setup_collision_inline_symbols(output_error)
     setup_types_symbols(output_error)
