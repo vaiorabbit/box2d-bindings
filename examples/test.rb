@@ -1,4 +1,4 @@
-require_relative 'util/setup_dll'
+require_relative 'util/setup_box2d'
 
 # Ref.: box2d/test/test_world.c
 
