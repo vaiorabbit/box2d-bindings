@@ -1,0 +1,6 @@
+source "https://rubygems.org"
+gem "ruby-lsp", require: false, group: :development
+gem "debug", require: false, group: :development, platforms: :mri
+gem "rubocop", require: false, group: :development
+gem "ffi", require: true
+gem "raylib-bindings", require: true

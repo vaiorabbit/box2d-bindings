@@ -4,27 +4,25 @@ require_relative 'util/setup_raylib'
 class RaylibDebugDraw
   attr_accessor :debug_draw
 
-  @@scale = 10.0
-  @@ofs_x = 800 / 2
-  @@ofs_y = 450 / 2
+  @scale = 20.0
 
-  @@draw_polygon_fcn = FFI::Function.new(:void, [:pointer, :int32, :int32, :pointer]) do |vertices, vertexCount, radius, color, context|
+  @@draw_polygon_fcn = FFI::Function.new(:void, %i[pointer int32 int32 pointer]) do |vertices, vertexCount, radius, color, context|
     p 'polygon'
   end
 
   @@draw_solid_polygon_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer, :int32, :float, :int32, :pointer]) do |transform, vertices, vertexCount, radius, color, context|
-    # pp [transform.p.x, transform.p.y, transform.q.c, transform.q.s]
-    Raylib::DrawCircle(transform.p.x.to_i * @@scale, transform.p.y.to_i * @@scale, radius * @@scale, RED)
+    radius = radius <= 0.0 ? 3.0 : radius
+    Raylib::DrawCircle(transform.p.x * @scale, -transform.p.y * @scale, radius, BLUE)
   end
 
   @@draw_circle_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :float, :int32, :pointer]) do |center, radius, color, context|
     # p 'circle'
-    Raylib::DrawCircle(center.p.x.to_i * @@scale, center.p.y.to_i * @@scale, radius * @@scale, BLUE)
+    Raylib::DrawCircle(center.p.x * @scale, -center.p.y * @scale, radius * @scale, BLUE)
   end
 
   @@draw_solid_circle_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :float, :int32, :pointer]) do |center, radius, color, context|
     # p 'solid_circle'
-    Raylib::DrawCircle(center.p.x.to_i * @@scale, center.p.y.to_i * @@scale, radius * @@scale, PURPLE)
+    Raylib::DrawCircle(center.p.x * @scale, -center.p.y * @scale, radius * @scale, BLACK)
   end
 
   @@draw_solid_capsule_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :float, :int32, :pointer]) do |p1, p2, radius, color, context|
@@ -32,9 +30,9 @@ class RaylibDebugDraw
   end
 
   @@draw_segment_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :int32, :pointer]) do |p1, p2, color, context|
+    # TODO
+    # DrawLine(p1.x * @scale, -p1.y * @scale, p2.x * @scale, -p2.y * @scale, GREEN)
     # p 'segment'
-    DrawLine(p1.x * @@scale + @@ofs_x, p1.y * @@scale + @@ofs_y, p2.x * @@scale + @@ofs_x, p2.y * @@scale + @@ofs_y, GREEN)
-    pp [p1.x * @@scale + @@ofs_x, p1.y * @@scale + @@ofs_y, p2.x * @@scale + @@ofs_x, p2.y * @@scale + @@ofs_y]
   end
 
   @@draw_transform_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer]) do |transform, context|
@@ -62,17 +60,19 @@ class RaylibDebugDraw
     @debug_draw.DrawPoint = @@draw_point_fcn
     @debug_draw.DrawString = @@draw_string_fcn
 
+    # @debug_draw.drawingBounds.lowerBound.x = -100.0
+    # @debug_draw.drawingBounds.lowerBound.y = -100.0
+    # @debug_draw.drawingBounds.upperBound.x = 100.0
+    # @debug_draw.drawingBounds.upperBound.y = 100.0
+    # @debug_draw.useDrawingBounds = true
     @debug_draw.useDrawingBounds = false
     @debug_draw.drawShapes = true
     @debug_draw.drawJoints = true
   end
-
 end
 
 class SampleTumber
-  attr_accessor :worldId
-  attr_accessor :jointId, :motorSpeed
-  attr_accessor :debugDraw
+  attr_accessor :worldId, :jointId, :motorSpeed, :debugDraw
 
   def initialize
     @debugDraw = RaylibDebugDraw.new
@@ -80,20 +80,25 @@ class SampleTumber
 
   def setup
     worldDef = Box2D::DefaultWorldDef()
+    worldDef.gravity.x = 0.0
+    worldDef.gravity.y = -10.0
+
     @worldId = Box2D::CreateWorld(worldDef)
     groundId = Box2D::CreateBody(@worldId, Box2D::DefaultBodyDef())
+
+    y_pos = 0.0 # 10.0
 
     bodyDef = Box2D::DefaultBodyDef()
     bodyDef.type = Box2D::BodyType_dynamicBody
     bodyDef.enableSleep = true
     bodyDef.position.x = 0.0
-    bodyDef.position.y = 10.0
+    bodyDef.position.y = y_pos
     bodyId = Box2D::CreateBody(@worldId, bodyDef)
 
     shapeDef = Box2D::DefaultShapeDef()
     shapeDef.density = 50.0
 
-    # TODO b2Rot_identity
+    # TODO: b2Rot_identity
     rot_identity = Box2D::Rot.create_as(1.0, 0.0)
     polygon = Box2D::MakeOffsetBox(0.5, 10.0, Box2D::Vec2.create_as(10.0, 0.0), rot_identity)
     Box2D::CreatePolygonShape(bodyId, shapeDef, polygon)
@@ -104,7 +109,7 @@ class SampleTumber
     polygon = Box2D::MakeOffsetBox(10.0, 0.5, Box2D::Vec2.create_as(0.0, -10.0), rot_identity)
     Box2D::CreatePolygonShape(bodyId, shapeDef, polygon)
 
-    # TODO b2_colorBlueViolet
+    # TODO: b2_colorBlueViolet
     shapeDef.customColor = Box2D::HexColor_colorBlueViolet
     circle = Box2D::Circle.create_as(Box2D::Vec2.create_as(5.0, 5.0), 1.0)
     Box2D::CreateCircleShape(bodyId, shapeDef, circle)
@@ -120,7 +125,7 @@ class SampleTumber
     jd = Box2D::DefaultRevoluteJointDef()
     jd.bodyIdA = groundId
     jd.bodyIdB = bodyId
-    jd.localAnchorA = Box2D::Vec2.create_as(0.0, 10.0)
+    jd.localAnchorA = Box2D::Vec2.create_as(0.0, y_pos)
     jd.localAnchorB = Box2D::Vec2.create_as(0.0, 0.0)
     jd.referenceAngle = 0.0
     jd.motorSpeed = (Math::PI / 180.0) * @motorSpeed
@@ -135,7 +140,7 @@ class SampleTumber
     bodyDef.type = Box2D::BodyType_dynamicBody
     shapeDef = Box2D::DefaultShapeDef()
 
-    y = -0.2 * gridCount + 10.0
+    y = -0.2 * gridCount + y_pos
     gridCount.times do |i|
       x = -0.2 * gridCount
       gridCount.times do |j|
@@ -167,41 +172,44 @@ class SampleTumber
 end
 
 if __FILE__ == $PROGRAM_NAME
+
+  run = false
+
   version = Box2D::GetVersion()
   title = "Box2D Version #{version.major}.#{version.minor}.#{version.revision}"
 
-  screenWidth = 800
-  screenHeight = 450
+  screenWidth = 1280
+  screenHeight = 720
   InitWindow(screenWidth, screenHeight, title)
 
   camera = Camera2D.new
-             .with_target(0, 0)
-             .with_offset(screenWidth / 2.0, screenHeight / 2.0)
-             .with_rotation(0.0)
-             .with_zoom(1.0)
+                   .with_target(0, 0)
+                   .with_offset(screenWidth / 2.0, screenHeight / 2.0)
+                   .with_rotation(0.0)
+                   .with_zoom(1.0)
   SetTargetFPS(60)
 
   current_sample = SampleTumber.new
   current_sample.setup
 
   until WindowShouldClose()
-
-    # sample step
-
-    current_sample.step
-
+    run = true if IsKeyPressed(KEY_SPACE)
+    current_sample.step if run
+    # rubocop:disable Layout/IndentationConsistency
     BeginDrawing()
       ClearBackground(RAYWHITE)
 
       BeginMode2D(camera)
-        DrawRectangle(-6000, 320, 13000, 8000, DARKGRAY)
-        DrawLine(camera.target.x.to_i, -screenHeight*10, camera.target.x.to_i, screenHeight*10, GREEN)
-        DrawLine(-screenWidth*10, camera.target.y.to_i, screenWidth*10, camera.target.y.to_i, GREEN)
+        DrawLine(camera.target.x.to_i, -screenHeight * 10, camera.target.x.to_i, screenHeight * 10, GREEN)
+        DrawLine(-screenWidth * 10, camera.target.y.to_i, screenWidth * 10, camera.target.y.to_i, GREEN)
 
         current_sample.draw
 
+        DrawFPS(screenWidth / 2 - 100, -screenHeight / 2 + 10)
+
       EndMode2D()
     EndDrawing()
+    # rubocop:enable Layout/IndentationConsistency
   end
 
   current_sample.cleanup
