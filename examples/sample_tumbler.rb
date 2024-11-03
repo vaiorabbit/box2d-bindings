@@ -1,11 +1,81 @@
 require_relative 'util/setup_box2d'
 require_relative 'util/setup_raylib'
 
+class RaylibDebugDraw
+  attr_accessor :debug_draw
+
+  @@scale = 10.0
+  @@ofs_x = 800 / 2
+  @@ofs_y = 450 / 2
+
+  @@draw_polygon_fcn = FFI::Function.new(:void, [:pointer, :int32, :int32, :pointer]) do |vertices, vertexCount, radius, color, context|
+    p 'polygon'
+  end
+
+  @@draw_solid_polygon_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer, :int32, :float, :int32, :pointer]) do |transform, vertices, vertexCount, radius, color, context|
+    # pp [transform.p.x, transform.p.y, transform.q.c, transform.q.s]
+    Raylib::DrawCircle(transform.p.x.to_i * @@scale, transform.p.y.to_i * @@scale, radius * @@scale, RED)
+  end
+
+  @@draw_circle_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :float, :int32, :pointer]) do |center, radius, color, context|
+    # p 'circle'
+    Raylib::DrawCircle(center.p.x.to_i * @@scale, center.p.y.to_i * @@scale, radius * @@scale, BLUE)
+  end
+
+  @@draw_solid_circle_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :float, :int32, :pointer]) do |center, radius, color, context|
+    # p 'solid_circle'
+    Raylib::DrawCircle(center.p.x.to_i * @@scale, center.p.y.to_i * @@scale, radius * @@scale, PURPLE)
+  end
+
+  @@draw_solid_capsule_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :float, :int32, :pointer]) do |p1, p2, radius, color, context|
+    p 'capsule'
+  end
+
+  @@draw_segment_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :int32, :pointer]) do |p1, p2, color, context|
+    # p 'segment'
+    DrawLine(p1.x * @@scale + @@ofs_x, p1.y * @@scale + @@ofs_y, p2.x * @@scale + @@ofs_x, p2.y * @@scale + @@ofs_y, GREEN)
+    pp [p1.x * @@scale + @@ofs_x, p1.y * @@scale + @@ofs_y, p2.x * @@scale + @@ofs_x, p2.y * @@scale + @@ofs_y]
+  end
+
+  @@draw_transform_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer]) do |transform, context|
+    p 'transform'
+  end
+
+  @@draw_point_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :float, :int32, :pointer]) do |p, size, color, context|
+    p 'point'
+  end
+
+  @@draw_string_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :pointer, :pointer]) do |p, s, context|
+    p 'string'
+  end
+
+  def initialize
+    @debug_draw = Box2D::DebugDraw.new
+
+    @debug_draw.DrawPolygon = @@draw_polygon_fcn
+    @debug_draw.DrawSolidPolygon = @@draw_solid_polygon_fcn
+    @debug_draw.DrawCircle = @@draw_circle_fcn
+    @debug_draw.DrawSolidCircle = @@draw_solid_circle_fcn
+    @debug_draw.DrawSolidCapsule = @@draw_solid_capsule_fcn
+    @debug_draw.DrawSegment = @@draw_segment_fcn
+    @debug_draw.DrawTransform = @@draw_transform_fcn
+    @debug_draw.DrawPoint = @@draw_point_fcn
+    @debug_draw.DrawString = @@draw_string_fcn
+
+    @debug_draw.useDrawingBounds = false
+    @debug_draw.drawShapes = true
+    @debug_draw.drawJoints = true
+  end
+
+end
+
 class SampleTumber
   attr_accessor :worldId
   attr_accessor :jointId, :motorSpeed
+  attr_accessor :debugDraw
 
   def initialize
+    @debugDraw = RaylibDebugDraw.new
   end
 
   def setup
@@ -80,13 +150,19 @@ class SampleTumber
   end
 
   def cleanup
-	Box2D::DestroyWorld(@worldId)
+    Box2D::DestroyWorld(@worldId)
   end
 
   def step
+    timeStep = 1.0 / 60.0
+    Box2D::World_EnableSleeping(@worldId, true)
+    Box2D::World_EnableWarmStarting(@worldId, true)
+    Box2D::World_EnableContinuous(@worldId, true)
+    Box2D::World_Step(@worldId, timeStep, 4)
   end
 
   def draw
+    Box2D::World_Draw(@worldId, @debugDraw.debug_draw)
   end
 end
 
@@ -112,6 +188,8 @@ if __FILE__ == $PROGRAM_NAME
 
     # sample step
 
+    current_sample.step
+
     BeginDrawing()
       ClearBackground(RAYWHITE)
 
@@ -119,6 +197,9 @@ if __FILE__ == $PROGRAM_NAME
         DrawRectangle(-6000, 320, 13000, 8000, DARKGRAY)
         DrawLine(camera.target.x.to_i, -screenHeight*10, camera.target.x.to_i, screenHeight*10, GREEN)
         DrawLine(-screenWidth*10, camera.target.y.to_i, screenWidth*10, camera.target.y.to_i, GREEN)
+
+        current_sample.draw
+
       EndMode2D()
     EndDrawing()
   end
