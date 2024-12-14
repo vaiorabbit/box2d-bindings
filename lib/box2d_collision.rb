@@ -10,6 +10,7 @@ module Box2D
   extend FFI::Library
   # Define/Macro
 
+  MAX_POLYGON_VERTICES = 8
 
   # Enum
 
@@ -81,44 +82,6 @@ module Box2D
     end
   end
 
-  class Circle < FFI::Struct
-    layout(
-      :center, Vec2,
-      :radius, :float,
-    )
-    def center = self[:center]
-    def center=(v) self[:center] = v end
-    def radius = self[:radius]
-    def radius=(v) self[:radius] = v end
-    def self.create_as(_center_, _radius_)
-      instance = Circle.new
-      instance[:center] = _center_
-      instance[:radius] = _radius_
-      instance
-    end
-  end
-
-  class Capsule < FFI::Struct
-    layout(
-      :center1, Vec2,
-      :center2, Vec2,
-      :radius, :float,
-    )
-    def center1 = self[:center1]
-    def center1=(v) self[:center1] = v end
-    def center2 = self[:center2]
-    def center2=(v) self[:center2] = v end
-    def radius = self[:radius]
-    def radius=(v) self[:radius] = v end
-    def self.create_as(_center1_, _center2_, _radius_)
-      instance = Capsule.new
-      instance[:center1] = _center1_
-      instance[:center2] = _center2_
-      instance[:radius] = _radius_
-      instance
-    end
-  end
-
   class DistanceCache < FFI::Struct
     layout(
       :count, :ushort,
@@ -136,77 +99,6 @@ module Box2D
       instance[:count] = _count_
       instance[:indexA] = _indexA_
       instance[:indexB] = _indexB_
-      instance
-    end
-  end
-
-  class Polygon < FFI::Struct
-    layout(
-      :vertices, [Vec2, 8],
-      :normals, [Vec2, 8],
-      :centroid, Vec2,
-      :radius, :float,
-      :count, :int,
-    )
-    def vertices = self[:vertices]
-    def vertices=(v) self[:vertices] = v end
-    def normals = self[:normals]
-    def normals=(v) self[:normals] = v end
-    def centroid = self[:centroid]
-    def centroid=(v) self[:centroid] = v end
-    def radius = self[:radius]
-    def radius=(v) self[:radius] = v end
-    def count = self[:count]
-    def count=(v) self[:count] = v end
-    def self.create_as(_vertices_, _normals_, _centroid_, _radius_, _count_)
-      instance = Polygon.new
-      instance[:vertices] = _vertices_
-      instance[:normals] = _normals_
-      instance[:centroid] = _centroid_
-      instance[:radius] = _radius_
-      instance[:count] = _count_
-      instance
-    end
-  end
-
-  class Segment < FFI::Struct
-    layout(
-      :point1, Vec2,
-      :point2, Vec2,
-    )
-    def point1 = self[:point1]
-    def point1=(v) self[:point1] = v end
-    def point2 = self[:point2]
-    def point2=(v) self[:point2] = v end
-    def self.create_as(_point1_, _point2_)
-      instance = Segment.new
-      instance[:point1] = _point1_
-      instance[:point2] = _point2_
-      instance
-    end
-  end
-
-  class ChainSegment < FFI::Struct
-    layout(
-      :ghost1, Vec2,
-      :segment, Segment,
-      :ghost2, Vec2,
-      :chainId, :int,
-    )
-    def ghost1 = self[:ghost1]
-    def ghost1=(v) self[:ghost1] = v end
-    def segment = self[:segment]
-    def segment=(v) self[:segment] = v end
-    def ghost2 = self[:ghost2]
-    def ghost2=(v) self[:ghost2] = v end
-    def chainId = self[:chainId]
-    def chainId=(v) self[:chainId] = v end
-    def self.create_as(_ghost1_, _segment_, _ghost2_, _chainId_)
-      instance = ChainSegment.new
-      instance[:ghost1] = _ghost1_
-      instance[:segment] = _segment_
-      instance[:ghost2] = _ghost2_
-      instance[:chainId] = _chainId_
       instance
     end
   end
@@ -324,6 +216,115 @@ module Box2D
       instance[:mass] = _mass_
       instance[:center] = _center_
       instance[:rotationalInertia] = _rotationalInertia_
+      instance
+    end
+  end
+
+  class Circle < FFI::Struct
+    layout(
+      :center, Vec2,
+      :radius, :float,
+    )
+    def center = self[:center]
+    def center=(v) self[:center] = v end
+    def radius = self[:radius]
+    def radius=(v) self[:radius] = v end
+    def self.create_as(_center_, _radius_)
+      instance = Circle.new
+      instance[:center] = _center_
+      instance[:radius] = _radius_
+      instance
+    end
+  end
+
+  class Capsule < FFI::Struct
+    layout(
+      :center1, Vec2,
+      :center2, Vec2,
+      :radius, :float,
+    )
+    def center1 = self[:center1]
+    def center1=(v) self[:center1] = v end
+    def center2 = self[:center2]
+    def center2=(v) self[:center2] = v end
+    def radius = self[:radius]
+    def radius=(v) self[:radius] = v end
+    def self.create_as(_center1_, _center2_, _radius_)
+      instance = Capsule.new
+      instance[:center1] = _center1_
+      instance[:center2] = _center2_
+      instance[:radius] = _radius_
+      instance
+    end
+  end
+
+  class Polygon < FFI::Struct
+    layout(
+      :vertices, [Vec2, 8],
+      :normals, [Vec2, 8],
+      :centroid, Vec2,
+      :radius, :float,
+      :count, :int,
+    )
+    def vertices = self[:vertices]
+    def vertices=(v) self[:vertices] = v end
+    def normals = self[:normals]
+    def normals=(v) self[:normals] = v end
+    def centroid = self[:centroid]
+    def centroid=(v) self[:centroid] = v end
+    def radius = self[:radius]
+    def radius=(v) self[:radius] = v end
+    def count = self[:count]
+    def count=(v) self[:count] = v end
+    def self.create_as(_vertices_, _normals_, _centroid_, _radius_, _count_)
+      instance = Polygon.new
+      instance[:vertices] = _vertices_
+      instance[:normals] = _normals_
+      instance[:centroid] = _centroid_
+      instance[:radius] = _radius_
+      instance[:count] = _count_
+      instance
+    end
+  end
+
+  class Segment < FFI::Struct
+    layout(
+      :point1, Vec2,
+      :point2, Vec2,
+    )
+    def point1 = self[:point1]
+    def point1=(v) self[:point1] = v end
+    def point2 = self[:point2]
+    def point2=(v) self[:point2] = v end
+    def self.create_as(_point1_, _point2_)
+      instance = Segment.new
+      instance[:point1] = _point1_
+      instance[:point2] = _point2_
+      instance
+    end
+  end
+
+  class ChainSegment < FFI::Struct
+    layout(
+      :ghost1, Vec2,
+      :segment, Segment,
+      :ghost2, Vec2,
+      :chainId, :int,
+    )
+    def ghost1 = self[:ghost1]
+    def ghost1=(v) self[:ghost1] = v end
+    def segment = self[:segment]
+    def segment=(v) self[:segment] = v end
+    def ghost2 = self[:ghost2]
+    def ghost2=(v) self[:ghost2] = v end
+    def chainId = self[:chainId]
+    def chainId=(v) self[:chainId] = v end
+    def self.create_as(_ghost1_, _segment_, _ghost2_, _chainId_)
+      instance = ChainSegment.new
+      instance[:ghost1] = _ghost1_
+      instance[:segment] = _segment_
+      instance[:ghost2] = _ghost2_
+      instance[:chainId] = _chainId_
       instance
     end
   end
@@ -806,12 +807,9 @@ module Box2D
       :b2DynamicTree_ShapeCast,
       :b2DynamicTree_Validate,
       :b2DynamicTree_GetHeight,
-      :b2DynamicTree_GetMaxBalance,
       :b2DynamicTree_GetAreaRatio,
-      :b2DynamicTree_RebuildBottomUp,
       :b2DynamicTree_GetProxyCount,
       :b2DynamicTree_Rebuild,
-      :b2DynamicTree_ShiftOrigin,
       :b2DynamicTree_GetByteCount,
     ]
     apis = {
@@ -874,12 +872,9 @@ module Box2D
       :b2DynamicTree_ShapeCast => :DynamicTree_ShapeCast,
       :b2DynamicTree_Validate => :DynamicTree_Validate,
       :b2DynamicTree_GetHeight => :DynamicTree_GetHeight,
-      :b2DynamicTree_GetMaxBalance => :DynamicTree_GetMaxBalance,
       :b2DynamicTree_GetAreaRatio => :DynamicTree_GetAreaRatio,
-      :b2DynamicTree_RebuildBottomUp => :DynamicTree_RebuildBottomUp,
       :b2DynamicTree_GetProxyCount => :DynamicTree_GetProxyCount,
       :b2DynamicTree_Rebuild => :DynamicTree_Rebuild,
-      :b2DynamicTree_ShiftOrigin => :DynamicTree_ShiftOrigin,
       :b2DynamicTree_GetByteCount => :DynamicTree_GetByteCount,
     }
     args = {
@@ -942,12 +937,9 @@ module Box2D
       :b2DynamicTree_ShapeCast => [:pointer, :pointer, :ulong_long, :pointer, :pointer],
       :b2DynamicTree_Validate => [:pointer],
       :b2DynamicTree_GetHeight => [:pointer],
-      :b2DynamicTree_GetMaxBalance => [:pointer],
       :b2DynamicTree_GetAreaRatio => [:pointer],
-      :b2DynamicTree_RebuildBottomUp => [:pointer],
       :b2DynamicTree_GetProxyCount => [:pointer],
       :b2DynamicTree_Rebuild => [:pointer, :bool],
-      :b2DynamicTree_ShiftOrigin => [:pointer, Vec2.by_value],
       :b2DynamicTree_GetByteCount => [:pointer],
     }
     retvals = {
@@ -1010,12 +1002,9 @@ module Box2D
       :b2DynamicTree_ShapeCast => TreeStats.by_value,
       :b2DynamicTree_Validate => :void,
       :b2DynamicTree_GetHeight => :int,
-      :b2DynamicTree_GetMaxBalance => :int,
       :b2DynamicTree_GetAreaRatio => :float,
-      :b2DynamicTree_RebuildBottomUp => :void,
       :b2DynamicTree_GetProxyCount => :int,
       :b2DynamicTree_Rebuild => :int,
-      :b2DynamicTree_ShiftOrigin => :void,
       :b2DynamicTree_GetByteCount => :int,
     }
     symbols.each do |sym|

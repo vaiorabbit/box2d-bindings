@@ -39,6 +39,7 @@ module Box2D
   JointType_wheelJoint = 7
   HexColor_colorAliceBlue = 15792383
   HexColor_colorAntiqueWhite = 16444375
+  HexColor_colorAqua = 65535
   HexColor_colorAquamarine = 8388564
   HexColor_colorAzure = 15794175
   HexColor_colorBeige = 16119260
@@ -59,7 +60,7 @@ module Box2D
   HexColor_colorCyan = 65535
   HexColor_colorDarkBlue = 139
   HexColor_colorDarkCyan = 35723
-  HexColor_colorDarkGoldenrod = 12092939
+  HexColor_colorDarkGoldenRod = 12092939
   HexColor_colorDarkGray = 11119017
   HexColor_colorDarkGreen = 25600
   HexColor_colorDarkKhaki = 12433259
@@ -78,26 +79,18 @@ module Box2D
   HexColor_colorDeepSkyBlue = 49151
   HexColor_colorDimGray = 6908265
   HexColor_colorDodgerBlue = 2003199
-  HexColor_colorFirebrick = 11674146
+  HexColor_colorFireBrick = 11674146
   HexColor_colorFloralWhite = 16775920
   HexColor_colorForestGreen = 2263842
+  HexColor_colorFuchsia = 16711935
   HexColor_colorGainsboro = 14474460
   HexColor_colorGhostWhite = 16316671
   HexColor_colorGold = 16766720
-  HexColor_colorGoldenrod = 14329120
-  HexColor_colorGray = 12500670
-  HexColor_colorGray1 = 1710618
-  HexColor_colorGray2 = 3355443
-  HexColor_colorGray3 = 5066061
-  HexColor_colorGray4 = 6710886
-  HexColor_colorGray5 = 8355711
-  HexColor_colorGray6 = 10066329
-  HexColor_colorGray7 = 11776947
-  HexColor_colorGray8 = 13421772
-  HexColor_colorGray9 = 15066597
-  HexColor_colorGreen = 65280
+  HexColor_colorGoldenRod = 14329120
+  HexColor_colorGray = 8421504
+  HexColor_colorGreen = 32768
   HexColor_colorGreenYellow = 11403055
-  HexColor_colorHoneydew = 15794160
+  HexColor_colorHoneyDew = 15794160
   HexColor_colorHotPink = 16738740
   HexColor_colorIndianRed = 13458524
   HexColor_colorIndigo = 4915330
@@ -110,23 +103,22 @@ module Box2D
   HexColor_colorLightBlue = 11393254
   HexColor_colorLightCoral = 15761536
   HexColor_colorLightCyan = 14745599
-  HexColor_colorLightGoldenrod = 15654274
-  HexColor_colorLightGoldenrodYellow = 16448210
+  HexColor_colorLightGoldenRodYellow = 16448210
   HexColor_colorLightGray = 13882323
   HexColor_colorLightGreen = 9498256
   HexColor_colorLightPink = 16758465
   HexColor_colorLightSalmon = 16752762
   HexColor_colorLightSeaGreen = 2142890
   HexColor_colorLightSkyBlue = 8900346
-  HexColor_colorLightSlateBlue = 8679679
   HexColor_colorLightSlateGray = 7833753
   HexColor_colorLightSteelBlue = 11584734
   HexColor_colorLightYellow = 16777184
+  HexColor_colorLime = 65280
   HexColor_colorLimeGreen = 3329330
   HexColor_colorLinen = 16445670
   HexColor_colorMagenta = 16711935
-  HexColor_colorMaroon = 11546720
-  HexColor_colorMediumAquamarine = 6737322
+  HexColor_colorMaroon = 8388608
+  HexColor_colorMediumAquaMarine = 6737322
   HexColor_colorMediumBlue = 205
   HexColor_colorMediumOrchid = 12211667
   HexColor_colorMediumPurple = 9662683
@@ -140,14 +132,14 @@ module Box2D
   HexColor_colorMistyRose = 16770273
   HexColor_colorMoccasin = 16770229
   HexColor_colorNavajoWhite = 16768685
-  HexColor_colorNavyBlue = 128
+  HexColor_colorNavy = 128
   HexColor_colorOldLace = 16643558
   HexColor_colorOlive = 8421376
   HexColor_colorOliveDrab = 7048739
   HexColor_colorOrange = 16753920
   HexColor_colorOrangeRed = 16729344
   HexColor_colorOrchid = 14315734
-  HexColor_colorPaleGoldenrod = 15657130
+  HexColor_colorPaleGoldenRod = 15657130
   HexColor_colorPaleGreen = 10025880
   HexColor_colorPaleTurquoise = 11529966
   HexColor_colorPaleVioletRed = 14381203
@@ -157,7 +149,7 @@ module Box2D
   HexColor_colorPink = 16761035
   HexColor_colorPlum = 14524637
   HexColor_colorPowderBlue = 11591910
-  HexColor_colorPurple = 10494192
+  HexColor_colorPurple = 8388736
   HexColor_colorRebeccaPurple = 6697881
   HexColor_colorRed = 16711680
   HexColor_colorRosyBrown = 12357519
@@ -166,7 +158,7 @@ module Box2D
   HexColor_colorSalmon = 16416882
   HexColor_colorSandyBrown = 16032864
   HexColor_colorSeaGreen = 3050327
-  HexColor_colorSeashell = 16774638
+  HexColor_colorSeaShell = 16774638
   HexColor_colorSienna = 10506797
   HexColor_colorSilver = 12632256
   HexColor_colorSkyBlue = 8900331
@@ -181,7 +173,6 @@ module Box2D
   HexColor_colorTomato = 16737095
   HexColor_colorTurquoise = 4251856
   HexColor_colorViolet = 15631086
-  HexColor_colorVioletRed = 13639824
   HexColor_colorWheat = 16113331
   HexColor_colorWhite = 16777215
   HexColor_colorWhiteSmoke = 16119285
@@ -250,7 +241,7 @@ module Box2D
     layout(
       :gravity, Vec2,
       :restitutionThreshold, :float,
-      :contactPushoutVelocity, :float,
+      :contactPushVelocity, :float,
       :hitEventThreshold, :float,
       :contactHertz, :float,
       :contactDampingRatio, :float,
@@ -272,8 +263,8 @@ module Box2D
     def gravity=(v) self[:gravity] = v end
     def restitutionThreshold = self[:restitutionThreshold]
     def restitutionThreshold=(v) self[:restitutionThreshold] = v end
-    def contactPushoutVelocity = self[:contactPushoutVelocity]
-    def contactPushoutVelocity=(v) self[:contactPushoutVelocity] = v end
+    def contactPushVelocity = self[:contactPushVelocity]
+    def contactPushVelocity=(v) self[:contactPushVelocity] = v end
     def hitEventThreshold = self[:hitEventThreshold]
     def hitEventThreshold=(v) self[:hitEventThreshold] = v end
     def contactHertz = self[:contactHertz]
@@ -306,11 +297,11 @@ module Box2D
     def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_gravity_, _restitutionThreshold_, _contactPushoutVelocity_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _jointHertz_, _jointDampingRatio_, _maximumLinearVelocity_, _frictionMixingRule_, _restitutionMixingRule_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _userData_, _internalValue_)
+    def self.create_as(_gravity_, _restitutionThreshold_, _contactPushVelocity_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _jointHertz_, _jointDampingRatio_, _maximumLinearVelocity_, _frictionMixingRule_, _restitutionMixingRule_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _userData_, _internalValue_)
       instance = WorldDef.new
       instance[:gravity] = _gravity_
       instance[:restitutionThreshold] = _restitutionThreshold_
-      instance[:contactPushoutVelocity] = _contactPushoutVelocity_
+      instance[:contactPushVelocity] = _contactPushVelocity_
       instance[:hitEventThreshold] = _hitEventThreshold_
       instance[:contactHertz] = _contactHertz_
       instance[:contactDampingRatio] = _contactDampingRatio_

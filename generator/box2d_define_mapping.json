@@ -3,10 +3,14 @@
     , "B2_INLINE" : null
     , "B2_LITERAL" : null
     , "B2_ZERO_INIT" : null
+    , "B2_BREAKPOINT" : null
+    , "B2_ASSERT" : null
     , "B2_HASH_INIT" : "5381"
+    , "B2_MAX_POLYGON_VERTICES" : "8"
     , "B2_IS_NULL" : null
     , "B2_IS_NON_NULL" : null
     , "B2_ID_EQUALS" : null
+    , "B2_PI" : null
     , "B2_DEFAULT_CATEGORY_BITS" : "0x0001"
     , "B2_DEFAULT_MASK_BITS" : null
 }
