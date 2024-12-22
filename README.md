@@ -3,7 +3,7 @@
 # Box2D bindings for Ruby #
 
 *   Created : 2024-08-18
-*   Last modified : 2024-12-14
+*   Last modified : 2024-12-22
 
 Provides Ruby bindings for Box2D
 *   https://box2d.org

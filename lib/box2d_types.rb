@@ -241,13 +241,13 @@ module Box2D
     layout(
       :gravity, Vec2,
       :restitutionThreshold, :float,
-      :contactPushVelocity, :float,
+      :contactPushSpeed, :float,
       :hitEventThreshold, :float,
       :contactHertz, :float,
       :contactDampingRatio, :float,
       :jointHertz, :float,
       :jointDampingRatio, :float,
-      :maximumLinearVelocity, :float,
+      :maximumLinearSpeed, :float,
       :frictionMixingRule, :int,
       :restitutionMixingRule, :int,
       :enableSleep, :bool,
@@ -263,8 +263,8 @@ module Box2D
     def gravity=(v) self[:gravity] = v end
     def restitutionThreshold = self[:restitutionThreshold]
     def restitutionThreshold=(v) self[:restitutionThreshold] = v end
-    def contactPushVelocity = self[:contactPushVelocity]
-    def contactPushVelocity=(v) self[:contactPushVelocity] = v end
+    def contactPushSpeed = self[:contactPushSpeed]
+    def contactPushSpeed=(v) self[:contactPushSpeed] = v end
     def hitEventThreshold = self[:hitEventThreshold]
     def hitEventThreshold=(v) self[:hitEventThreshold] = v end
     def contactHertz = self[:contactHertz]
@@ -275,8 +275,8 @@ module Box2D
     def jointHertz=(v) self[:jointHertz] = v end
     def jointDampingRatio = self[:jointDampingRatio]
     def jointDampingRatio=(v) self[:jointDampingRatio] = v end
-    def maximumLinearVelocity = self[:maximumLinearVelocity]
-    def maximumLinearVelocity=(v) self[:maximumLinearVelocity] = v end
+    def maximumLinearSpeed = self[:maximumLinearSpeed]
+    def maximumLinearSpeed=(v) self[:maximumLinearSpeed] = v end
     def frictionMixingRule = self[:frictionMixingRule]
     def frictionMixingRule=(v) self[:frictionMixingRule] = v end
     def restitutionMixingRule = self[:restitutionMixingRule]
@@ -297,17 +297,17 @@ module Box2D
     def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_gravity_, _restitutionThreshold_, _contactPushVelocity_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _jointHertz_, _jointDampingRatio_, _maximumLinearVelocity_, _frictionMixingRule_, _restitutionMixingRule_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _userData_, _internalValue_)
+    def self.create_as(_gravity_, _restitutionThreshold_, _contactPushSpeed_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _jointHertz_, _jointDampingRatio_, _maximumLinearSpeed_, _frictionMixingRule_, _restitutionMixingRule_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _userData_, _internalValue_)
       instance = WorldDef.new
       instance[:gravity] = _gravity_
       instance[:restitutionThreshold] = _restitutionThreshold_
-      instance[:contactPushVelocity] = _contactPushVelocity_
+      instance[:contactPushSpeed] = _contactPushSpeed_
       instance[:hitEventThreshold] = _hitEventThreshold_
       instance[:contactHertz] = _contactHertz_
       instance[:contactDampingRatio] = _contactDampingRatio_
       instance[:jointHertz] = _jointHertz_
       instance[:jointDampingRatio] = _jointDampingRatio_
-      instance[:maximumLinearVelocity] = _maximumLinearVelocity_
+      instance[:maximumLinearSpeed] = _maximumLinearSpeed_
       instance[:frictionMixingRule] = _frictionMixingRule_
       instance[:restitutionMixingRule] = _restitutionMixingRule_
       instance[:enableSleep] = _enableSleep_
@@ -442,6 +442,7 @@ module Box2D
       :userData, :pointer,
       :friction, :float,
       :restitution, :float,
+      :rollingResistance, :float,
       :density, :float,
       :filter, Filter,
       :customColor, :uint,
@@ -460,6 +461,8 @@ module Box2D
     def friction=(v) self[:friction] = v end
     def restitution = self[:restitution]
     def restitution=(v) self[:restitution] = v end
+    def rollingResistance = self[:rollingResistance]
+    def rollingResistance=(v) self[:rollingResistance] = v end
     def density = self[:density]
     def density=(v) self[:density] = v end
     def filter = self[:filter]
@@ -482,11 +485,12 @@ module Box2D
     def updateBodyMass=(v) self[:updateBodyMass] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_userData_, _friction_, _restitution_, _density_, _filter_, _customColor_, _isSensor_, _enableSensorEvents_, _enableContactEvents_, _enableHitEvents_, _enablePreSolveEvents_, _invokeContactCreation_, _updateBodyMass_, _internalValue_)
+    def self.create_as(_userData_, _friction_, _restitution_, _rollingResistance_, _density_, _filter_, _customColor_, _isSensor_, _enableSensorEvents_, _enableContactEvents_, _enableHitEvents_, _enablePreSolveEvents_, _invokeContactCreation_, _updateBodyMass_, _internalValue_)
       instance = ShapeDef.new
       instance[:userData] = _userData_
       instance[:friction] = _friction_
       instance[:restitution] = _restitution_
+      instance[:rollingResistance] = _rollingResistance_
       instance[:density] = _density_
       instance[:filter] = _filter_
       instance[:customColor] = _customColor_

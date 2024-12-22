@@ -82,7 +82,7 @@ module Box2D
     end
   end
 
-  class DistanceCache < FFI::Struct
+  class SimplexCache < FFI::Struct
     layout(
       :count, :ushort,
       :indexA, [:uchar, 3],
@@ -95,7 +95,7 @@ module Box2D
     def indexB = self[:indexB]
     def indexB=(v) self[:indexB] = v end
     def self.create_as(_count_, _indexA_, _indexB_)
-      instance = DistanceCache.new
+      instance = SimplexCache.new
       instance[:count] = _count_
       instance[:indexA] = _indexA_
       instance[:indexB] = _indexB_
@@ -358,7 +358,7 @@ module Box2D
     end
   end
 
-  class DistanceProxy < FFI::Struct
+  class ShapeProxy < FFI::Struct
     layout(
       :points, [Vec2, 8],
       :count, :int,
@@ -371,7 +371,7 @@ module Box2D
     def radius = self[:radius]
     def radius=(v) self[:radius] = v end
     def self.create_as(_points_, _count_, _radius_)
-      instance = DistanceProxy.new
+      instance = ShapeProxy.new
       instance[:points] = _points_
       instance[:count] = _count_
       instance[:radius] = _radius_
@@ -381,8 +381,8 @@ module Box2D
 
   class DistanceInput < FFI::Struct
     layout(
-      :proxyA, DistanceProxy,
-      :proxyB, DistanceProxy,
+      :proxyA, ShapeProxy,
+      :proxyB, ShapeProxy,
       :transformA, Transform,
       :transformB, Transform,
       :useRadii, :bool,
@@ -497,8 +497,8 @@ module Box2D
 
   class ShapeCastPairInput < FFI::Struct
     layout(
-      :proxyA, DistanceProxy,
-      :proxyB, DistanceProxy,
+      :proxyA, ShapeProxy,
+      :proxyB, ShapeProxy,
       :transformA, Transform,
       :transformB, Transform,
       :translationB, Vec2,
@@ -559,11 +559,11 @@ module Box2D
 
   class TOIInput < FFI::Struct
     layout(
-      :proxyA, DistanceProxy,
-      :proxyB, DistanceProxy,
+      :proxyA, ShapeProxy,
+      :proxyB, ShapeProxy,
       :sweepA, Sweep,
       :sweepB, Sweep,
-      :tMax, :float,
+      :maxFraction, :float,
     )
     def proxyA = self[:proxyA]
     def proxyA=(v) self[:proxyA] = v end
@@ -573,15 +573,15 @@ module Box2D
     def sweepA=(v) self[:sweepA] = v end
     def sweepB = self[:sweepB]
     def sweepB=(v) self[:sweepB] = v end
-    def tMax = self[:tMax]
-    def tMax=(v) self[:tMax] = v end
-    def self.create_as(_proxyA_, _proxyB_, _sweepA_, _sweepB_, _tMax_)
+    def maxFraction = self[:maxFraction]
+    def maxFraction=(v) self[:maxFraction] = v end
+    def self.create_as(_proxyA_, _proxyB_, _sweepA_, _sweepB_, _maxFraction_)
       instance = TOIInput.new
       instance[:proxyA] = _proxyA_
       instance[:proxyB] = _proxyB_
       instance[:sweepA] = _sweepA_
       instance[:sweepB] = _sweepB_
-      instance[:tMax] = _tMax_
+      instance[:maxFraction] = _maxFraction_
       instance
     end
   end
@@ -589,16 +589,16 @@ module Box2D
   class TOIOutput < FFI::Struct
     layout(
       :state, :int,
-      :t, :float,
+      :fraction, :float,
     )
     def state = self[:state]
     def state=(v) self[:state] = v end
-    def t = self[:t]
-    def t=(v) self[:t] = v end
-    def self.create_as(_state_, _t_)
+    def fraction = self[:fraction]
+    def fraction=(v) self[:fraction] = v end
+    def self.create_as(_state_, _fraction_)
       instance = TOIOutput.new
       instance[:state] = _state_
-      instance[:t] = _t_
+      instance[:fraction] = _fraction_
       instance
     end
   end
@@ -976,7 +976,7 @@ module Box2D
       :b2SegmentDistance => SegmentDistanceResult.by_value,
       :b2ShapeDistance => DistanceOutput.by_value,
       :b2ShapeCast => CastOutput.by_value,
-      :b2MakeProxy => DistanceProxy.by_value,
+      :b2MakeProxy => ShapeProxy.by_value,
       :b2GetSweepTransform => Transform.by_value,
       :b2TimeOfImpact => TOIOutput.by_value,
       :b2CollideCircles => Manifold.by_value,
