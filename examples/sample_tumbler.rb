@@ -4,25 +4,33 @@ require_relative 'util/setup_raylib'
 class RaylibDebugDraw
   attr_accessor :debug_draw
 
-  @scale = 20.0
+  def set_scale(s)
+    @@scale = s
+  end
+  @@scale = 1.0
 
   @@draw_polygon_fcn = FFI::Function.new(:void, %i[pointer int32 int32 pointer]) do |vertices, vertexCount, radius, color, context|
     p 'polygon'
   end
 
   @@draw_solid_polygon_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer, :int32, :float, :int32, :pointer]) do |transform, vertices, vertexCount, radius, color, context|
-    radius = radius <= 0.0 ? 3.0 : radius
-    Raylib::DrawCircle(transform.p.x * @scale, -transform.p.y * @scale, radius, BLUE)
+    points = []
+    vertexCount.times do |i|
+      vert = Box2D::Vec2.new(vertices + i * Box2D::Vec2.size)
+      points <<  (@@scale * (transform.q.c * vert.x + transform.q.s * vert.y) + @@scale * transform.p.x)
+      points <<  (@@scale * (-transform.q.s * vert.x + transform.q.c * vert.y) - @@scale * transform.p.y)
+    end
+    points << points[0]
+    points << points[1]
+    Raylib::DrawLineStrip(points.pack('F*'), vertexCount + 1, BLUE)
   end
 
   @@draw_circle_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :float, :int32, :pointer]) do |center, radius, color, context|
-    # p 'circle'
-    Raylib::DrawCircle(center.p.x * @scale, -center.p.y * @scale, radius * @scale, BLUE)
+    Raylib::DrawCircle(center.p.x * @@scale, -center.p.y * @@scale, radius * @@scale, BLUE)
   end
 
   @@draw_solid_circle_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :float, :int32, :pointer]) do |center, radius, color, context|
-    # p 'solid_circle'
-    Raylib::DrawCircle(center.p.x * @scale, -center.p.y * @scale, radius * @scale, BLACK)
+    Raylib::DrawCircle(center.p.x * @@scale, -center.p.y * @@scale, radius * @@scale, BLACK)
   end
 
   @@draw_solid_capsule_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :float, :int32, :pointer]) do |p1, p2, radius, color, context|
@@ -30,9 +38,7 @@ class RaylibDebugDraw
   end
 
   @@draw_segment_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :int32, :pointer]) do |p1, p2, color, context|
-    # TODO
-    # DrawLine(p1.x * @scale, -p1.y * @scale, p2.x * @scale, -p2.y * @scale, GREEN)
-    # p 'segment'
+    p 'segment'
   end
 
   @@draw_transform_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer]) do |transform, context|
@@ -60,18 +66,13 @@ class RaylibDebugDraw
     @debug_draw.DrawPoint = @@draw_point_fcn
     @debug_draw.DrawString = @@draw_string_fcn
 
-    # @debug_draw.drawingBounds.lowerBound.x = -100.0
-    # @debug_draw.drawingBounds.lowerBound.y = -100.0
-    # @debug_draw.drawingBounds.upperBound.x = 100.0
-    # @debug_draw.drawingBounds.upperBound.y = 100.0
-    # @debug_draw.useDrawingBounds = true
     @debug_draw.useDrawingBounds = false
     @debug_draw.drawShapes = true
     @debug_draw.drawJoints = true
   end
 end
 
-class SampleTumber
+class SampleTumbler
   attr_accessor :worldId, :jointId, :motorSpeed, :debugDraw
 
   def initialize
@@ -86,7 +87,7 @@ class SampleTumber
     @worldId = Box2D::CreateWorld(worldDef)
     groundId = Box2D::CreateBody(@worldId, Box2D::DefaultBodyDef())
 
-    y_pos = 0.0 # 10.0
+    y_pos = 0.0
 
     bodyDef = Box2D::DefaultBodyDef()
     bodyDef.type = Box2D::BodyType_dynamicBody
@@ -134,7 +135,7 @@ class SampleTumber
 
     @jointId = Box2D::CreateRevoluteJoint(@worldId, jd)
 
-    gridCount = 45
+    gridCount = 25
     polygon = Box2D::MakeBox(0.125, 0.125)
     bodyDef = Box2D::DefaultBodyDef()
     bodyDef.type = Box2D::BodyType_dynamicBody
@@ -178,6 +179,7 @@ if __FILE__ == $PROGRAM_NAME
   version = Box2D::GetVersion()
   title = "Box2D Version #{version.major}.#{version.minor}.#{version.revision}"
 
+  SetWindowState(FLAG_WINDOW_RESIZABLE)
   screenWidth = 1280
   screenHeight = 720
   InitWindow(screenWidth, screenHeight, title)
@@ -189,13 +191,18 @@ if __FILE__ == $PROGRAM_NAME
                    .with_zoom(1.0)
   SetTargetFPS(60)
 
-  current_sample = SampleTumber.new
+  current_sample = SampleTumbler.new
   current_sample.setup
 
   until WindowShouldClose()
     run = true if IsKeyPressed(KEY_SPACE)
     current_sample.step if run
     # rubocop:disable Layout/IndentationConsistency
+    screenWidth = GetScreenWidth()
+    screenHeight = GetScreenHeight()
+    camera[:offset].set(screenWidth / 2.0, screenHeight / 2.0)
+    current_sample.debugDraw.set_scale(20.0 * (screenWidth / 1280.0))
+
     BeginDrawing()
       ClearBackground(RAYWHITE)
 
