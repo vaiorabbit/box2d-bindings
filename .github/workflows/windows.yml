@@ -1,0 +1,37 @@
+name: Build (Windows)
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        ref: ${{github.ref}}
+        fetch-depth: 1
+        submodules: recursive
+
+    - name: Run rebuild script
+      shell: cmd
+      run: |
+        cd script
+        rebuild_libs_windows.cmd cmake
+
+    - name: Commit new libraries
+      continue-on-error: true
+      run: |
+        git config user.name "$env:GITHUB_ACTOR"
+        git config user.email "$env:GITHUB_ACTOR"
+        git add lib/*
+        git commit -a -m "commit by $env:GITHUB_ACTOR via GitHub Actions"
+        git push --force-with-lease -u origin ${{github.ref}}

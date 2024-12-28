@@ -15,9 +15,6 @@ end
 if File.exist?("#{filename}.default")
   FileUtils.copy("#{filename}.default", filename)
 end
-# if File.exist?("#{File.dirname(filename)}/../../src/dynamic_tree.c.default")
-#   FileUtils.copy("#{File.dirname(filename)}/../../src/dynamic_tree.c.default", "#{File.dirname(filename)}/../../src/dynamic_tree.c")
-# end
 
 # Extract inline functions
 File.open(filename, 'r') do |id_h|
@@ -61,7 +58,6 @@ end
 
 # Copy original id.h
 FileUtils.copy(filename, "#{filename}.default")
-# FileUtils.copy("#{File.dirname(filename)}/../../src/dynamic_tree.c", "#{File.dirname(filename)}/../../src/dynamic_tree.c.default")
 
 # Write modified version of id.h
 File.open(filename, 'w') do |id_h|
@@ -70,13 +66,6 @@ File.open(filename, 'w') do |id_h|
   end
   id_h.puts '#include "id_inline.h"'
 end
-
-# Modify dynamic_tree.c to include split code
-# File.open("#{File.dirname(filename)}/../../src/dynamic_tree.c", 'a') do |dynamic_tree_c|
-#   dynamic_tree_c.puts '#include "id_inline.c"'
-# end
-
-# Write id_inline.h and id_inline.c
 
 File.open("#{File.dirname(filename)}/id_inline.h", 'w') do |id_inline_h|
   header = <<-HEADER
