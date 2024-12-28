@@ -38,7 +38,7 @@ class RaylibDebugDraw
   end
 
   @@draw_segment_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :int32, :pointer]) do |p1, p2, color, context|
-    p 'segment'
+    Raylib.DrawLine(p1.x * @@scale, -p1.y * @@scale, p2.x * @@scale, -p2.y * @@scale, Raylib::RED)
   end
 
   @@draw_transform_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer]) do |transform, context|
@@ -135,23 +135,24 @@ class SampleTumbler
 
     @jointId = Box2D::CreateRevoluteJoint(@worldId, jd)
 
-    gridCount = 25
-    polygon = Box2D::MakeBox(0.125, 0.125)
+    box_side_size = 0.25
+    gridCount = 24
+    polygon = Box2D::MakeBox(box_side_size, box_side_size)
     bodyDef = Box2D::DefaultBodyDef()
     bodyDef.type = Box2D::BodyType_dynamicBody
     shapeDef = Box2D::DefaultShapeDef()
 
-    y = -0.2 * gridCount + y_pos
+    y = -(box_side_size * 1.5) * gridCount + y_pos
     gridCount.times do |i|
-      x = -0.2 * gridCount
+      x = -(box_side_size * 1.5) * gridCount
       gridCount.times do |j|
         bodyDef.position.x = x
         bodyDef.position.y = y
         bodyId = Box2D::CreateBody(@worldId, bodyDef)
         Box2D::CreatePolygonShape(bodyId, shapeDef, polygon)
-        x += 0.4
+        x += (box_side_size * 3)
       end
-      y += 0.4
+      y += (box_side_size * 3)
     end
   end
 
