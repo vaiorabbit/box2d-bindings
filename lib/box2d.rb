@@ -17,7 +17,7 @@ module Box2D
   extend FFI::Library
 
   @@box2d_import_done = false
-  def self.load_lib(libpath, output_error = false)
+  def self.load_lib(libpath, method_naming: :original)
 
     unless @@box2d_import_done
       # Ref.: Using Multiple and Alternate Libraries
@@ -26,7 +26,7 @@ module Box2D
         lib_paths = [libpath].compact
         ffi_lib_flags :now, :global
         ffi_lib *lib_paths
-        setup_symbols(output_error)
+        setup_symbols(method_naming: method_naming)
       rescue => error
         $stderr.puts("[Warning] Failed to load libraries (#{error}).") if output_error
       end
@@ -34,16 +34,16 @@ module Box2D
 
   end
 
-  def self.setup_symbols(output_error = false)
-    setup_base_symbols(output_error)
-    setup_math_functions_symbols(output_error)
-    setup_math_inline_functions_symbols(output_error)
-    setup_id_symbols(output_error)
-    setup_id_inline_symbols(output_error)
-    setup_collision_symbols(output_error)
-    setup_collision_inline_symbols(output_error)
-    setup_types_symbols(output_error)
-    setup_main_symbols(output_error)
+  def self.setup_symbols(method_naming: :original)
+    setup_base_symbols(method_naming: method_naming)
+    setup_math_functions_symbols(method_naming: method_naming)
+    setup_math_inline_functions_symbols(method_naming: method_naming)
+    setup_id_symbols(method_naming: method_naming)
+    setup_id_inline_symbols(method_naming: method_naming)
+    setup_collision_symbols(method_naming: method_naming)
+    setup_collision_inline_symbols(method_naming: method_naming)
+    setup_types_symbols(method_naming: method_naming)
+    setup_main_symbols(method_naming: method_naming)
   end
 
 end

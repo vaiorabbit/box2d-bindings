@@ -123,21 +123,22 @@ module Box2D
 
   # Function
 
-  def self.setup_id_symbols(output_error = false)
-    symbols = [
+  def self.setup_id_symbols(method_naming: :original)
+    entries = [
     ]
-    apis = {
-    }
-    args = {
-    }
-    retvals = {
-    }
-    symbols.each do |sym|
-      begin
-        attach_function apis[sym], sym, args[sym], retvals[sym]
-      rescue FFI::NotFoundError => error
-        $stderr.puts("[Warning] Failed to import #{sym} (#{error}).") if output_error
-      end
+    entries.each do |entry|
+      api_name = if method_naming == :snake_case
+                   snake_case_name = entry[0].to_s.gsub(/([A-Z]+)([A-Z0-9][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z0-9])/, '\1_\2').downcase
+                   snake_case_name.gsub!('vector_3', 'vector3_') if snake_case_name.include?('vector_3')
+                   snake_case_name.gsub!('vector_2', 'vector2_') if snake_case_name.include?('vector_2')
+                   snake_case_name.chop! if snake_case_name.end_with?('_')
+                   snake_case_name.to_sym
+                 else
+                   entry[0]
+                 end
+      attach_function api_name, entry[1], entry[2], entry[3]
+    rescue FFI::NotFoundError => e
+      warn "[Warning] Failed to import #{entry[0]} (#{e})."
     end
   end
 

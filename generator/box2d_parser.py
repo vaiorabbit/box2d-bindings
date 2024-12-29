@@ -314,10 +314,11 @@ class FunctionInfo(object):
     """
 
     # Block adding members unintentionally
-    __slots__ = ('original_name', 'api_name', 'args', 'retval')
+    __slots__ = ('original_name', 'explicit_name', 'api_name', 'args', 'retval')
 
     def __init__(self):
         self.original_name = ""
+        self.explicit_name = ""
         self.api_name = ""
         self.args = []
         self.retval = None
@@ -405,13 +406,7 @@ def collect_decl_macro(ctx, cursor):
         macro_values[0] = macro_values[0].replace('"', '\\"')
         macro_values[0] = '"' + macro_values[0] + '"'
 
-    # pick out values with these prefixes:
-    # - SDL_
-    # - AUDIO_ (for SDL_audio)
-    # - SDL2_ (for SDL2_gfx)
-    # - MIX_ (for SDL_mixer)
-    # - TTF_ (for SDL_ttf)
-    # - SOUND_ (for SDL_sound)
+    # pick up values with 'B2" prefix:
     if re.match(r"^B2_", macro_name):
         ctx.add_decl_macro(macro_name, macro_values)
     ctx.collection_mode = ParseContext.Decl_Unknown
@@ -503,9 +498,6 @@ def collect_decl_enum(ctx, cursor):
     ctx.add_decl_enum(name=cursor.displayname, values=val)
     ctx.collection_mode = ParseContext.Decl_Unknown
 
-#
-# TODO : Merge anonymous structs into one union (e.g. SDL_RWops)
-#
 def collect_decl_struct(ctx, cursor, struct_name=None, typedef_name=None):
 
     if str(cursor.location.file) != ctx.parse_file:
@@ -587,8 +579,6 @@ def collect_decl_struct(ctx, cursor, struct_name=None, typedef_name=None):
                 collect_decl_struct(ctx, cursor_decl, cursor_decl.spelling)
                 ctx.pop()
         else:
-            # [2018-03-21] A wrong member 'packed' is mixed in the parsed result of 'SDL_AudioCVT'.
-            # "#define SDL_AUDIOCVT_PACKED __attribute__((packed))" and "SDL_AUDIOCVT_PACKED SDL_AudioCVT;" might cause this problem.
             # The condition below seems useful for preventing wrong members to be added.
             if field_info.type_kind == TypeKind.INVALID and field.get_field_offsetof() == -1:
                 continue
@@ -597,7 +587,7 @@ def collect_decl_struct(ctx, cursor, struct_name=None, typedef_name=None):
 
     match_obj = re.match(r"^b2(.+)", struct_info.original_name)
     if match_obj:
-        # Remove prefix 'SDL_' from struct name and capitalize first character
+        # Remove prefix 'b2' from struct name and capitalize first character
         struct_info.api_name = match_obj.group(1)[0].upper() + match_obj.group(1)[1:]
     else:
         struct_info.api_name = struct_info.original_name
@@ -616,10 +606,11 @@ def collect_decl_function(ctx, cursor):
 
     func_info = FunctionInfo()
     func_info.original_name = cursor.spelling
+    func_info.explicit_name = cursor.spelling
 
     match_obj = re.match(r"^b2(.+)", func_info.original_name)
     if match_obj:
-        # Remove prefix 'SDL_' from name
+        # Remove prefix 'b2' from name
         func_info.api_name = match_obj.group(1)
     else:
         func_info.api_name = func_info.original_name
@@ -628,7 +619,7 @@ def collect_decl_function(ctx, cursor):
     retval_info.type_original_name = cursor.result_type.spelling
     match_obj = re.match(r"^b2(.+)", retval_info.type_original_name)
     if match_obj:
-        # Remove prefix 'SDL_' from name
+        # Remove prefix 'b2_' from name
         retval_info.type_api_name = match_obj.group(1)
     else:
         retval_info.type_api_name = retval_info.type_original_name
@@ -682,10 +673,7 @@ def collect_decl(ctx, cursor):
 
 
 parser_arg = [
-    "-fsyntax-only", #, "-DDOXYGEN_SHOULD_IGNORE_THIS"
-    # "-DDECLSPEC=",
-    # "-DSDLCALL=",
-    # "-I./",
+    "-fsyntax-only",
 ]
 
 parser_opt = TranslationUnit.PARSE_SKIP_FUNCTION_BODIES | TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD | TranslationUnit.PARSE_INCOMPLETE

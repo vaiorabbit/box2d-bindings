@@ -124,57 +124,31 @@ module Box2D
 
   # Function
 
-  def self.setup_math_functions_symbols(output_error = false)
-    symbols = [
-      :b2Atan2,
-      :b2ComputeCosSin,
-      :b2ComputeRotationBetweenUnitVectors,
-      :b2IsValidFloat,
-      :b2IsValidVec2,
-      :b2IsValidRotation,
-      :b2IsValidAABB,
-      :b2SetLengthUnitsPerMeter,
-      :b2GetLengthUnitsPerMeter,
+  def self.setup_math_functions_symbols(method_naming: :original)
+    entries = [
+      [:Atan2, :b2Atan2, [:float, :float], :float],
+      [:ComputeCosSin, :b2ComputeCosSin, [:float], CosSin.by_value],
+      [:ComputeRotationBetweenUnitVectors, :b2ComputeRotationBetweenUnitVectors, [Vec2.by_value, Vec2.by_value], Rot.by_value],
+      [:IsValidFloat, :b2IsValidFloat, [:float], :bool],
+      [:IsValidVec2, :b2IsValidVec2, [Vec2.by_value], :bool],
+      [:IsValidRotation, :b2IsValidRotation, [Rot.by_value], :bool],
+      [:IsValidAABB, :b2IsValidAABB, [AABB.by_value], :bool],
+      [:SetLengthUnitsPerMeter, :b2SetLengthUnitsPerMeter, [:float], :void],
+      [:GetLengthUnitsPerMeter, :b2GetLengthUnitsPerMeter, [], :float],
     ]
-    apis = {
-      :b2Atan2 => :Atan2,
-      :b2ComputeCosSin => :ComputeCosSin,
-      :b2ComputeRotationBetweenUnitVectors => :ComputeRotationBetweenUnitVectors,
-      :b2IsValidFloat => :IsValidFloat,
-      :b2IsValidVec2 => :IsValidVec2,
-      :b2IsValidRotation => :IsValidRotation,
-      :b2IsValidAABB => :IsValidAABB,
-      :b2SetLengthUnitsPerMeter => :SetLengthUnitsPerMeter,
-      :b2GetLengthUnitsPerMeter => :GetLengthUnitsPerMeter,
-    }
-    args = {
-      :b2Atan2 => [:float, :float],
-      :b2ComputeCosSin => [:float],
-      :b2ComputeRotationBetweenUnitVectors => [Vec2.by_value, Vec2.by_value],
-      :b2IsValidFloat => [:float],
-      :b2IsValidVec2 => [Vec2.by_value],
-      :b2IsValidRotation => [Rot.by_value],
-      :b2IsValidAABB => [AABB.by_value],
-      :b2SetLengthUnitsPerMeter => [:float],
-      :b2GetLengthUnitsPerMeter => [],
-    }
-    retvals = {
-      :b2Atan2 => :float,
-      :b2ComputeCosSin => CosSin.by_value,
-      :b2ComputeRotationBetweenUnitVectors => Rot.by_value,
-      :b2IsValidFloat => :bool,
-      :b2IsValidVec2 => :bool,
-      :b2IsValidRotation => :bool,
-      :b2IsValidAABB => :bool,
-      :b2SetLengthUnitsPerMeter => :void,
-      :b2GetLengthUnitsPerMeter => :float,
-    }
-    symbols.each do |sym|
-      begin
-        attach_function apis[sym], sym, args[sym], retvals[sym]
-      rescue FFI::NotFoundError => error
-        $stderr.puts("[Warning] Failed to import #{sym} (#{error}).") if output_error
-      end
+    entries.each do |entry|
+      api_name = if method_naming == :snake_case
+                   snake_case_name = entry[0].to_s.gsub(/([A-Z]+)([A-Z0-9][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z0-9])/, '\1_\2').downcase
+                   snake_case_name.gsub!('vector_3', 'vector3_') if snake_case_name.include?('vector_3')
+                   snake_case_name.gsub!('vector_2', 'vector2_') if snake_case_name.include?('vector_2')
+                   snake_case_name.chop! if snake_case_name.end_with?('_')
+                   snake_case_name.to_sym
+                 else
+                   entry[0]
+                 end
+      attach_function api_name, entry[1], entry[2], entry[3]
+    rescue FFI::NotFoundError => e
+      warn "[Warning] Failed to import #{entry[0]} (#{e})."
     end
   end
 

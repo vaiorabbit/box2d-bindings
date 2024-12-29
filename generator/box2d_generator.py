@@ -185,58 +185,71 @@ def generate_structunion(ctx, indent = "", struct_prefix="", struct_postfix=""):
     if struct_postfix != "":
         print(struct_postfix, file = sys.stdout)
 
+
+class FunctionEntry:
+    def __init__(self, original_name, explicit_name):
+        self.original_name = original_name
+        self.explicit_name = explicit_name
+        self.retval = None
+        self.arg_types = ""
+        self.arg_names = ""
+        self.description = ""
+        self.ret_description = ""
+        self.arg_descriptions = []
+
 def generate_function(ctx, indent = "", setup_method_name = ""):
-    print(indent + "def self.setup_%s_symbols(output_error = false)" % setup_method_name , file = sys.stdout)
-    indent = "  "
-    print(indent + "  symbols = [", file = sys.stdout)
+    func_entries = []
     for func_name, func_info in ctx.decl_functions.items():
         if func_info == None:
             continue
-        print(indent + "    :%s," % func_info.original_name, file = sys.stdout)
-    print(indent + "  ]", file = sys.stdout)
+        func_entry = FunctionEntry(func_info.original_name, func_info.api_name)
 
-    print(indent + "  apis = {", file = sys.stdout)
-    for func_name, func_info in ctx.decl_functions.items():
-        if func_info == None:
-            continue
-        print(indent + "    :%s => :%s," % (func_info.original_name, func_info.api_name), file = sys.stdout)
-    print(indent + "  }", file = sys.stdout)
-
-    print(indent + "  args = {", file = sys.stdout)
-    for func_name, func_info in ctx.decl_functions.items():
-        if func_info == None:
-            continue
-        print(indent + "    :%s => [" % func_info.original_name, file = sys.stdout, end='')
+        # Arguments
         if len(func_info.args) > 0:
             # Get Ruby FFI arguments
             args_ctype_list = list(map((lambda t: str(t.type_kind)), func_info.args))
 
-            # Remove leading 'b2' string and add ".by_value" to struct arguments (e.g.: Color -> Color.by_value)
+            # Capitalize and add ".by_value" to struct arguments (e.g.: Color -> Color.by_value)
             arg_is_record = lambda arg: box2d_parser.query_box2d_cindex_mapping_entry_exists(arg) and box2d_parser.get_box2d_cindex_mapping_value(arg) == "TypeKind.RECORD"
             args_ctype_list = list(map((lambda arg: re.sub('^b2', '', arg) + ".by_value" if arg_is_record(arg) else arg), args_ctype_list))
+            func_entry.arg_types = ', '.join(args_ctype_list)
 
-            print(', '.join(args_ctype_list), file = sys.stdout, end='')
-        print("],", file = sys.stdout)
-    print(indent + "  }", file = sys.stdout)
+            # List of argument names
+            args_name_list = list(map((lambda t: str(t.original_name)), func_info.args))
+            func_entry.arg_names = ', '.join(args_name_list)
 
-    print(indent + "  retvals = {", file = sys.stdout)
-    for func_name, func_info in ctx.decl_functions.items():
-        if func_info == None:
-            continue
+        # Return value
         retval_str = str(func_info.retval.type_kind)
-        if re.match(r"^b2", retval_str): # For functions that return SDL structs by value
+        if re.match(r"^b2", retval_str): # For functions that return structs by value
             retval_str = func_info.retval.type_api_name + ".by_value"
-        print(indent + "    :%s => %s," % (func_info.original_name, retval_str), file = sys.stdout)
-    print(indent + "  }", file = sys.stdout)
+
+        func_entry.retval =  retval_str
+
+        func_entries.append(func_entry)
+
+    print(indent + "def self.setup_%s_symbols(method_naming: :original)" % setup_method_name , file = sys.stdout)
+    indent = "  "
+    print(indent + "  entries = [", file = sys.stdout)
+    for func_entry in func_entries:
+        entry_str = f':{func_entry.explicit_name}, :{func_entry.original_name}, [{func_entry.arg_types}], {func_entry.retval}'
+        print(indent + f'    [{entry_str}],', file = sys.stdout)
+    print(indent + "  ]", file = sys.stdout)
 
     print(indent +
-      """  symbols.each do |sym|
-      begin
-        attach_function apis[sym], sym, args[sym], retvals[sym]
-      rescue FFI::NotFoundError => error
-        $stderr.puts("[Warning] Failed to import #{s}.") if output_error
-      end""".format(s="{sym} (#{error})"))
-    print(indent + "  end", file = sys.stdout)
+      r"""  entries.each do |entry|
+      api_name = if method_naming == :snake_case
+                   snake_case_name = entry[0].to_s.gsub(/([A-Z]+)([A-Z0-9][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z0-9])/, '\1_\2').downcase
+                   snake_case_name.gsub!('vector_3', 'vector3_') if snake_case_name.include?('vector_3')
+                   snake_case_name.gsub!('vector_2', 'vector2_') if snake_case_name.include?('vector_2')
+                   snake_case_name.chop! if snake_case_name.end_with?('_')
+                   snake_case_name.to_sym
+                 else
+                   entry[0]
+                 end
+      attach_function api_name, entry[1], entry[2], entry[3]
+    rescue FFI::NotFoundError => e
+      warn "[Warning] Failed to import #{s}."
+    end""".format(s="{entry[0]} (#{e})"))
 
     indent = "  "
     print(indent + "end", file = sys.stdout)

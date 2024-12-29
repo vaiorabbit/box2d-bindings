@@ -1544,85 +1544,38 @@ module Box2D
 
   # Function
 
-  def self.setup_types_symbols(output_error = false)
-    symbols = [
-      :b2DefaultWorldDef,
-      :b2DefaultBodyDef,
-      :b2DefaultFilter,
-      :b2DefaultQueryFilter,
-      :b2DefaultShapeDef,
-      :b2DefaultChainDef,
-      :b2DefaultDistanceJointDef,
-      :b2DefaultMotorJointDef,
-      :b2DefaultMouseJointDef,
-      :b2DefaultNullJointDef,
-      :b2DefaultPrismaticJointDef,
-      :b2DefaultRevoluteJointDef,
-      :b2DefaultWeldJointDef,
-      :b2DefaultWheelJointDef,
-      :b2DefaultExplosionDef,
-      :b2DefaultDebugDraw,
+  def self.setup_types_symbols(method_naming: :original)
+    entries = [
+      [:DefaultWorldDef, :b2DefaultWorldDef, [], WorldDef.by_value],
+      [:DefaultBodyDef, :b2DefaultBodyDef, [], BodyDef.by_value],
+      [:DefaultFilter, :b2DefaultFilter, [], Filter.by_value],
+      [:DefaultQueryFilter, :b2DefaultQueryFilter, [], QueryFilter.by_value],
+      [:DefaultShapeDef, :b2DefaultShapeDef, [], ShapeDef.by_value],
+      [:DefaultChainDef, :b2DefaultChainDef, [], ChainDef.by_value],
+      [:DefaultDistanceJointDef, :b2DefaultDistanceJointDef, [], DistanceJointDef.by_value],
+      [:DefaultMotorJointDef, :b2DefaultMotorJointDef, [], MotorJointDef.by_value],
+      [:DefaultMouseJointDef, :b2DefaultMouseJointDef, [], MouseJointDef.by_value],
+      [:DefaultNullJointDef, :b2DefaultNullJointDef, [], NullJointDef.by_value],
+      [:DefaultPrismaticJointDef, :b2DefaultPrismaticJointDef, [], PrismaticJointDef.by_value],
+      [:DefaultRevoluteJointDef, :b2DefaultRevoluteJointDef, [], RevoluteJointDef.by_value],
+      [:DefaultWeldJointDef, :b2DefaultWeldJointDef, [], WeldJointDef.by_value],
+      [:DefaultWheelJointDef, :b2DefaultWheelJointDef, [], WheelJointDef.by_value],
+      [:DefaultExplosionDef, :b2DefaultExplosionDef, [], ExplosionDef.by_value],
+      [:DefaultDebugDraw, :b2DefaultDebugDraw, [], DebugDraw.by_value],
     ]
-    apis = {
-      :b2DefaultWorldDef => :DefaultWorldDef,
-      :b2DefaultBodyDef => :DefaultBodyDef,
-      :b2DefaultFilter => :DefaultFilter,
-      :b2DefaultQueryFilter => :DefaultQueryFilter,
-      :b2DefaultShapeDef => :DefaultShapeDef,
-      :b2DefaultChainDef => :DefaultChainDef,
-      :b2DefaultDistanceJointDef => :DefaultDistanceJointDef,
-      :b2DefaultMotorJointDef => :DefaultMotorJointDef,
-      :b2DefaultMouseJointDef => :DefaultMouseJointDef,
-      :b2DefaultNullJointDef => :DefaultNullJointDef,
-      :b2DefaultPrismaticJointDef => :DefaultPrismaticJointDef,
-      :b2DefaultRevoluteJointDef => :DefaultRevoluteJointDef,
-      :b2DefaultWeldJointDef => :DefaultWeldJointDef,
-      :b2DefaultWheelJointDef => :DefaultWheelJointDef,
-      :b2DefaultExplosionDef => :DefaultExplosionDef,
-      :b2DefaultDebugDraw => :DefaultDebugDraw,
-    }
-    args = {
-      :b2DefaultWorldDef => [],
-      :b2DefaultBodyDef => [],
-      :b2DefaultFilter => [],
-      :b2DefaultQueryFilter => [],
-      :b2DefaultShapeDef => [],
-      :b2DefaultChainDef => [],
-      :b2DefaultDistanceJointDef => [],
-      :b2DefaultMotorJointDef => [],
-      :b2DefaultMouseJointDef => [],
-      :b2DefaultNullJointDef => [],
-      :b2DefaultPrismaticJointDef => [],
-      :b2DefaultRevoluteJointDef => [],
-      :b2DefaultWeldJointDef => [],
-      :b2DefaultWheelJointDef => [],
-      :b2DefaultExplosionDef => [],
-      :b2DefaultDebugDraw => [],
-    }
-    retvals = {
-      :b2DefaultWorldDef => WorldDef.by_value,
-      :b2DefaultBodyDef => BodyDef.by_value,
-      :b2DefaultFilter => Filter.by_value,
-      :b2DefaultQueryFilter => QueryFilter.by_value,
-      :b2DefaultShapeDef => ShapeDef.by_value,
-      :b2DefaultChainDef => ChainDef.by_value,
-      :b2DefaultDistanceJointDef => DistanceJointDef.by_value,
-      :b2DefaultMotorJointDef => MotorJointDef.by_value,
-      :b2DefaultMouseJointDef => MouseJointDef.by_value,
-      :b2DefaultNullJointDef => NullJointDef.by_value,
-      :b2DefaultPrismaticJointDef => PrismaticJointDef.by_value,
-      :b2DefaultRevoluteJointDef => RevoluteJointDef.by_value,
-      :b2DefaultWeldJointDef => WeldJointDef.by_value,
-      :b2DefaultWheelJointDef => WheelJointDef.by_value,
-      :b2DefaultExplosionDef => ExplosionDef.by_value,
-      :b2DefaultDebugDraw => DebugDraw.by_value,
-    }
-    symbols.each do |sym|
-      begin
-        attach_function apis[sym], sym, args[sym], retvals[sym]
-      rescue FFI::NotFoundError => error
-        $stderr.puts("[Warning] Failed to import #{sym} (#{error}).") if output_error
-      end
+    entries.each do |entry|
+      api_name = if method_naming == :snake_case
+                   snake_case_name = entry[0].to_s.gsub(/([A-Z]+)([A-Z0-9][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z0-9])/, '\1_\2').downcase
+                   snake_case_name.gsub!('vector_3', 'vector3_') if snake_case_name.include?('vector_3')
+                   snake_case_name.gsub!('vector_2', 'vector2_') if snake_case_name.include?('vector_2')
+                   snake_case_name.chop! if snake_case_name.end_with?('_')
+                   snake_case_name.to_sym
+                 else
+                   entry[0]
+                 end
+      attach_function api_name, entry[1], entry[2], entry[3]
+    rescue FFI::NotFoundError => e
+      warn "[Warning] Failed to import #{entry[0]} (#{e})."
     end
   end
 

@@ -60,69 +60,34 @@ module Box2D
 
   # Function
 
-  def self.setup_base_symbols(output_error = false)
-    symbols = [
-      :b2SetAllocator,
-      :b2GetByteCount,
-      :b2SetAssertFcn,
-      :b2InternalAssertFcn,
-      :b2GetVersion,
-      :b2CreateTimer,
-      :b2GetTicks,
-      :b2GetMilliseconds,
-      :b2GetMillisecondsAndReset,
-      :b2SleepMilliseconds,
-      :b2Yield,
-      :b2Hash,
+  def self.setup_base_symbols(method_naming: :original)
+    entries = [
+      [:SetAllocator, :b2SetAllocator, [:pointer, :pointer], :void],
+      [:GetByteCount, :b2GetByteCount, [], :int],
+      [:SetAssertFcn, :b2SetAssertFcn, [:pointer], :void],
+      [:InternalAssertFcn, :b2InternalAssertFcn, [:pointer, :pointer, :int], :int],
+      [:GetVersion, :b2GetVersion, [], Version.by_value],
+      [:CreateTimer, :b2CreateTimer, [], Timer.by_value],
+      [:GetTicks, :b2GetTicks, [:pointer], :long_long],
+      [:GetMilliseconds, :b2GetMilliseconds, [:pointer], :float],
+      [:GetMillisecondsAndReset, :b2GetMillisecondsAndReset, [:pointer], :float],
+      [:SleepMilliseconds, :b2SleepMilliseconds, [:int], :void],
+      [:Yield, :b2Yield, [], :void],
+      [:Hash, :b2Hash, [:uint, :pointer, :int], :uint],
     ]
-    apis = {
-      :b2SetAllocator => :SetAllocator,
-      :b2GetByteCount => :GetByteCount,
-      :b2SetAssertFcn => :SetAssertFcn,
-      :b2InternalAssertFcn => :InternalAssertFcn,
-      :b2GetVersion => :GetVersion,
-      :b2CreateTimer => :CreateTimer,
-      :b2GetTicks => :GetTicks,
-      :b2GetMilliseconds => :GetMilliseconds,
-      :b2GetMillisecondsAndReset => :GetMillisecondsAndReset,
-      :b2SleepMilliseconds => :SleepMilliseconds,
-      :b2Yield => :Yield,
-      :b2Hash => :Hash,
-    }
-    args = {
-      :b2SetAllocator => [:pointer, :pointer],
-      :b2GetByteCount => [],
-      :b2SetAssertFcn => [:pointer],
-      :b2InternalAssertFcn => [:pointer, :pointer, :int],
-      :b2GetVersion => [],
-      :b2CreateTimer => [],
-      :b2GetTicks => [:pointer],
-      :b2GetMilliseconds => [:pointer],
-      :b2GetMillisecondsAndReset => [:pointer],
-      :b2SleepMilliseconds => [:int],
-      :b2Yield => [],
-      :b2Hash => [:uint, :pointer, :int],
-    }
-    retvals = {
-      :b2SetAllocator => :void,
-      :b2GetByteCount => :int,
-      :b2SetAssertFcn => :void,
-      :b2InternalAssertFcn => :int,
-      :b2GetVersion => Version.by_value,
-      :b2CreateTimer => Timer.by_value,
-      :b2GetTicks => :long_long,
-      :b2GetMilliseconds => :float,
-      :b2GetMillisecondsAndReset => :float,
-      :b2SleepMilliseconds => :void,
-      :b2Yield => :void,
-      :b2Hash => :uint,
-    }
-    symbols.each do |sym|
-      begin
-        attach_function apis[sym], sym, args[sym], retvals[sym]
-      rescue FFI::NotFoundError => error
-        $stderr.puts("[Warning] Failed to import #{sym} (#{error}).") if output_error
-      end
+    entries.each do |entry|
+      api_name = if method_naming == :snake_case
+                   snake_case_name = entry[0].to_s.gsub(/([A-Z]+)([A-Z0-9][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z0-9])/, '\1_\2').downcase
+                   snake_case_name.gsub!('vector_3', 'vector3_') if snake_case_name.include?('vector_3')
+                   snake_case_name.gsub!('vector_2', 'vector2_') if snake_case_name.include?('vector_2')
+                   snake_case_name.chop! if snake_case_name.end_with?('_')
+                   snake_case_name.to_sym
+                 else
+                   entry[0]
+                 end
+      attach_function api_name, entry[1], entry[2], entry[3]
+    rescue FFI::NotFoundError => e
+      warn "[Warning] Failed to import #{entry[0]} (#{e})."
     end
   end
 
