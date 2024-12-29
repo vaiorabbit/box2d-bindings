@@ -7,6 +7,11 @@ class RaylibDebugDraw
   def set_scale(s)
     @@scale = s
   end
+  
+  def get_scale
+   @@scale
+  end
+
   @@scale = 1.0
 
   @@draw_polygon_fcn = FFI::Function.new(:void, %i[pointer int32 int32 pointer]) do |vertices, vertexCount, radius, color, context|
@@ -58,7 +63,7 @@ class RaylibDebugDraw
   end
 
   @@draw_point_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :float, :int32, :pointer]) do |p, size, color, context|
-    p 'point'
+    Raylib.DrawCircle(p.x * @@scale, -p.y * @@scale, 5.0, Raylib::BLUE)
   end
 
   @@draw_string_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :pointer, :pointer]) do |p, s, context|
@@ -85,7 +90,8 @@ class RaylibDebugDraw
 end
 
 class Donut
-  attr_reader :is_spawned,  :body_ids, :joint_ids
+  attr_reader :is_spawned, :body_ids, :joint_ids
+
   SIDES = 7
   def initialize
     @body_ids = Array.new(SIDES) # b2BodyId
@@ -156,7 +162,7 @@ class Donut
     @is_spawned = true
   end
 
-  def despawn()
+  def despawn
     return unless @is_spawned
 
     SIDES.times do |i|
@@ -178,12 +184,59 @@ class Donut
   end
 end
 
+
+class QueryContext < FFI::Struct
+  layout(
+    :point, Box2D::Vec2,
+    :bodyId, Box2D::BodyId,
+  )
+  def point = self[:point]
+  def point=(v) self[:point] = v end
+  def bodyId = self[:bodyId]
+  def bodyId=(v) self[:bodyId] = v end
+  def self.create_as(_point_, _bodyId_)
+    instance = QueryContext.new
+    instance[:point] = _point_
+    instance[:bodyId] = _bodyId_
+    instance
+  end
+end
+
+$query_callback_fcn = FFI::Function.new(:bool, [Box2D::Vec2.by_value, :pointer]) do |shapeId, context|
+  ret = true
+
+  queryContext = QueryContext.new(context)
+  bodyId = Box2D::Shape_GetBody(shapeId)
+  bodyType = Box2D::Body_GetType(bodyId)
+  if bodyType == Box2D::BodyType_dynamicBody && Box2D::Shape_TestPoint(shapeId, queryContext.point)
+    queryContext.bodyId = bodyId
+    ret = false
+  end
+
+  ret
+end
+
 class SampleSoftbody
   attr_accessor :worldId, :jointId, :motorSpeed, :debugDraw
 
-  def initialize
+  def initialize(screenWidth, screenHeight, camera)
+    @screen_width = screenWidth
+    @screen_height = screenHeight
+    @camera = camera
+
+    @mouse_joint_id = Box2D::JointId.new
+    @ground_body_id = Box2D::BodyId.new
+
     @debugDraw = RaylibDebugDraw.new
     @donut = Donut.new
+  end
+
+  def get_screen_scale
+    @debugDraw.get_scale
+  end
+
+  def set_screen_scale(scale)
+    @debugDraw.set_scale(scale)
   end
 
   def setup
@@ -199,15 +252,16 @@ class SampleSoftbody
     segment = Box2D::Segment.create_as(Box2D::Vec2.create_as(-30.0, 0.0), Box2D::Vec2.create_as(30.0, 0.0))
     Box2D::CreateSegmentShape(groundId, shapeDef, segment)
 
-    @donut.spawn(@worldId, Box2D::Vec2.create_as(0.0, 20.0), 3.0)
+    @donut.spawn(@worldId, Box2D::Vec2.create_as(0.0, 20.0), 6.0)
   end
 
   def cleanup
-    @donut.despawn()
+    @donut.despawn
     Box2D::DestroyWorld(@worldId)
   end
 
   def step
+    handle_mouse
     timeStep = 1.0 / 60.0
     Box2D::World_EnableSleeping(@worldId, true)
     Box2D::World_EnableWarmStarting(@worldId, true)
@@ -217,6 +271,66 @@ class SampleSoftbody
 
   def draw
     Box2D::World_Draw(@worldId, @debugDraw.debug_draw)
+  end
+
+  private
+  def handle_mouse
+    if Raylib.IsMouseButtonPressed(Raylib::MOUSE_BUTTON_LEFT)
+      mouse_pos = Raylib.GetMousePosition()
+      world_pos = Box2D::Vec2.create_as((mouse_pos.x - @camera[:offset].x) / @debugDraw.get_scale,  (@camera[:offset].y - @camera[:target].y - mouse_pos.y) / @debugDraw.get_scale)
+
+      # MouseDown
+      # Make a small box.
+      d = Box2D::Vec2.create_as(0.001, 0.001)
+      box = Box2D::AABB.create_as(Box2D.Sub(world_pos, d), Box2D::Add(world_pos, d))
+
+      # Query the world for overlapping shapes.
+      queryContext = QueryContext.create_as(world_pos, Box2D::BodyId.new)
+      Box2D::World_OverlapAABB(@worldId, box, Box2D::DefaultQueryFilter(), $query_callback_fcn, queryContext)
+
+      if queryContext.bodyId.index1 != 0 # == B2_IS_NON_NULL( queryContext.bodyId )
+        bodyDef = Box2D::DefaultBodyDef()
+        @ground_body_id = Box2D::CreateBody(@worldId, bodyDef)
+
+        mouseDef = Box2D::DefaultMouseJointDef()
+        mouseDef.bodyIdA = @ground_body_id
+        mouseDef.bodyIdB = queryContext.bodyId
+        mouseDef.target = world_pos
+        mouseDef.hertz = 5.0
+        mouseDef.dampingRatio = 0.7
+        mouseDef.maxForce = 1000.0 * Box2D::Body_GetMass(queryContext.bodyId)
+        @mouse_joint_id = Box2D::CreateMouseJoint(@worldId, mouseDef)
+
+        Box2D::Body_SetAwake(queryContext.bodyId, true)
+      end
+    elsif Raylib.IsMouseButtonReleased(Raylib::MOUSE_BUTTON_LEFT)
+      # MouseUp
+      if @mouse_joint_id.index1 != 0
+        Box2D::DestroyJoint(@mouse_joint_id)
+        m_mouseJointId = Box2D::JointId.new
+
+        Box2D::DestroyBody(@ground_body_id)
+        @ground_body_id = Box2D::BodyId.new
+      end
+    end
+
+    mouse_delta = Raylib.GetMouseDelta
+    if (mouse_delta.x != 0 || mouse_delta.y != 0)
+      mouse_pos = Raylib.GetMousePosition()
+      world_pos = Box2D::Vec2.create_as((mouse_pos.x - @camera[:offset].x) / @debugDraw.get_scale,  (@camera[:offset].y - @camera[:target].y - mouse_pos.y) / @debugDraw.get_scale)
+
+      # MouseMotion
+      if Box2D::Joint_IsValid(@mouse_joint_id) == false
+        # The world or attached body was destroyed.
+        @mouse_joint_id = Box2D::JointId.new # b2_nullJointId
+      end
+
+      if @mouse_joint_id.index1 != 0 # B2_IS_NON_NULL( m_mouseJointId )
+        Box2D::MouseJoint_SetTarget(@mouse_joint_id, world_pos)
+        bodyIdB = Box2D::Joint_GetBodyB(@mouse_joint_id)
+        Box2D::Body_SetAwake(bodyIdB, true)
+      end
+    end
   end
 end
 
@@ -240,17 +354,20 @@ if __FILE__ == $PROGRAM_NAME
                    .with_zoom(1.0)
   SetTargetFPS(60)
 
-  current_sample = SampleSoftbody.new
+  current_sample = SampleSoftbody.new(screenWidth, screenHeight, camera)
   current_sample.setup
 
   until WindowShouldClose()
-    run = true if IsKeyPressed(KEY_SPACE)
-    current_sample.step if run
     # rubocop:disable Layout/IndentationConsistency
     screenWidth = GetScreenWidth()
     screenHeight = GetScreenHeight()
     camera[:offset].set(screenWidth / 2.0, screenHeight / 2.0)
-    current_sample.debugDraw.set_scale(20.0 * (screenWidth / 1280.0))
+    target_y = -screenHeight / 3.0
+    camera[:target].set(0, target_y)
+    current_sample.set_screen_scale(20.0 * (screenWidth / 1280.0))
+
+    run = true if IsKeyPressed(KEY_SPACE)
+    current_sample.step if run
 
     BeginDrawing()
       ClearBackground(RAYWHITE)
