@@ -12,6 +12,7 @@ require_relative 'box2d_collision.rb'
 require_relative 'box2d_collision_inline.rb'
 require_relative 'box2d_types.rb'
 require_relative 'box2d_main.rb'
+require_relative 'box2d_helper.rb'
 
 module Box2D
   extend FFI::Library

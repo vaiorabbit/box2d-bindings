@@ -224,8 +224,8 @@ class SampleSoftbody
     @screen_height = screenHeight
     @camera = camera
 
-    @mouse_joint_id = Box2D::JointId.new
-    @ground_body_id = Box2D::BodyId.new
+    @mouse_joint_id = Box2D::NULL_JOINTID
+    @ground_body_id = Box2D::NULL_BODYID
 
     @debugDraw = RaylibDebugDraw.new
     @donut = Donut.new
@@ -288,7 +288,7 @@ class SampleSoftbody
       queryContext = QueryContext.create_as(world_pos, Box2D::BodyId.new)
       Box2D::World_OverlapAABB(@worldId, box, Box2D::DefaultQueryFilter(), $query_callback_fcn, queryContext)
 
-      if queryContext.bodyId.index1 != 0 # == B2_IS_NON_NULL( queryContext.bodyId )
+      if Box2D.id_non_null(queryContext.bodyId)
         bodyDef = Box2D::DefaultBodyDef()
         @ground_body_id = Box2D::CreateBody(@worldId, bodyDef)
 
@@ -305,12 +305,12 @@ class SampleSoftbody
       end
     elsif Raylib.IsMouseButtonReleased(Raylib::MOUSE_BUTTON_LEFT)
       # MouseUp
-      if @mouse_joint_id.index1 != 0
+      if Box2D.id_non_null(@mouse_joint_id)
         Box2D::DestroyJoint(@mouse_joint_id)
-        m_mouseJointId = Box2D::JointId.new
+        @mouse_joint_id = Box2D::NULL_JOINTID
 
         Box2D::DestroyBody(@ground_body_id)
-        @ground_body_id = Box2D::BodyId.new
+        @ground_body_id = Box2D::NULL_BODYID
       end
     end
 
@@ -322,10 +322,10 @@ class SampleSoftbody
       # MouseMotion
       if Box2D::Joint_IsValid(@mouse_joint_id) == false
         # The world or attached body was destroyed.
-        @mouse_joint_id = Box2D::JointId.new # b2_nullJointId
+        @mouse_joint_id = Box2D::NULL_JOINTID
       end
 
-      if @mouse_joint_id.index1 != 0 # B2_IS_NON_NULL( m_mouseJointId )
+      if Box2D.id_non_null(@mouse_joint_id)
         Box2D::MouseJoint_SetTarget(@mouse_joint_id, world_pos)
         bodyIdB = Box2D::Joint_GetBodyB(@mouse_joint_id)
         Box2D::Body_SetAwake(bodyIdB, true)
