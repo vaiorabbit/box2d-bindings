@@ -26,7 +26,7 @@ File.open(filename, 'r') do |collision_h|
   original_lines.each do |original_line|
     if original_line.start_with? 'B2_INLINE'
       current_key = original_line.split(/\W()/).reject(&:empty?)[2] # key : "B2_INLINE float b2LengthSquared( b2Vec2 v )" -> "b2LengthSquared"
-      first_line = original_line.gsub('B2_INLINE ', '') # first_line : "float b2LengthSquared( b2Vec2 v )"
+      first_line = original_line.gsub('B2_INLINE ', 'B2_API ') # first_line : "float b2LengthSquared( b2Vec2 v )"
       current_body = [first_line]
       parsing = true
       next
