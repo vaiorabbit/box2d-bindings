@@ -36,4 +36,32 @@ module Box2D
   TRANSFORM_IDENTITY = Transform.create_as(Vec2.new.freeze, Rot.create_as(1.0, 0.0).freeze).freeze
   MAT22_ZERO = Mat22.create_as(Vec2.new.freeze, Vec2.new.freeze).freeze
 
+  class Vec2
+    def self.copy_from(vec)
+      Vec2.create_as(vec[:x], vec[:y])
+    end
+
+    def set(x, y)
+      self[:x] = x
+      self[:y] = y
+      self
+    end
+
+    def add(x, y)
+      self[:x] = self[:x] + x
+      self[:y] = self[:y] + y
+      self
+    end
+
+    def add_vector(v)
+      self[:x] = self[:x] + v[:x]
+      self[:y] = self[:y] + v[:y]
+      self
+    end
+
+    def to_a
+      [x, y]
+    end
+  end
+
 end

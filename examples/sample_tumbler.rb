@@ -149,7 +149,6 @@ class SampleTumbler
     shapeDef = Box2D::DefaultShapeDef()
     shapeDef.density = 50.0
 
-    # TODO: b2Rot_identity
     rot_identity = Box2D::ROT_IDENTITY
     polygon = Box2D::MakeOffsetBox(0.5, 10.0, Box2D::Vec2.create_as(10.0, 0.0), rot_identity)
     Box2D::CreatePolygonShape(bodyId, shapeDef, polygon)
@@ -160,7 +159,6 @@ class SampleTumbler
     polygon = Box2D::MakeOffsetBox(10.0, 0.5, Box2D::Vec2.create_as(0.0, -10.0), rot_identity)
     Box2D::CreatePolygonShape(bodyId, shapeDef, polygon)
 
-    # TODO: b2_colorBlueViolet
     shapeDef.customColor = Box2D::HexColor_colorBlueViolet
     circle = Box2D::Circle.create_as(Box2D::Vec2.create_as(5.0, 5.0), 1.0)
     Box2D::CreateCircleShape(bodyId, shapeDef, circle)
