@@ -2,37 +2,6 @@ require_relative 'util/setup_box2d'
 require_relative 'util/setup_raylib'
 require_relative 'util/sample_debugdraw'
 
-class QueryContext < FFI::Struct
-  layout(
-    :point, Box2D::Vec2,
-    :bodyId, Box2D::BodyId,
-  )
-  def point = self[:point]
-  def point=(v) self[:point] = v end
-  def bodyId = self[:bodyId]
-  def bodyId=(v) self[:bodyId] = v end
-  def self.create_as(_point_, _bodyId_)
-    instance = QueryContext.new
-    instance[:point] = _point_
-    instance[:bodyId] = _bodyId_
-    instance
-  end
-end
-
-$query_callback_fcn = FFI::Function.new(:bool, [Box2D::Vec2.by_value, :pointer]) do |shapeId, context|
-  ret = true
-
-  queryContext = QueryContext.new(context)
-  bodyId = Box2D::Shape_GetBody(shapeId)
-  bodyType = Box2D::Body_GetType(bodyId)
-  if bodyType == Box2D::BodyType_dynamicBody && Box2D::Shape_TestPoint(shapeId, queryContext.point)
-    queryContext.bodyId = bodyId
-    ret = false
-  end
-
-  ret
-end
-
 class Body
   def initialize(world_id, pos_x, pos_y)
     @world_id = world_id
