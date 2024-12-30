@@ -29,7 +29,7 @@ if __FILE__ == $PROGRAM_NAME
 
   # Define the dynamic body. We set its position and call the body factory.
   bodyDef = Box2D::DefaultBodyDef()
-  bodyDef.type = Box2D::BodyType_dynamicBody;
+  bodyDef.type = Box2D::BodyType_dynamicBody
   bodyDef.position.x = 0.0
   bodyDef.position.y = 4.0
 

@@ -162,6 +162,7 @@ class Body
     @body_id = Box2D::CreateBody(@world_id, bodyDef)
 
     shapeDef = Box2D::DefaultShapeDef()
+    shapeDef.enableContactEvents = true
 
     box_side_size = 0.5
     polygon = Box2D::MakeBox(box_side_size, box_side_size)
@@ -198,6 +199,7 @@ class SampleContact
     @debugDraw = RaylibDebugDraw.new
 
     @bodies = []
+    @contacts = []
   end
 
   def get_screen_scale
@@ -241,6 +243,56 @@ class SampleContact
     Box2D::DestroyWorld(@worldId)
   end
 
+  def collect_contacts
+    @contacts.clear
+
+    contactEvents = Box2D::World_GetContactEvents(@worldId)
+    contactEvents.beginCount.times do |i|
+      beginTouchEvent = Box2D::ContactBeginTouchEvent.new(contactEvents.beginEvents + i * Box2D::ContactBeginTouchEvent.size)
+      bodyIdA = Box2D::Shape_GetBody(beginTouchEvent.shapeIdA)
+      bodyIdB = Box2D::Shape_GetBody(beginTouchEvent.shapeIdB)
+
+      # We can get the final contact data from the shapes. The manifold is shared by the two shapes, so we just need the
+      # contact data from one of the shapes. Choose the one with the smallest number of contacts.
+      capacityA = Box2D::Shape_GetContactCapacity(beginTouchEvent.shapeIdA)
+      capacityB = Box2D::Shape_GetContactCapacity(beginTouchEvent.shapeIdB)
+
+      if capacityA < capacityB
+        contactDataBuf = FFI::MemoryPointer.new(:uint8, Box2D::ContactData.size * capacityA)
+        # pp [beginTouchEvent.shapeIdA, contactDataBuf, capacityA]
+        countA = Box2D::Shape_GetContactData(beginTouchEvent.shapeIdA, contactDataBuf, capacityA)
+        countA.times do |j|
+          contact = Box2D::ContactData.new(contactDataBuf + j * Box2D::ContactData.size)
+          idA = contact.shapeIdA
+          idB = contact.shapeIdB
+          if Box2D::id_equals(idA, beginTouchEvent.shapeIdB) || Box2D::id_equals(idB, beginTouchEvent.shapeIdB)
+            manifold = contact.manifold
+            manifold.pointCount.times do |k|
+              manifoldPoint = manifold.points[k]
+              @contacts << manifoldPoint.point
+            end
+          end
+        end
+      else
+        contactDataBuf = FFI::MemoryPointer.new(:uint8, Box2D::ContactData.size * capacityB)
+        # pp [beginTouchEvent.shapeIdB, contactDataBuf, capacityB]
+        countB = Box2D::Shape_GetContactData(beginTouchEvent.shapeIdB, contactDataBuf, capacityB)
+        countB.times do |j|
+          contact = Box2D::ContactData.new(contactDataBuf + j * Box2D::ContactData.size)
+          idA = contact.shapeIdA
+          idB = contact.shapeIdB
+          if Box2D::id_equals(idA, beginTouchEvent.shapeIdA) || Box2D::id_equals(idB, beginTouchEvent.shapeIdA)
+            manifold = contact.manifold
+            manifold.pointCount.times do |k|
+              manifoldPoint = manifold.points[k]
+              @contacts << manifoldPoint.point
+            end
+          end
+        end
+      end
+    end
+  end
+
   def step
     if IsKeyPressed(Raylib::KEY_SPACE) || IsMouseButtonPressed(Raylib::MOUSE_BUTTON_LEFT)
       # spawn 10 new rigid bodies
@@ -256,10 +308,15 @@ class SampleContact
     Box2D::World_EnableWarmStarting(@worldId, true)
     Box2D::World_EnableContinuous(@worldId, true)
     Box2D::World_Step(@worldId, timeStep, 4)
+    collect_contacts()
   end
 
   def draw
     Box2D::World_Draw(@worldId, @debugDraw.debug_draw)
+    scale = @debugDraw.get_scale
+    @contacts.each do |contact|
+      Raylib.DrawCircle(contact.x * scale, -contact.y * scale, 5.0, Raylib::ORANGE)
+    end
   end
 
 end
