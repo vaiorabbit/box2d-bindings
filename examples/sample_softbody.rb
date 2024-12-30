@@ -9,7 +9,6 @@ module Raylib
       g = (rgba >> 16) & 0xFF
       b = (rgba >>  8) & 0xFF
       a = (rgba >>  0) & 0xFF
-      pp [r, g, b, a]
       Color.new.set(r, g, b, a)
     end
 

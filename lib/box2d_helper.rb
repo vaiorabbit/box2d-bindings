@@ -27,4 +27,13 @@ module Box2D
     id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.revision == id2.revision
   end
 
+  #
+  # Math helper
+  #
+
+  VEC2_ZERO = Vec2.new.freeze
+  ROT_IDENTITY = Rot.create_as(1.0, 0.0).freeze
+  TRANSFORM_IDENTITY = Transform.create_as(Vec2.new.freeze, Rot.create_as(1.0, 0.0).freeze).freeze
+  MAT22_ZERO = Mat22.create_as(Vec2.new.freeze, Vec2.new.freeze).freeze
+
 end

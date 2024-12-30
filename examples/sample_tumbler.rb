@@ -1,12 +1,38 @@
 require_relative 'util/setup_box2d'
 require_relative 'util/setup_raylib'
 
+module Raylib
+  # Color helper
+  class Color
+    def self.from_u32(rgba = 255)
+      r = (rgba >> 24) & 0xFF
+      g = (rgba >> 16) & 0xFF
+      b = (rgba >>  8) & 0xFF
+      a = (rgba >>  0) & 0xFF
+      Color.new.set(r, g, b, a)
+    end
+
+    def self.set(rgba)
+      self[:r] = (rgba >> 24) & 0xFF
+      self[:g] = (rgba >> 16) & 0xFF
+      self[:b] = (rgba >>  8) & 0xFF
+      self[:a] = (rgba >>  0) & 0xFF
+      self
+    end
+  end
+end
+
 class RaylibDebugDraw
   attr_accessor :debug_draw
 
   def set_scale(s)
     @@scale = s
   end
+
+  def get_scale
+   @@scale
+  end
+
   @@scale = 1.0
 
   @@draw_polygon_fcn = FFI::Function.new(:void, %i[pointer int32 int32 pointer]) do |vertices, vertexCount, radius, color, context|
@@ -34,11 +60,24 @@ class RaylibDebugDraw
   end
 
   @@draw_solid_capsule_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :float, :int32, :pointer]) do |p1, p2, radius, color, context|
-    p 'capsule'
+    raylib_color = Raylib::Color.from_u32(color)
+    Raylib::DrawCircleLines(@@scale * p1.x, -@@scale * p1.y, @@scale * radius, raylib_color)
+    Raylib::DrawCircleLines(@@scale * p2.x, -@@scale * p2.y, @@scale * radius, raylib_color)
+    dir = Raylib.Vector2Subtract(Raylib::Vector2.create(p2.x, p2.y), Raylib::Vector2.create(p1.x, p1.y))
+    len = Raylib.Vector2LengthSqr(dir)
+    return if len <= 1e-6
+
+    dir = Raylib.Vector2Normalize(dir)
+    side0dir_x = -dir.y * radius
+    side0dir_y = dir.x * radius
+    side1dir_x = dir.y * radius
+    side1dir_y = -dir.x * radius
+    Raylib::DrawLine(@@scale * (p1.x + side0dir_x), -@@scale * (p1.y + side0dir_y), @@scale * (p2.x + side0dir_x), -@@scale * (p2.y + side0dir_y), raylib_color)
+    Raylib::DrawLine(@@scale * (p1.x + side1dir_x), -@@scale * (p1.y + side1dir_y), @@scale * (p2.x + side1dir_x), -@@scale * (p2.y + side1dir_y), raylib_color)
   end
 
   @@draw_segment_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :int32, :pointer]) do |p1, p2, color, context|
-    Raylib.DrawLine(p1.x * @@scale, -p1.y * @@scale, p2.x * @@scale, -p2.y * @@scale, Raylib::RED)
+    Raylib.DrawLine(p1.x * @@scale, -p1.y * @@scale, p2.x * @@scale, -p2.y * @@scale, Raylib::Color.from_u32(color))
   end
 
   @@draw_transform_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer]) do |transform, context|
@@ -46,7 +85,7 @@ class RaylibDebugDraw
   end
 
   @@draw_point_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :float, :int32, :pointer]) do |p, size, color, context|
-    p 'point'
+    Raylib.DrawCircle(p.x * @@scale, -p.y * @@scale, 5.0, Raylib::Color.from_u32(color))
   end
 
   @@draw_string_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :pointer, :pointer]) do |p, s, context|
@@ -75,8 +114,19 @@ end
 class SampleTumbler
   attr_accessor :worldId, :jointId, :motorSpeed, :debugDraw
 
-  def initialize
+  def initialize(screenWidth, screenHeight, camera)
+    @screen_width = screenWidth
+    @screen_height = screenHeight
+    @camera = camera
     @debugDraw = RaylibDebugDraw.new
+  end
+
+  def get_screen_scale
+    @debugDraw.get_scale
+  end
+
+  def set_screen_scale(scale)
+    @debugDraw.set_scale(scale)
   end
 
   def setup
@@ -87,7 +137,7 @@ class SampleTumbler
     @worldId = Box2D::CreateWorld(worldDef)
     groundId = Box2D::CreateBody(@worldId, Box2D::DefaultBodyDef())
 
-    y_pos = 0.0
+    y_pos = 0.0 # 10.0
 
     bodyDef = Box2D::DefaultBodyDef()
     bodyDef.type = Box2D::BodyType_dynamicBody
@@ -100,7 +150,7 @@ class SampleTumbler
     shapeDef.density = 50.0
 
     # TODO: b2Rot_identity
-    rot_identity = Box2D::Rot.create_as(1.0, 0.0)
+    rot_identity = Box2D::ROT_IDENTITY
     polygon = Box2D::MakeOffsetBox(0.5, 10.0, Box2D::Vec2.create_as(10.0, 0.0), rot_identity)
     Box2D::CreatePolygonShape(bodyId, shapeDef, polygon)
     polygon = Box2D::MakeOffsetBox(0.5, 10.0, Box2D::Vec2.create_as(-10.0, 0.0), rot_identity)
@@ -154,6 +204,7 @@ class SampleTumbler
       end
       y += (box_side_size * 3)
     end
+
   end
 
   def cleanup
@@ -185,24 +236,28 @@ if __FILE__ == $PROGRAM_NAME
   screenHeight = 720
   InitWindow(screenWidth, screenHeight, title)
 
+  target_y = 0.0
   camera = Camera2D.new
-                   .with_target(0, 0)
+                   .with_target(0, target_y)
                    .with_offset(screenWidth / 2.0, screenHeight / 2.0)
                    .with_rotation(0.0)
                    .with_zoom(1.0)
   SetTargetFPS(60)
 
-  current_sample = SampleTumbler.new
+  current_sample = SampleTumbler.new(screenWidth, screenHeight, camera)
   current_sample.setup
 
   until WindowShouldClose()
-    run = true if IsKeyPressed(KEY_SPACE)
-    current_sample.step if run
     # rubocop:disable Layout/IndentationConsistency
     screenWidth = GetScreenWidth()
     screenHeight = GetScreenHeight()
     camera[:offset].set(screenWidth / 2.0, screenHeight / 2.0)
-    current_sample.debugDraw.set_scale(20.0 * (screenWidth / 1280.0))
+    target_y = 0.0
+    camera[:target].set(0, target_y)
+    current_sample.set_screen_scale(20.0 * (screenWidth / 1280.0))
+
+    run = true if IsKeyPressed(KEY_SPACE)
+    current_sample.step if run
 
     BeginDrawing()
       ClearBackground(RAYWHITE)
