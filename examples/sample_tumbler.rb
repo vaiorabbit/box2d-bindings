@@ -1,34 +1,19 @@
 require_relative 'util/setup_box2d'
 require_relative 'util/setup_raylib'
+require_relative 'util/sample_base'
 require_relative 'util/sample_debugdraw'
 
-class SampleTumbler
-  attr_accessor :worldId, :jointId, :motorSpeed, :debugDraw
+class SampleTumbler < SampleBase
 
   def initialize(screenWidth, screenHeight, camera)
-    @screen_width = screenWidth
-    @screen_height = screenHeight
-    @camera = camera
-    @debugDraw = RaylibDebugDraw.new
-  end
-
-  def get_screen_scale
-    @debugDraw.get_scale
-  end
-
-  def set_screen_scale(scale)
-    @debugDraw.set_scale(scale)
+    super(screenWidth, screenHeight, camera)
   end
 
   def setup
-    worldDef = Box2D::DefaultWorldDef()
-    worldDef.gravity.x = 0.0
-    worldDef.gravity.y = -10.0
-
-    @worldId = Box2D::CreateWorld(worldDef)
+    super
     groundId = Box2D::CreateBody(@worldId, Box2D::DefaultBodyDef())
 
-    y_pos = 0.0 # 10.0
+    y_pos = 0.0
 
     bodyDef = Box2D::DefaultBodyDef()
     bodyDef.type = Box2D::BodyType_dynamicBody
@@ -95,21 +80,6 @@ class SampleTumbler
     end
   end
 
-  def cleanup
-    Box2D::DestroyWorld(@worldId)
-  end
-
-  def step
-    timeStep = 1.0 / 60.0
-    Box2D::World_EnableSleeping(@worldId, true)
-    Box2D::World_EnableWarmStarting(@worldId, true)
-    Box2D::World_EnableContinuous(@worldId, true)
-    Box2D::World_Step(@worldId, timeStep, 4)
-  end
-
-  def draw
-    Box2D::World_Draw(@worldId, @debugDraw.debug_draw)
-  end
 end
 
 if __FILE__ == $PROGRAM_NAME

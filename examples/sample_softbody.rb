@@ -1,5 +1,6 @@
 require_relative 'util/setup_box2d'
 require_relative 'util/setup_raylib'
+require_relative 'util/sample_base'
 require_relative 'util/sample_debugdraw'
 
 class Donut
@@ -129,36 +130,19 @@ $query_callback_fcn = FFI::Function.new(:bool, [Box2D::Vec2.by_value, :pointer])
   ret
 end
 
-class SampleSoftbody
-  attr_accessor :worldId, :jointId, :motorSpeed, :debugDraw
+class SampleSoftbody < SampleBase
 
   def initialize(screenWidth, screenHeight, camera)
-    @screen_width = screenWidth
-    @screen_height = screenHeight
-    @camera = camera
+    super(screenWidth, screenHeight, camera)
 
     @mouse_joint_id = Box2D::NULL_JOINTID
     @ground_body_id = Box2D::NULL_BODYID
 
-    @debugDraw = RaylibDebugDraw.new
     @donut = Donut.new
   end
 
-  def get_screen_scale
-    @debugDraw.get_scale
-  end
-
-  def set_screen_scale(scale)
-    @debugDraw.set_scale(scale)
-  end
-
   def setup
-    worldDef = Box2D::DefaultWorldDef()
-    worldDef.gravity.x = 0.0
-    worldDef.gravity.y = -10.0
-
-    @worldId = Box2D::CreateWorld(worldDef)
-
+    super
     bodyDef = Box2D::DefaultBodyDef()
     groundId = Box2D::CreateBody(@worldId, Box2D::DefaultBodyDef())
     shapeDef = Box2D::DefaultShapeDef()
@@ -170,20 +154,12 @@ class SampleSoftbody
 
   def cleanup
     @donut.despawn
-    Box2D::DestroyWorld(@worldId)
+    super
   end
 
   def step
     handle_mouse
-    timeStep = 1.0 / 60.0
-    Box2D::World_EnableSleeping(@worldId, true)
-    Box2D::World_EnableWarmStarting(@worldId, true)
-    Box2D::World_EnableContinuous(@worldId, true)
-    Box2D::World_Step(@worldId, timeStep, 4)
-  end
-
-  def draw
-    Box2D::World_Draw(@worldId, @debugDraw.debug_draw)
+    super
   end
 
   private

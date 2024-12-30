@@ -1,5 +1,6 @@
 require_relative 'util/setup_box2d'
 require_relative 'util/setup_raylib'
+require_relative 'util/sample_base'
 require_relative 'util/sample_debugdraw'
 
 class Body
@@ -36,37 +37,18 @@ class Body
   end
 end
 
-class SampleContact
-  attr_accessor :worldId, :jointId, :motorSpeed, :debugDraw
+class SampleContact < SampleBase
+  # attr_accessor :worldId, :jointId, :motorSpeed, :debugDraw
 
   def initialize(screenWidth, screenHeight, camera)
-    @screen_width = screenWidth
-    @screen_height = screenHeight
-    @camera = camera
-
-    @mouse_joint_id = Box2D::NULL_JOINTID
-    @ground_body_id = Box2D::NULL_BODYID
-
-    @debugDraw = RaylibDebugDraw.new
+    super(screenWidth, screenHeight, camera)
 
     @bodies = []
     @contacts = []
   end
 
-  def get_screen_scale
-    @debugDraw.get_scale
-  end
-
-  def set_screen_scale(scale)
-    @debugDraw.set_scale(scale)
-  end
-
   def setup
-    worldDef = Box2D::DefaultWorldDef()
-    worldDef.gravity.x = 0.0
-    worldDef.gravity.y = -10.0
-
-    @worldId = Box2D::CreateWorld(worldDef)
+    super
 
     bodyDef = Box2D::DefaultBodyDef()
     bodyDef.type = Box2D::BodyType_staticBody
@@ -91,7 +73,7 @@ class SampleContact
   def cleanup
     @bodies.clear
     GC.start
-    Box2D::DestroyWorld(@worldId)
+    super
   end
 
   def collect_contacts
@@ -145,6 +127,8 @@ class SampleContact
   end
 
   def step
+    super
+
     if IsKeyPressed(Raylib::KEY_SPACE) || IsMouseButtonPressed(Raylib::MOUSE_BUTTON_LEFT)
       # spawn 10 new rigid bodies
       10.times do
@@ -154,16 +138,11 @@ class SampleContact
     # remove rigid bodies completely fallen off from platform
     @bodies.reject! {|body| body.get_transform_y < -50.0}
 
-    timeStep = 1.0 / 60.0
-    Box2D::World_EnableSleeping(@worldId, true)
-    Box2D::World_EnableWarmStarting(@worldId, true)
-    Box2D::World_EnableContinuous(@worldId, true)
-    Box2D::World_Step(@worldId, timeStep, 4)
     collect_contacts()
   end
 
   def draw
-    Box2D::World_Draw(@worldId, @debugDraw.debug_draw)
+    super
     scale = @debugDraw.get_scale
     @contacts.each do |contact|
       Raylib.DrawCircle(contact.x * scale, -contact.y * scale, 5.0, Raylib::ORANGE)
