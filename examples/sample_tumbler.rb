@@ -83,9 +83,6 @@ class SampleTumbler < SampleBase
 end
 
 if __FILE__ == $PROGRAM_NAME
-
-  run = false
-
   version = Box2D::GetVersion()
   title = "Box2D Version #{version.major}.#{version.minor}.#{version.revision}"
 
@@ -114,8 +111,7 @@ if __FILE__ == $PROGRAM_NAME
     camera[:target].set(0, target_y)
     current_sample.set_screen_scale(20.0 * (screenWidth / 1280.0))
 
-    run = true if IsKeyPressed(KEY_SPACE)
-    current_sample.step if run
+    current_sample.step
 
     BeginDrawing()
       ClearBackground(Raylib::BLACK)

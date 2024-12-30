@@ -171,8 +171,6 @@ if __FILE__ == $PROGRAM_NAME
   current_sample = SampleContact.new(screenWidth, screenHeight, camera)
   current_sample.setup
 
-  bodies = []
-
   until WindowShouldClose()
     # rubocop:disable Layout/IndentationConsistency
     screenWidth = GetScreenWidth()
