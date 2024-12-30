@@ -1,13 +1,35 @@
 require_relative 'util/setup_box2d'
 require_relative 'util/setup_raylib'
 
+module Raylib
+  # Color helper
+  class Color
+    def self.from_u32(rgba = 255)
+      r = (rgba >> 24) & 0xFF
+      g = (rgba >> 16) & 0xFF
+      b = (rgba >>  8) & 0xFF
+      a = (rgba >>  0) & 0xFF
+      pp [r, g, b, a]
+      Color.new.set(r, g, b, a)
+    end
+
+    def self.set(rgba)
+      self[:r] = (rgba >> 24) & 0xFF
+      self[:g] = (rgba >> 16) & 0xFF
+      self[:b] = (rgba >>  8) & 0xFF
+      self[:a] = (rgba >>  0) & 0xFF
+      self
+    end
+  end
+end
+
 class RaylibDebugDraw
   attr_accessor :debug_draw
 
   def set_scale(s)
     @@scale = s
   end
-  
+
   def get_scale
    @@scale
   end
@@ -39,8 +61,9 @@ class RaylibDebugDraw
   end
 
   @@draw_solid_capsule_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :float, :int32, :pointer]) do |p1, p2, radius, color, context|
-    Raylib::DrawCircleLines(@@scale * p1.x, -@@scale * p1.y, @@scale * radius, Raylib::BLACK)
-    Raylib::DrawCircleLines(@@scale * p2.x, -@@scale * p2.y, @@scale * radius, Raylib::BLACK)
+    raylib_color = Raylib::Color.from_u32(color)
+    Raylib::DrawCircleLines(@@scale * p1.x, -@@scale * p1.y, @@scale * radius, raylib_color)
+    Raylib::DrawCircleLines(@@scale * p2.x, -@@scale * p2.y, @@scale * radius, raylib_color)
     dir = Raylib.Vector2Subtract(Raylib::Vector2.create(p2.x, p2.y), Raylib::Vector2.create(p1.x, p1.y))
     len = Raylib.Vector2LengthSqr(dir)
     return if len <= 1e-6
@@ -50,12 +73,12 @@ class RaylibDebugDraw
     side0dir_y = dir.x * radius
     side1dir_x = dir.y * radius
     side1dir_y = -dir.x * radius
-    Raylib::DrawLine(@@scale * (p1.x + side0dir_x), -@@scale * (p1.y + side0dir_y), @@scale * (p2.x + side0dir_x), -@@scale * (p2.y + side0dir_y), Raylib::BLACK)
-    Raylib::DrawLine(@@scale * (p1.x + side1dir_x), -@@scale * (p1.y + side1dir_y), @@scale * (p2.x + side1dir_x), -@@scale * (p2.y + side1dir_y), Raylib::BLACK)
+    Raylib::DrawLine(@@scale * (p1.x + side0dir_x), -@@scale * (p1.y + side0dir_y), @@scale * (p2.x + side0dir_x), -@@scale * (p2.y + side0dir_y), raylib_color)
+    Raylib::DrawLine(@@scale * (p1.x + side1dir_x), -@@scale * (p1.y + side1dir_y), @@scale * (p2.x + side1dir_x), -@@scale * (p2.y + side1dir_y), raylib_color)
   end
 
   @@draw_segment_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :int32, :pointer]) do |p1, p2, color, context|
-    Raylib.DrawLine(p1.x * @@scale, -p1.y * @@scale, p2.x * @@scale, -p2.y * @@scale, Raylib::RED)
+    Raylib.DrawLine(p1.x * @@scale, -p1.y * @@scale, p2.x * @@scale, -p2.y * @@scale, Raylib::Color.from_u32(color))
   end
 
   @@draw_transform_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer]) do |transform, context|
@@ -63,7 +86,7 @@ class RaylibDebugDraw
   end
 
   @@draw_point_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :float, :int32, :pointer]) do |p, size, color, context|
-    Raylib.DrawCircle(p.x * @@scale, -p.y * @@scale, 5.0, Raylib::BLUE)
+    Raylib.DrawCircle(p.x * @@scale, -p.y * @@scale, 5.0, Raylib::Color.from_u32(color))
   end
 
   @@draw_string_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :pointer, :pointer]) do |p, s, context|
@@ -370,16 +393,11 @@ if __FILE__ == $PROGRAM_NAME
     current_sample.step if run
 
     BeginDrawing()
-      ClearBackground(RAYWHITE)
+      ClearBackground(Raylib::BLACK)
 
       BeginMode2D(camera)
-        DrawLine(camera.target.x.to_i, -screenHeight * 10, camera.target.x.to_i, screenHeight * 10, GREEN)
-        DrawLine(-screenWidth * 10, camera.target.y.to_i, screenWidth * 10, camera.target.y.to_i, GREEN)
-
         current_sample.draw
-
         DrawFPS(screenWidth / 2 - 100, -screenHeight / 2 + 10 + target_y)
-
       EndMode2D()
     EndDrawing()
     # rubocop:enable Layout/IndentationConsistency
