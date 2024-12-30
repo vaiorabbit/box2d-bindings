@@ -58,6 +58,7 @@ end
 
 # Copy original id.h
 FileUtils.copy(filename, "#{filename}.default")
+FileUtils.copy("#{File.dirname(filename)}/../../src/id_pool.c", "#{File.dirname(filename)}/../../src/id_pool.c.default")
 
 # Write modified version of id.h
 File.open(filename, 'w') do |id_h|
@@ -66,6 +67,13 @@ File.open(filename, 'w') do |id_h|
   end
   id_h.puts '#include "id_inline.h"'
 end
+
+# Modify id_pool.c to include split code
+File.open("#{File.dirname(filename)}/../../src/id_pool.c", 'a') do |id_pool_c|
+  id_pool_c.puts '#include "id_inline.c"'
+end
+
+# Write id_inline.h and id_inline.c
 
 File.open("#{File.dirname(filename)}/id_inline.h", 'w') do |id_inline_h|
   header = <<-HEADER
