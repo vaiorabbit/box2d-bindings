@@ -1,7 +1,7 @@
 #!/bin/sh
 export MACOSX_DEPLOYMENT_TARGET=15.0
 
-./split_inline.sh
+bash ./split_inline.sh
 
 mkdir -p build_x86_64
 cd build_x86_64

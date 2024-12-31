@@ -9,6 +9,15 @@ Provides Ruby bindings for Box2D
 *   https://box2d.org
 *   https://github.com/erincatto/box2d
 
+## Features ##
+
+*   Generated semi-automatically
+*   Based on Ruby/FFI ( https://github.com/ffi/ffi )
+*   Pre-built binaries are inside:
+    *   Windows (x86_64)
+    *   macOS (x86_64, ARM64)
+    *   Linux (x86_64, ARM64)
+
 ## License ##
 
 All shared libraries found in `lib` directory are built on top of Box2D ( https://github.com/erincatto/box2d ) and are available under the MIT License.

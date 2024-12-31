@@ -116,7 +116,7 @@ class QueryContext < FFI::Struct
   end
 end
 
-$query_callback_fcn = FFI::Function.new(:bool, [Box2D::Vec2.by_value, :pointer]) do |shapeId, context|
+$query_callback_fcn = FFI::Function.new(:bool, [Box2D::ShapeId.by_value, :pointer]) do |shapeId, context|
   ret = true
 
   queryContext = QueryContext.new(context)
