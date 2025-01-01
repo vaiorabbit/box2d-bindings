@@ -3,7 +3,7 @@
 # Box2D bindings for Ruby #
 
 *   Created : 2024-08-18
-*   Last modified : 2024-12-29
+*   Last modified : 2025-01-01
 
 Provides Ruby bindings for Box2D
 *   https://box2d.org
@@ -27,7 +27,7 @@ All ruby codes here are available under the zlib/libpng License ( http://opensou
 
 ```
 Ruby-Box2D : Box2D bindings for Ruby
-Copyright (c) 2024 vaiorabbit <http://twitter.com/vaiorabbit>
+Copyright (c) 2024-2025 vaiorabbit <http://twitter.com/vaiorabbit>
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
