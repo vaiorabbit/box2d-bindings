@@ -24,6 +24,6 @@ if not exist build (
 cd build
 %CMAKE_EXE% -G "MSYS Makefiles" -D CMAKE_C_FLAGS="" -D CMAKE_BUILD_TYPE=Release -D CMAKE_OSX_ARCHITECTURES="x86_64" -D CMAKE_C_COMPILER=gcc -Dbox2d_EXPORTS=1 -D BOX2D_SAMPLES=OFF -D BOX2D_VALIDATE=OFF -D BOX2D_UNIT_TESTS=OFF -D BUILD_SHARED_LIBS=ON ../box2d
 cmake --build .
-copy bin\libbox2d.dll ..\..\lib
+copy src\libbox2d.dll ..\..\lib
 
 popd

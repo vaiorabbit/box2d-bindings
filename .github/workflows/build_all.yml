@@ -6,7 +6,7 @@ on:
 jobs:
   call-build-linux:
     uses: ./.github/workflows/linux.yml
-  call-build-linux-cross:
+  call-build-linux-arm64:
     needs: call-build-linux
     uses: ./.github/workflows/linux_arm64.yml
   call-build-macos:
