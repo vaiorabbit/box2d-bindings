@@ -44,19 +44,6 @@ module Box2D
     end
   end
 
-  class Timer < FFI::Struct
-    layout(
-      :start, :long_long,
-    )
-    def start = self[:start]
-    def start=(v) self[:start] = v end
-    def self.create_as(_start_)
-      instance = Timer.new
-      instance[:start] = _start_
-      instance
-    end
-  end
-
 
   # Function
 
@@ -67,11 +54,9 @@ module Box2D
       [:SetAssertFcn, :b2SetAssertFcn, [:pointer], :void],
       [:InternalAssertFcn, :b2InternalAssertFcn, [:pointer, :pointer, :int], :int],
       [:GetVersion, :b2GetVersion, [], Version.by_value],
-      [:CreateTimer, :b2CreateTimer, [], Timer.by_value],
-      [:GetTicks, :b2GetTicks, [:pointer], :long_long],
-      [:GetMilliseconds, :b2GetMilliseconds, [:pointer], :float],
+      [:GetTicks, :b2GetTicks, [], :ulong_long],
+      [:GetMilliseconds, :b2GetMilliseconds, [:ulong_long], :float],
       [:GetMillisecondsAndReset, :b2GetMillisecondsAndReset, [:pointer], :float],
-      [:SleepMilliseconds, :b2SleepMilliseconds, [:int], :void],
       [:Yield, :b2Yield, [], :void],
       [:Hash, :b2Hash, [:uint, :pointer, :int], :uint],
     ]

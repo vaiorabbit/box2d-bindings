@@ -22,16 +22,16 @@ module Box2D
   class WorldId < FFI::Struct
     layout(
       :index1, :ushort,
-      :revision, :ushort,
+      :generation, :ushort,
     )
     def index1 = self[:index1]
     def index1=(v) self[:index1] = v end
-    def revision = self[:revision]
-    def revision=(v) self[:revision] = v end
-    def self.create_as(_index1_, _revision_)
+    def generation = self[:generation]
+    def generation=(v) self[:generation] = v end
+    def self.create_as(_index1_, _generation_)
       instance = WorldId.new
       instance[:index1] = _index1_
-      instance[:revision] = _revision_
+      instance[:generation] = _generation_
       instance
     end
   end
@@ -40,19 +40,19 @@ module Box2D
     layout(
       :index1, :int,
       :world0, :ushort,
-      :revision, :ushort,
+      :generation, :ushort,
     )
     def index1 = self[:index1]
     def index1=(v) self[:index1] = v end
     def world0 = self[:world0]
     def world0=(v) self[:world0] = v end
-    def revision = self[:revision]
-    def revision=(v) self[:revision] = v end
-    def self.create_as(_index1_, _world0_, _revision_)
+    def generation = self[:generation]
+    def generation=(v) self[:generation] = v end
+    def self.create_as(_index1_, _world0_, _generation_)
       instance = BodyId.new
       instance[:index1] = _index1_
       instance[:world0] = _world0_
-      instance[:revision] = _revision_
+      instance[:generation] = _generation_
       instance
     end
   end
@@ -61,19 +61,19 @@ module Box2D
     layout(
       :index1, :int,
       :world0, :ushort,
-      :revision, :ushort,
+      :generation, :ushort,
     )
     def index1 = self[:index1]
     def index1=(v) self[:index1] = v end
     def world0 = self[:world0]
     def world0=(v) self[:world0] = v end
-    def revision = self[:revision]
-    def revision=(v) self[:revision] = v end
-    def self.create_as(_index1_, _world0_, _revision_)
+    def generation = self[:generation]
+    def generation=(v) self[:generation] = v end
+    def self.create_as(_index1_, _world0_, _generation_)
       instance = ShapeId.new
       instance[:index1] = _index1_
       instance[:world0] = _world0_
-      instance[:revision] = _revision_
+      instance[:generation] = _generation_
       instance
     end
   end
@@ -82,19 +82,19 @@ module Box2D
     layout(
       :index1, :int,
       :world0, :ushort,
-      :revision, :ushort,
+      :generation, :ushort,
     )
     def index1 = self[:index1]
     def index1=(v) self[:index1] = v end
     def world0 = self[:world0]
     def world0=(v) self[:world0] = v end
-    def revision = self[:revision]
-    def revision=(v) self[:revision] = v end
-    def self.create_as(_index1_, _world0_, _revision_)
+    def generation = self[:generation]
+    def generation=(v) self[:generation] = v end
+    def self.create_as(_index1_, _world0_, _generation_)
       instance = ChainId.new
       instance[:index1] = _index1_
       instance[:world0] = _world0_
-      instance[:revision] = _revision_
+      instance[:generation] = _generation_
       instance
     end
   end
@@ -103,19 +103,19 @@ module Box2D
     layout(
       :index1, :int,
       :world0, :ushort,
-      :revision, :ushort,
+      :generation, :ushort,
     )
     def index1 = self[:index1]
     def index1=(v) self[:index1] = v end
     def world0 = self[:world0]
     def world0=(v) self[:world0] = v end
-    def revision = self[:revision]
-    def revision=(v) self[:revision] = v end
-    def self.create_as(_index1_, _world0_, _revision_)
+    def generation = self[:generation]
+    def generation=(v) self[:generation] = v end
+    def self.create_as(_index1_, _world0_, _generation_)
       instance = JointId.new
       instance[:index1] = _index1_
       instance[:world0] = _world0_
-      instance[:revision] = _revision_
+      instance[:generation] = _generation_
       instance
     end
   end

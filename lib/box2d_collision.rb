@@ -654,20 +654,24 @@ module Box2D
 
   class Manifold < FFI::Struct
     layout(
-      :points, [ManifoldPoint, 2],
       :normal, Vec2,
+      :rollingImpulse, :float,
+      :points, [ManifoldPoint, 2],
       :pointCount, :int,
     )
-    def points = self[:points]
-    def points=(v) self[:points] = v end
     def normal = self[:normal]
     def normal=(v) self[:normal] = v end
+    def rollingImpulse = self[:rollingImpulse]
+    def rollingImpulse=(v) self[:rollingImpulse] = v end
+    def points = self[:points]
+    def points=(v) self[:points] = v end
     def pointCount = self[:pointCount]
     def pointCount=(v) self[:pointCount] = v end
-    def self.create_as(_points_, _normal_, _pointCount_)
+    def self.create_as(_normal_, _rollingImpulse_, _points_, _pointCount_)
       instance = Manifold.new
-      instance[:points] = _points_
       instance[:normal] = _normal_
+      instance[:rollingImpulse] = _rollingImpulse_
+      instance[:points] = _points_
       instance[:pointCount] = _pointCount_
       instance
     end
@@ -805,12 +809,15 @@ module Box2D
       [:DynamicTree_Query, :b2DynamicTree_Query, [:pointer, AABB.by_value, :ulong_long, :pointer, :pointer], TreeStats.by_value],
       [:DynamicTree_RayCast, :b2DynamicTree_RayCast, [:pointer, :pointer, :ulong_long, :pointer, :pointer], TreeStats.by_value],
       [:DynamicTree_ShapeCast, :b2DynamicTree_ShapeCast, [:pointer, :pointer, :ulong_long, :pointer, :pointer], TreeStats.by_value],
-      [:DynamicTree_Validate, :b2DynamicTree_Validate, [:pointer], :void],
       [:DynamicTree_GetHeight, :b2DynamicTree_GetHeight, [:pointer], :int],
       [:DynamicTree_GetAreaRatio, :b2DynamicTree_GetAreaRatio, [:pointer], :float],
       [:DynamicTree_GetProxyCount, :b2DynamicTree_GetProxyCount, [:pointer], :int],
       [:DynamicTree_Rebuild, :b2DynamicTree_Rebuild, [:pointer, :bool], :int],
       [:DynamicTree_GetByteCount, :b2DynamicTree_GetByteCount, [:pointer], :int],
+      [:DynamicTree_GetUserData, :b2DynamicTree_GetUserData, [:pointer, :int], :int],
+      [:DynamicTree_GetAABB, :b2DynamicTree_GetAABB, [:pointer, :int], AABB.by_value],
+      [:DynamicTree_Validate, :b2DynamicTree_Validate, [:pointer], :void],
+      [:DynamicTree_ValidateNoEnlarged, :b2DynamicTree_ValidateNoEnlarged, [:pointer], :void],
     ]
     entries.each do |entry|
       api_name = if method_naming == :snake_case

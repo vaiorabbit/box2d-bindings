@@ -2,7 +2,6 @@
     "base.h",
     "box2d.h",
     "collision.h",
-    "collision_inline.h",
     "id.h",
     "id_inline.h",
     "math_functions.h",
