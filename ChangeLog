@@ -2,6 +2,7 @@
 
 	* https://github.com/erincatto/box2d/commit/28adacf82377d4113f2ed00586141463244b9d10
 	* Updated the helper function to use the latest version of Box2D.
+	* Added sample_compound.rb
 
 2024-12-29  vaiorabbit  <http://twitter.com/vaiorabbit>
 
