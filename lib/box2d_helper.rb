@@ -24,7 +24,7 @@ module Box2D
   end
 
   def self.id_equals(id1, id2)
-    id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.revision == id2.revision
+    id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation
   end
 
   #
