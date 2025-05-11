@@ -42,7 +42,7 @@ class Donut
     shapeDef = Box2D::DefaultShapeDef()
     shapeDef.density = 1.0
     shapeDef.filter.groupIndex = -0
-    shapeDef.friction = 0.3
+    shapeDef.material.friction = 0.3
 
     # Create bodies
     angle = 0.0

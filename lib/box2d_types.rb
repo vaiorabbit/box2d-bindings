@@ -25,9 +25,9 @@ module Box2D
   ShapeType_chainSegmentShape = 4
   ShapeType_shapeTypeCount = 5
   JointType_distanceJoint = 0
-  JointType_motorJoint = 1
-  JointType_mouseJoint = 2
-  JointType_nullJoint = 3
+  JointType_filterJoint = 1
+  JointType_motorJoint = 2
+  JointType_mouseJoint = 3
   JointType_prismaticJoint = 4
   JointType_revoluteJoint = 5
   JointType_weldJoint = 6
@@ -192,6 +192,7 @@ module Box2D
   typedef :pointer, :b2PreSolveFcn
   typedef :pointer, :b2OverlapResultFcn
   typedef :pointer, :b2CastResultFcn
+  typedef :pointer, :b2PlaneResultFcn
   typedef :int, :b2HexColor
 
   # Struct
@@ -240,7 +241,7 @@ module Box2D
       :hitEventThreshold, :float,
       :contactHertz, :float,
       :contactDampingRatio, :float,
-      :contactPushMaxSpeed, :float,
+      :maxContactPushSpeed, :float,
       :jointHertz, :float,
       :jointDampingRatio, :float,
       :maximumLinearSpeed, :float,
@@ -265,8 +266,8 @@ module Box2D
     def contactHertz=(v) self[:contactHertz] = v end
     def contactDampingRatio = self[:contactDampingRatio]
     def contactDampingRatio=(v) self[:contactDampingRatio] = v end
-    def contactPushMaxSpeed = self[:contactPushMaxSpeed]
-    def contactPushMaxSpeed=(v) self[:contactPushMaxSpeed] = v end
+    def maxContactPushSpeed = self[:maxContactPushSpeed]
+    def maxContactPushSpeed=(v) self[:maxContactPushSpeed] = v end
     def jointHertz = self[:jointHertz]
     def jointHertz=(v) self[:jointHertz] = v end
     def jointDampingRatio = self[:jointDampingRatio]
@@ -293,14 +294,14 @@ module Box2D
     def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_gravity_, _restitutionThreshold_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _contactPushMaxSpeed_, _jointHertz_, _jointDampingRatio_, _maximumLinearSpeed_, _frictionCallback_, _restitutionCallback_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _userData_, _internalValue_)
+    def self.create_as(_gravity_, _restitutionThreshold_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _maxContactPushSpeed_, _jointHertz_, _jointDampingRatio_, _maximumLinearSpeed_, _frictionCallback_, _restitutionCallback_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _userData_, _internalValue_)
       instance = WorldDef.new
       instance[:gravity] = _gravity_
       instance[:restitutionThreshold] = _restitutionThreshold_
       instance[:hitEventThreshold] = _hitEventThreshold_
       instance[:contactHertz] = _contactHertz_
       instance[:contactDampingRatio] = _contactDampingRatio_
-      instance[:contactPushMaxSpeed] = _contactPushMaxSpeed_
+      instance[:maxContactPushSpeed] = _maxContactPushSpeed_
       instance[:jointHertz] = _jointHertz_
       instance[:jointDampingRatio] = _jointDampingRatio_
       instance[:maximumLinearSpeed] = _maximumLinearSpeed_
@@ -437,18 +438,47 @@ module Box2D
     end
   end
 
-  class ShapeDef < FFI::Struct
+  class SurfaceMaterial < FFI::Struct
     layout(
-      :userData, :pointer,
       :friction, :float,
       :restitution, :float,
       :rollingResistance, :float,
       :tangentSpeed, :float,
-      :material, :int,
+      :userMaterialId, :int,
+      :customColor, :uint,
+    )
+    def friction = self[:friction]
+    def friction=(v) self[:friction] = v end
+    def restitution = self[:restitution]
+    def restitution=(v) self[:restitution] = v end
+    def rollingResistance = self[:rollingResistance]
+    def rollingResistance=(v) self[:rollingResistance] = v end
+    def tangentSpeed = self[:tangentSpeed]
+    def tangentSpeed=(v) self[:tangentSpeed] = v end
+    def userMaterialId = self[:userMaterialId]
+    def userMaterialId=(v) self[:userMaterialId] = v end
+    def customColor = self[:customColor]
+    def customColor=(v) self[:customColor] = v end
+    def self.create_as(_friction_, _restitution_, _rollingResistance_, _tangentSpeed_, _userMaterialId_, _customColor_)
+      instance = SurfaceMaterial.new
+      instance[:friction] = _friction_
+      instance[:restitution] = _restitution_
+      instance[:rollingResistance] = _rollingResistance_
+      instance[:tangentSpeed] = _tangentSpeed_
+      instance[:userMaterialId] = _userMaterialId_
+      instance[:customColor] = _customColor_
+      instance
+    end
+  end
+
+  class ShapeDef < FFI::Struct
+    layout(
+      :userData, :pointer,
+      :material, SurfaceMaterial,
       :density, :float,
       :filter, Filter,
-      :customColor, :uint,
       :isSensor, :bool,
+      :enableSensorEvents, :bool,
       :enableContactEvents, :bool,
       :enableHitEvents, :bool,
       :enablePreSolveEvents, :bool,
@@ -458,24 +488,16 @@ module Box2D
     )
     def userData = self[:userData]
     def userData=(v) self[:userData] = v end
-    def friction = self[:friction]
-    def friction=(v) self[:friction] = v end
-    def restitution = self[:restitution]
-    def restitution=(v) self[:restitution] = v end
-    def rollingResistance = self[:rollingResistance]
-    def rollingResistance=(v) self[:rollingResistance] = v end
-    def tangentSpeed = self[:tangentSpeed]
-    def tangentSpeed=(v) self[:tangentSpeed] = v end
     def material = self[:material]
     def material=(v) self[:material] = v end
     def density = self[:density]
     def density=(v) self[:density] = v end
     def filter = self[:filter]
     def filter=(v) self[:filter] = v end
-    def customColor = self[:customColor]
-    def customColor=(v) self[:customColor] = v end
     def isSensor = self[:isSensor]
     def isSensor=(v) self[:isSensor] = v end
+    def enableSensorEvents = self[:enableSensorEvents]
+    def enableSensorEvents=(v) self[:enableSensorEvents] = v end
     def enableContactEvents = self[:enableContactEvents]
     def enableContactEvents=(v) self[:enableContactEvents] = v end
     def enableHitEvents = self[:enableHitEvents]
@@ -488,57 +510,20 @@ module Box2D
     def updateBodyMass=(v) self[:updateBodyMass] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_userData_, _friction_, _restitution_, _rollingResistance_, _tangentSpeed_, _material_, _density_, _filter_, _customColor_, _isSensor_, _enableContactEvents_, _enableHitEvents_, _enablePreSolveEvents_, _invokeContactCreation_, _updateBodyMass_, _internalValue_)
+    def self.create_as(_userData_, _material_, _density_, _filter_, _isSensor_, _enableSensorEvents_, _enableContactEvents_, _enableHitEvents_, _enablePreSolveEvents_, _invokeContactCreation_, _updateBodyMass_, _internalValue_)
       instance = ShapeDef.new
       instance[:userData] = _userData_
-      instance[:friction] = _friction_
-      instance[:restitution] = _restitution_
-      instance[:rollingResistance] = _rollingResistance_
-      instance[:tangentSpeed] = _tangentSpeed_
       instance[:material] = _material_
       instance[:density] = _density_
       instance[:filter] = _filter_
-      instance[:customColor] = _customColor_
       instance[:isSensor] = _isSensor_
+      instance[:enableSensorEvents] = _enableSensorEvents_
       instance[:enableContactEvents] = _enableContactEvents_
       instance[:enableHitEvents] = _enableHitEvents_
       instance[:enablePreSolveEvents] = _enablePreSolveEvents_
       instance[:invokeContactCreation] = _invokeContactCreation_
       instance[:updateBodyMass] = _updateBodyMass_
       instance[:internalValue] = _internalValue_
-      instance
-    end
-  end
-
-  class SurfaceMaterial < FFI::Struct
-    layout(
-      :friction, :float,
-      :restitution, :float,
-      :rollingResistance, :float,
-      :tangentSpeed, :float,
-      :material, :int,
-      :customColor, :uint,
-    )
-    def friction = self[:friction]
-    def friction=(v) self[:friction] = v end
-    def restitution = self[:restitution]
-    def restitution=(v) self[:restitution] = v end
-    def rollingResistance = self[:rollingResistance]
-    def rollingResistance=(v) self[:rollingResistance] = v end
-    def tangentSpeed = self[:tangentSpeed]
-    def tangentSpeed=(v) self[:tangentSpeed] = v end
-    def material = self[:material]
-    def material=(v) self[:material] = v end
-    def customColor = self[:customColor]
-    def customColor=(v) self[:customColor] = v end
-    def self.create_as(_friction_, _restitution_, _rollingResistance_, _tangentSpeed_, _material_, _customColor_)
-      instance = SurfaceMaterial.new
-      instance[:friction] = _friction_
-      instance[:restitution] = _restitution_
-      instance[:rollingResistance] = _rollingResistance_
-      instance[:tangentSpeed] = _tangentSpeed_
-      instance[:material] = _material_
-      instance[:customColor] = _customColor_
       instance
     end
   end
@@ -552,6 +537,7 @@ module Box2D
       :materialCount, :int,
       :filter, Filter,
       :isLoop, :bool,
+      :enableSensorEvents, :bool,
       :internalValue, :int,
     )
     def userData = self[:userData]
@@ -568,9 +554,11 @@ module Box2D
     def filter=(v) self[:filter] = v end
     def isLoop = self[:isLoop]
     def isLoop=(v) self[:isLoop] = v end
+    def enableSensorEvents = self[:enableSensorEvents]
+    def enableSensorEvents=(v) self[:enableSensorEvents] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_userData_, _points_, _count_, _materials_, _materialCount_, _filter_, _isLoop_, _internalValue_)
+    def self.create_as(_userData_, _points_, _count_, _materials_, _materialCount_, _filter_, _isLoop_, _enableSensorEvents_, _internalValue_)
       instance = ChainDef.new
       instance[:userData] = _userData_
       instance[:points] = _points_
@@ -579,6 +567,7 @@ module Box2D
       instance[:materialCount] = _materialCount_
       instance[:filter] = _filter_
       instance[:isLoop] = _isLoop_
+      instance[:enableSensorEvents] = _enableSensorEvents_
       instance[:internalValue] = _internalValue_
       instance
     end
@@ -905,7 +894,7 @@ module Box2D
     end
   end
 
-  class NullJointDef < FFI::Struct
+  class FilterJointDef < FFI::Struct
     layout(
       :bodyIdA, BodyId,
       :bodyIdB, BodyId,
@@ -921,7 +910,7 @@ module Box2D
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
     def self.create_as(_bodyIdA_, _bodyIdB_, _userData_, _internalValue_)
-      instance = NullJointDef.new
+      instance = FilterJointDef.new
       instance[:bodyIdA] = _bodyIdA_
       instance[:bodyIdB] = _bodyIdB_
       instance[:userData] = _userData_
@@ -1479,48 +1468,50 @@ module Box2D
 
   class DebugDraw < FFI::Struct
     layout(
-      :DrawPolygon, :pointer,
-      :DrawSolidPolygon, :pointer,
-      :DrawCircle, :pointer,
-      :DrawSolidCircle, :pointer,
-      :DrawSolidCapsule, :pointer,
-      :DrawSegment, :pointer,
-      :DrawTransform, :pointer,
-      :DrawPoint, :pointer,
-      :DrawString, :pointer,
+      :DrawPolygonFcn, :pointer,
+      :DrawSolidPolygonFcn, :pointer,
+      :DrawCircleFcn, :pointer,
+      :DrawSolidCircleFcn, :pointer,
+      :DrawSolidCapsuleFcn, :pointer,
+      :DrawSegmentFcn, :pointer,
+      :DrawTransformFcn, :pointer,
+      :DrawPointFcn, :pointer,
+      :DrawStringFcn, :pointer,
       :drawingBounds, AABB,
       :useDrawingBounds, :bool,
       :drawShapes, :bool,
       :drawJoints, :bool,
       :drawJointExtras, :bool,
-      :drawAABBs, :bool,
+      :drawBounds, :bool,
       :drawMass, :bool,
       :drawBodyNames, :bool,
       :drawContacts, :bool,
       :drawGraphColors, :bool,
       :drawContactNormals, :bool,
       :drawContactImpulses, :bool,
+      :drawContactFeatures, :bool,
       :drawFrictionImpulses, :bool,
+      :drawIslands, :bool,
       :context, :pointer,
     )
-    def DrawPolygon = self[:DrawPolygon]
-    def DrawPolygon=(v) self[:DrawPolygon] = v end
-    def DrawSolidPolygon = self[:DrawSolidPolygon]
-    def DrawSolidPolygon=(v) self[:DrawSolidPolygon] = v end
-    def DrawCircle = self[:DrawCircle]
-    def DrawCircle=(v) self[:DrawCircle] = v end
-    def DrawSolidCircle = self[:DrawSolidCircle]
-    def DrawSolidCircle=(v) self[:DrawSolidCircle] = v end
-    def DrawSolidCapsule = self[:DrawSolidCapsule]
-    def DrawSolidCapsule=(v) self[:DrawSolidCapsule] = v end
-    def DrawSegment = self[:DrawSegment]
-    def DrawSegment=(v) self[:DrawSegment] = v end
-    def DrawTransform = self[:DrawTransform]
-    def DrawTransform=(v) self[:DrawTransform] = v end
-    def DrawPoint = self[:DrawPoint]
-    def DrawPoint=(v) self[:DrawPoint] = v end
-    def DrawString = self[:DrawString]
-    def DrawString=(v) self[:DrawString] = v end
+    def DrawPolygonFcn = self[:DrawPolygonFcn]
+    def DrawPolygonFcn=(v) self[:DrawPolygonFcn] = v end
+    def DrawSolidPolygonFcn = self[:DrawSolidPolygonFcn]
+    def DrawSolidPolygonFcn=(v) self[:DrawSolidPolygonFcn] = v end
+    def DrawCircleFcn = self[:DrawCircleFcn]
+    def DrawCircleFcn=(v) self[:DrawCircleFcn] = v end
+    def DrawSolidCircleFcn = self[:DrawSolidCircleFcn]
+    def DrawSolidCircleFcn=(v) self[:DrawSolidCircleFcn] = v end
+    def DrawSolidCapsuleFcn = self[:DrawSolidCapsuleFcn]
+    def DrawSolidCapsuleFcn=(v) self[:DrawSolidCapsuleFcn] = v end
+    def DrawSegmentFcn = self[:DrawSegmentFcn]
+    def DrawSegmentFcn=(v) self[:DrawSegmentFcn] = v end
+    def DrawTransformFcn = self[:DrawTransformFcn]
+    def DrawTransformFcn=(v) self[:DrawTransformFcn] = v end
+    def DrawPointFcn = self[:DrawPointFcn]
+    def DrawPointFcn=(v) self[:DrawPointFcn] = v end
+    def DrawStringFcn = self[:DrawStringFcn]
+    def DrawStringFcn=(v) self[:DrawStringFcn] = v end
     def drawingBounds = self[:drawingBounds]
     def drawingBounds=(v) self[:drawingBounds] = v end
     def useDrawingBounds = self[:useDrawingBounds]
@@ -1531,8 +1522,8 @@ module Box2D
     def drawJoints=(v) self[:drawJoints] = v end
     def drawJointExtras = self[:drawJointExtras]
     def drawJointExtras=(v) self[:drawJointExtras] = v end
-    def drawAABBs = self[:drawAABBs]
-    def drawAABBs=(v) self[:drawAABBs] = v end
+    def drawBounds = self[:drawBounds]
+    def drawBounds=(v) self[:drawBounds] = v end
     def drawMass = self[:drawMass]
     def drawMass=(v) self[:drawMass] = v end
     def drawBodyNames = self[:drawBodyNames]
@@ -1545,34 +1536,40 @@ module Box2D
     def drawContactNormals=(v) self[:drawContactNormals] = v end
     def drawContactImpulses = self[:drawContactImpulses]
     def drawContactImpulses=(v) self[:drawContactImpulses] = v end
+    def drawContactFeatures = self[:drawContactFeatures]
+    def drawContactFeatures=(v) self[:drawContactFeatures] = v end
     def drawFrictionImpulses = self[:drawFrictionImpulses]
     def drawFrictionImpulses=(v) self[:drawFrictionImpulses] = v end
+    def drawIslands = self[:drawIslands]
+    def drawIslands=(v) self[:drawIslands] = v end
     def context = self[:context]
     def context=(v) self[:context] = v end
-    def self.create_as(_DrawPolygon_, _DrawSolidPolygon_, _DrawCircle_, _DrawSolidCircle_, _DrawSolidCapsule_, _DrawSegment_, _DrawTransform_, _DrawPoint_, _DrawString_, _drawingBounds_, _useDrawingBounds_, _drawShapes_, _drawJoints_, _drawJointExtras_, _drawAABBs_, _drawMass_, _drawBodyNames_, _drawContacts_, _drawGraphColors_, _drawContactNormals_, _drawContactImpulses_, _drawFrictionImpulses_, _context_)
+    def self.create_as(_DrawPolygonFcn_, _DrawSolidPolygonFcn_, _DrawCircleFcn_, _DrawSolidCircleFcn_, _DrawSolidCapsuleFcn_, _DrawSegmentFcn_, _DrawTransformFcn_, _DrawPointFcn_, _DrawStringFcn_, _drawingBounds_, _useDrawingBounds_, _drawShapes_, _drawJoints_, _drawJointExtras_, _drawBounds_, _drawMass_, _drawBodyNames_, _drawContacts_, _drawGraphColors_, _drawContactNormals_, _drawContactImpulses_, _drawContactFeatures_, _drawFrictionImpulses_, _drawIslands_, _context_)
       instance = DebugDraw.new
-      instance[:DrawPolygon] = _DrawPolygon_
-      instance[:DrawSolidPolygon] = _DrawSolidPolygon_
-      instance[:DrawCircle] = _DrawCircle_
-      instance[:DrawSolidCircle] = _DrawSolidCircle_
-      instance[:DrawSolidCapsule] = _DrawSolidCapsule_
-      instance[:DrawSegment] = _DrawSegment_
-      instance[:DrawTransform] = _DrawTransform_
-      instance[:DrawPoint] = _DrawPoint_
-      instance[:DrawString] = _DrawString_
+      instance[:DrawPolygonFcn] = _DrawPolygonFcn_
+      instance[:DrawSolidPolygonFcn] = _DrawSolidPolygonFcn_
+      instance[:DrawCircleFcn] = _DrawCircleFcn_
+      instance[:DrawSolidCircleFcn] = _DrawSolidCircleFcn_
+      instance[:DrawSolidCapsuleFcn] = _DrawSolidCapsuleFcn_
+      instance[:DrawSegmentFcn] = _DrawSegmentFcn_
+      instance[:DrawTransformFcn] = _DrawTransformFcn_
+      instance[:DrawPointFcn] = _DrawPointFcn_
+      instance[:DrawStringFcn] = _DrawStringFcn_
       instance[:drawingBounds] = _drawingBounds_
       instance[:useDrawingBounds] = _useDrawingBounds_
       instance[:drawShapes] = _drawShapes_
       instance[:drawJoints] = _drawJoints_
       instance[:drawJointExtras] = _drawJointExtras_
-      instance[:drawAABBs] = _drawAABBs_
+      instance[:drawBounds] = _drawBounds_
       instance[:drawMass] = _drawMass_
       instance[:drawBodyNames] = _drawBodyNames_
       instance[:drawContacts] = _drawContacts_
       instance[:drawGraphColors] = _drawGraphColors_
       instance[:drawContactNormals] = _drawContactNormals_
       instance[:drawContactImpulses] = _drawContactImpulses_
+      instance[:drawContactFeatures] = _drawContactFeatures_
       instance[:drawFrictionImpulses] = _drawFrictionImpulses_
+      instance[:drawIslands] = _drawIslands_
       instance[:context] = _context_
       instance
     end
@@ -1587,13 +1584,13 @@ module Box2D
       [:DefaultBodyDef, :b2DefaultBodyDef, [], BodyDef.by_value],
       [:DefaultFilter, :b2DefaultFilter, [], Filter.by_value],
       [:DefaultQueryFilter, :b2DefaultQueryFilter, [], QueryFilter.by_value],
-      [:DefaultShapeDef, :b2DefaultShapeDef, [], ShapeDef.by_value],
       [:DefaultSurfaceMaterial, :b2DefaultSurfaceMaterial, [], SurfaceMaterial.by_value],
+      [:DefaultShapeDef, :b2DefaultShapeDef, [], ShapeDef.by_value],
       [:DefaultChainDef, :b2DefaultChainDef, [], ChainDef.by_value],
       [:DefaultDistanceJointDef, :b2DefaultDistanceJointDef, [], DistanceJointDef.by_value],
       [:DefaultMotorJointDef, :b2DefaultMotorJointDef, [], MotorJointDef.by_value],
       [:DefaultMouseJointDef, :b2DefaultMouseJointDef, [], MouseJointDef.by_value],
-      [:DefaultNullJointDef, :b2DefaultNullJointDef, [], NullJointDef.by_value],
+      [:DefaultFilterJointDef, :b2DefaultFilterJointDef, [], FilterJointDef.by_value],
       [:DefaultPrismaticJointDef, :b2DefaultPrismaticJointDef, [], PrismaticJointDef.by_value],
       [:DefaultRevoluteJointDef, :b2DefaultRevoluteJointDef, [], RevoluteJointDef.by_value],
       [:DefaultWeldJointDef, :b2DefaultWeldJointDef, [], WeldJointDef.by_value],

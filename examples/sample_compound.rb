@@ -60,7 +60,7 @@ class Shape
     shapeDef.filter.groupIndex = -0
     shapeDef.filter.categoryBits = CATEGORY_ATTACHED_TO_MOUSE
     shapeDef.filter.maskBits = CATEGORY_GROUND | CATEGORY_ATTACHED_TO_MOUSE
-    shapeDef.friction = 0.3
+    shapeDef.material.friction = 0.3
 
     bodyDef.position = Box2D::Vec2.create_as(center.x, center.y)
     bodyDef.rotation = Box2D.MakeRot(0.0)

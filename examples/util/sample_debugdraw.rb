@@ -92,15 +92,15 @@ class RaylibDebugDraw
   def initialize
     @debug_draw = Box2D::DebugDraw.new
 
-    @debug_draw.DrawPolygon = @@draw_polygon_fcn
-    @debug_draw.DrawSolidPolygon = @@draw_solid_polygon_fcn
-    @debug_draw.DrawCircle = @@draw_circle_fcn
-    @debug_draw.DrawSolidCircle = @@draw_solid_circle_fcn
-    @debug_draw.DrawSolidCapsule = @@draw_solid_capsule_fcn
-    @debug_draw.DrawSegment = @@draw_segment_fcn
-    @debug_draw.DrawTransform = @@draw_transform_fcn
-    @debug_draw.DrawPoint = @@draw_point_fcn
-    @debug_draw.DrawString = @@draw_string_fcn
+    @debug_draw.DrawPolygonFcn = @@draw_polygon_fcn
+    @debug_draw.DrawSolidPolygonFcn = @@draw_solid_polygon_fcn
+    @debug_draw.DrawCircleFcn = @@draw_circle_fcn
+    @debug_draw.DrawSolidCircleFcn = @@draw_solid_circle_fcn
+    @debug_draw.DrawSolidCapsuleFcn = @@draw_solid_capsule_fcn
+    @debug_draw.DrawSegmentFcn = @@draw_segment_fcn
+    @debug_draw.DrawTransformFcn = @@draw_transform_fcn
+    @debug_draw.DrawPointFcn = @@draw_point_fcn
+    @debug_draw.DrawStringFcn = @@draw_string_fcn
 
     @debug_draw.useDrawingBounds = false
     @debug_draw.drawShapes = true

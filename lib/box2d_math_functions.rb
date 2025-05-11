@@ -121,6 +121,23 @@ module Box2D
     end
   end
 
+  class Plane < FFI::Struct
+    layout(
+      :normal, Vec2,
+      :offset, :float,
+    )
+    def normal = self[:normal]
+    def normal=(v) self[:normal] = v end
+    def offset = self[:offset]
+    def offset=(v) self[:offset] = v end
+    def self.create_as(_normal_, _offset_)
+      instance = Plane.new
+      instance[:normal] = _normal_
+      instance[:offset] = _offset_
+      instance
+    end
+  end
+
 
   # Function
 
@@ -133,6 +150,7 @@ module Box2D
       [:IsValidVec2, :b2IsValidVec2, [Vec2.by_value], :bool],
       [:IsValidRotation, :b2IsValidRotation, [Rot.by_value], :bool],
       [:IsValidAABB, :b2IsValidAABB, [AABB.by_value], :bool],
+      [:IsValidPlane, :b2IsValidPlane, [Plane.by_value], :bool],
       [:SetLengthUnitsPerMeter, :b2SetLengthUnitsPerMeter, [:float], :void],
       [:GetLengthUnitsPerMeter, :b2GetLengthUnitsPerMeter, [], :float],
     ]

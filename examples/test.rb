@@ -45,7 +45,7 @@ if __FILE__ == $PROGRAM_NAME
   shapeDef.density = 1.0
 
   # Override the default friction.
-  shapeDef.friction = 0.3
+  shapeDef.material.friction = 0.3
 
   # Add the shape to the body.
   Box2D::CreatePolygonShape(bodyId, shapeDef, dynamicBox)

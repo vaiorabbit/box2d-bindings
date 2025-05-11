@@ -53,13 +53,14 @@ module Box2D
       [:Length, :b2Length, [Vec2.by_value], :float],
       [:Distance, :b2Distance, [Vec2.by_value, Vec2.by_value], :float],
       [:Normalize, :b2Normalize, [Vec2.by_value], Vec2.by_value],
+      [:IsNormalized, :b2IsNormalized, [Vec2.by_value], :bool],
       [:GetLengthAndNormalize, :b2GetLengthAndNormalize, [:pointer, Vec2.by_value], Vec2.by_value],
       [:NormalizeRot, :b2NormalizeRot, [Rot.by_value], Rot.by_value],
       [:IntegrateRotation, :b2IntegrateRotation, [Rot.by_value, :float], Rot.by_value],
       [:LengthSquared, :b2LengthSquared, [Vec2.by_value], :float],
       [:DistanceSquared, :b2DistanceSquared, [Vec2.by_value, Vec2.by_value], :float],
       [:MakeRot, :b2MakeRot, [:float], Rot.by_value],
-      [:IsNormalized, :b2IsNormalized, [Rot.by_value], :bool],
+      [:IsNormalizedRot, :b2IsNormalizedRot, [Rot.by_value], :bool],
       [:NLerp, :b2NLerp, [Rot.by_value, Rot.by_value, :float], Rot.by_value],
       [:ComputeAngularVelocity, :b2ComputeAngularVelocity, [Rot.by_value, Rot.by_value, :float], :float],
       [:Rot_GetAngle, :b2Rot_GetAngle, [Rot.by_value], :float],
@@ -83,6 +84,9 @@ module Box2D
       [:AABB_Center, :b2AABB_Center, [AABB.by_value], Vec2.by_value],
       [:AABB_Extents, :b2AABB_Extents, [AABB.by_value], Vec2.by_value],
       [:AABB_Union, :b2AABB_Union, [AABB.by_value, AABB.by_value], AABB.by_value],
+      [:AABB_Overlaps, :b2AABB_Overlaps, [AABB.by_value, AABB.by_value], :bool],
+      [:MakeAABB, :b2MakeAABB, [:pointer, :int, :float], AABB.by_value],
+      [:PlaneSeparation, :b2PlaneSeparation, [Plane.by_value, Vec2.by_value], :float],
     ]
     entries.each do |entry|
       api_name = if method_naming == :snake_case

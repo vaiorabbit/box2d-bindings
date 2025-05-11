@@ -141,13 +141,11 @@ module Box2D
     end
   end
 
-  class ShapeCastInput < FFI::Struct
+  class ShapeProxy < FFI::Struct
     layout(
       :points, [Vec2, 8],
       :count, :int,
       :radius, :float,
-      :translation, Vec2,
-      :maxFraction, :float,
     )
     def points = self[:points]
     def points=(v) self[:points] = v end
@@ -155,17 +153,36 @@ module Box2D
     def count=(v) self[:count] = v end
     def radius = self[:radius]
     def radius=(v) self[:radius] = v end
+    def self.create_as(_points_, _count_, _radius_)
+      instance = ShapeProxy.new
+      instance[:points] = _points_
+      instance[:count] = _count_
+      instance[:radius] = _radius_
+      instance
+    end
+  end
+
+  class ShapeCastInput < FFI::Struct
+    layout(
+      :proxy, ShapeProxy,
+      :translation, Vec2,
+      :maxFraction, :float,
+      :canEncroach, :bool,
+    )
+    def proxy = self[:proxy]
+    def proxy=(v) self[:proxy] = v end
     def translation = self[:translation]
     def translation=(v) self[:translation] = v end
     def maxFraction = self[:maxFraction]
     def maxFraction=(v) self[:maxFraction] = v end
-    def self.create_as(_points_, _count_, _radius_, _translation_, _maxFraction_)
+    def canEncroach = self[:canEncroach]
+    def canEncroach=(v) self[:canEncroach] = v end
+    def self.create_as(_proxy_, _translation_, _maxFraction_, _canEncroach_)
       instance = ShapeCastInput.new
-      instance[:points] = _points_
-      instance[:count] = _count_
-      instance[:radius] = _radius_
+      instance[:proxy] = _proxy_
       instance[:translation] = _translation_
       instance[:maxFraction] = _maxFraction_
+      instance[:canEncroach] = _canEncroach_
       instance
     end
   end
@@ -358,27 +375,6 @@ module Box2D
     end
   end
 
-  class ShapeProxy < FFI::Struct
-    layout(
-      :points, [Vec2, 8],
-      :count, :int,
-      :radius, :float,
-    )
-    def points = self[:points]
-    def points=(v) self[:points] = v end
-    def count = self[:count]
-    def count=(v) self[:count] = v end
-    def radius = self[:radius]
-    def radius=(v) self[:radius] = v end
-    def self.create_as(_points_, _count_, _radius_)
-      instance = ShapeProxy.new
-      instance[:points] = _points_
-      instance[:count] = _count_
-      instance[:radius] = _radius_
-      instance
-    end
-  end
-
   class DistanceInput < FFI::Struct
     layout(
       :proxyA, ShapeProxy,
@@ -412,6 +408,7 @@ module Box2D
     layout(
       :pointA, Vec2,
       :pointB, Vec2,
+      :normal, Vec2,
       :distance, :float,
       :iterations, :int,
       :simplexCount, :int,
@@ -420,16 +417,19 @@ module Box2D
     def pointA=(v) self[:pointA] = v end
     def pointB = self[:pointB]
     def pointB=(v) self[:pointB] = v end
+    def normal = self[:normal]
+    def normal=(v) self[:normal] = v end
     def distance = self[:distance]
     def distance=(v) self[:distance] = v end
     def iterations = self[:iterations]
     def iterations=(v) self[:iterations] = v end
     def simplexCount = self[:simplexCount]
     def simplexCount=(v) self[:simplexCount] = v end
-    def self.create_as(_pointA_, _pointB_, _distance_, _iterations_, _simplexCount_)
+    def self.create_as(_pointA_, _pointB_, _normal_, _distance_, _iterations_, _simplexCount_)
       instance = DistanceOutput.new
       instance[:pointA] = _pointA_
       instance[:pointB] = _pointB_
+      instance[:normal] = _normal_
       instance[:distance] = _distance_
       instance[:iterations] = _iterations_
       instance[:simplexCount] = _simplexCount_
@@ -503,6 +503,7 @@ module Box2D
       :transformB, Transform,
       :translationB, Vec2,
       :maxFraction, :float,
+      :canEncroach, :bool,
     )
     def proxyA = self[:proxyA]
     def proxyA=(v) self[:proxyA] = v end
@@ -516,7 +517,9 @@ module Box2D
     def translationB=(v) self[:translationB] = v end
     def maxFraction = self[:maxFraction]
     def maxFraction=(v) self[:maxFraction] = v end
-    def self.create_as(_proxyA_, _proxyB_, _transformA_, _transformB_, _translationB_, _maxFraction_)
+    def canEncroach = self[:canEncroach]
+    def canEncroach=(v) self[:canEncroach] = v end
+    def self.create_as(_proxyA_, _proxyB_, _transformA_, _transformB_, _translationB_, _maxFraction_, _canEncroach_)
       instance = ShapeCastPairInput.new
       instance[:proxyA] = _proxyA_
       instance[:proxyB] = _proxyB_
@@ -524,6 +527,7 @@ module Box2D
       instance[:transformB] = _transformB_
       instance[:translationB] = _translationB_
       instance[:maxFraction] = _maxFraction_
+      instance[:canEncroach] = _canEncroach_
       instance
     end
   end
@@ -611,7 +615,7 @@ module Box2D
       :separation, :float,
       :normalImpulse, :float,
       :tangentImpulse, :float,
-      :maxNormalImpulse, :float,
+      :totalNormalImpulse, :float,
       :normalVelocity, :float,
       :id, :ushort,
       :persisted, :bool,
@@ -628,15 +632,15 @@ module Box2D
     def normalImpulse=(v) self[:normalImpulse] = v end
     def tangentImpulse = self[:tangentImpulse]
     def tangentImpulse=(v) self[:tangentImpulse] = v end
-    def maxNormalImpulse = self[:maxNormalImpulse]
-    def maxNormalImpulse=(v) self[:maxNormalImpulse] = v end
+    def totalNormalImpulse = self[:totalNormalImpulse]
+    def totalNormalImpulse=(v) self[:totalNormalImpulse] = v end
     def normalVelocity = self[:normalVelocity]
     def normalVelocity=(v) self[:normalVelocity] = v end
     def id = self[:id]
     def id=(v) self[:id] = v end
     def persisted = self[:persisted]
     def persisted=(v) self[:persisted] = v end
-    def self.create_as(_point_, _anchorA_, _anchorB_, _separation_, _normalImpulse_, _tangentImpulse_, _maxNormalImpulse_, _normalVelocity_, _id_, _persisted_)
+    def self.create_as(_point_, _anchorA_, _anchorB_, _separation_, _normalImpulse_, _tangentImpulse_, _totalNormalImpulse_, _normalVelocity_, _id_, _persisted_)
       instance = ManifoldPoint.new
       instance[:point] = _point_
       instance[:anchorA] = _anchorA_
@@ -644,7 +648,7 @@ module Box2D
       instance[:separation] = _separation_
       instance[:normalImpulse] = _normalImpulse_
       instance[:tangentImpulse] = _tangentImpulse_
-      instance[:maxNormalImpulse] = _maxNormalImpulse_
+      instance[:totalNormalImpulse] = _totalNormalImpulse_
       instance[:normalVelocity] = _normalVelocity_
       instance[:id] = _id_
       instance[:persisted] = _persisted_
@@ -747,6 +751,69 @@ module Box2D
     end
   end
 
+  class PlaneResult < FFI::Struct
+    layout(
+      :plane, Plane,
+      :point, Vec2,
+      :hit, :bool,
+    )
+    def plane = self[:plane]
+    def plane=(v) self[:plane] = v end
+    def point = self[:point]
+    def point=(v) self[:point] = v end
+    def hit = self[:hit]
+    def hit=(v) self[:hit] = v end
+    def self.create_as(_plane_, _point_, _hit_)
+      instance = PlaneResult.new
+      instance[:plane] = _plane_
+      instance[:point] = _point_
+      instance[:hit] = _hit_
+      instance
+    end
+  end
+
+  class CollisionPlane < FFI::Struct
+    layout(
+      :plane, Plane,
+      :pushLimit, :float,
+      :push, :float,
+      :clipVelocity, :bool,
+    )
+    def plane = self[:plane]
+    def plane=(v) self[:plane] = v end
+    def pushLimit = self[:pushLimit]
+    def pushLimit=(v) self[:pushLimit] = v end
+    def push = self[:push]
+    def push=(v) self[:push] = v end
+    def clipVelocity = self[:clipVelocity]
+    def clipVelocity=(v) self[:clipVelocity] = v end
+    def self.create_as(_plane_, _pushLimit_, _push_, _clipVelocity_)
+      instance = CollisionPlane.new
+      instance[:plane] = _plane_
+      instance[:pushLimit] = _pushLimit_
+      instance[:push] = _push_
+      instance[:clipVelocity] = _clipVelocity_
+      instance
+    end
+  end
+
+  class PlaneSolverResult < FFI::Struct
+    layout(
+      :position, Vec2,
+      :iterationCount, :int,
+    )
+    def position = self[:position]
+    def position=(v) self[:position] = v end
+    def iterationCount = self[:iterationCount]
+    def iterationCount=(v) self[:iterationCount] = v end
+    def self.create_as(_position_, _iterationCount_)
+      instance = PlaneSolverResult.new
+      instance[:position] = _position_
+      instance[:iterationCount] = _iterationCount_
+      instance
+    end
+  end
+
 
   # Function
 
@@ -786,6 +853,7 @@ module Box2D
       [:ShapeDistance, :b2ShapeDistance, [:pointer, :pointer, :pointer, :int], DistanceOutput.by_value],
       [:ShapeCast, :b2ShapeCast, [:pointer], CastOutput.by_value],
       [:MakeProxy, :b2MakeProxy, [:pointer, :int, :float], ShapeProxy.by_value],
+      [:MakeOffsetProxy, :b2MakeOffsetProxy, [:pointer, :int, :float, Vec2.by_value, Rot.by_value], ShapeProxy.by_value],
       [:GetSweepTransform, :b2GetSweepTransform, [:pointer, :float], Transform.by_value],
       [:TimeOfImpact, :b2TimeOfImpact, [:pointer], TOIOutput.by_value],
       [:CollideCircles, :b2CollideCircles, [:pointer, Transform.by_value, :pointer, Transform.by_value], Manifold.by_value],
@@ -802,22 +870,27 @@ module Box2D
       [:CollideChainSegmentAndPolygon, :b2CollideChainSegmentAndPolygon, [:pointer, Transform.by_value, :pointer, Transform.by_value, :pointer], Manifold.by_value],
       [:DynamicTree_Create, :b2DynamicTree_Create, [], DynamicTree.by_value],
       [:DynamicTree_Destroy, :b2DynamicTree_Destroy, [:pointer], :void],
-      [:DynamicTree_CreateProxy, :b2DynamicTree_CreateProxy, [:pointer, AABB.by_value, :ulong_long, :int], :int],
+      [:DynamicTree_CreateProxy, :b2DynamicTree_CreateProxy, [:pointer, AABB.by_value, :ulong_long, :ulong_long], :int],
       [:DynamicTree_DestroyProxy, :b2DynamicTree_DestroyProxy, [:pointer, :int], :void],
       [:DynamicTree_MoveProxy, :b2DynamicTree_MoveProxy, [:pointer, :int, AABB.by_value], :void],
       [:DynamicTree_EnlargeProxy, :b2DynamicTree_EnlargeProxy, [:pointer, :int, AABB.by_value], :void],
+      [:DynamicTree_SetCategoryBits, :b2DynamicTree_SetCategoryBits, [:pointer, :int, :ulong_long], :void],
+      [:DynamicTree_GetCategoryBits, :b2DynamicTree_GetCategoryBits, [:pointer, :int], :ulong_long],
       [:DynamicTree_Query, :b2DynamicTree_Query, [:pointer, AABB.by_value, :ulong_long, :pointer, :pointer], TreeStats.by_value],
       [:DynamicTree_RayCast, :b2DynamicTree_RayCast, [:pointer, :pointer, :ulong_long, :pointer, :pointer], TreeStats.by_value],
       [:DynamicTree_ShapeCast, :b2DynamicTree_ShapeCast, [:pointer, :pointer, :ulong_long, :pointer, :pointer], TreeStats.by_value],
       [:DynamicTree_GetHeight, :b2DynamicTree_GetHeight, [:pointer], :int],
       [:DynamicTree_GetAreaRatio, :b2DynamicTree_GetAreaRatio, [:pointer], :float],
+      [:DynamicTree_GetRootBounds, :b2DynamicTree_GetRootBounds, [:pointer], AABB.by_value],
       [:DynamicTree_GetProxyCount, :b2DynamicTree_GetProxyCount, [:pointer], :int],
       [:DynamicTree_Rebuild, :b2DynamicTree_Rebuild, [:pointer, :bool], :int],
       [:DynamicTree_GetByteCount, :b2DynamicTree_GetByteCount, [:pointer], :int],
-      [:DynamicTree_GetUserData, :b2DynamicTree_GetUserData, [:pointer, :int], :int],
+      [:DynamicTree_GetUserData, :b2DynamicTree_GetUserData, [:pointer, :int], :ulong_long],
       [:DynamicTree_GetAABB, :b2DynamicTree_GetAABB, [:pointer, :int], AABB.by_value],
       [:DynamicTree_Validate, :b2DynamicTree_Validate, [:pointer], :void],
       [:DynamicTree_ValidateNoEnlarged, :b2DynamicTree_ValidateNoEnlarged, [:pointer], :void],
+      [:SolvePlanes, :b2SolvePlanes, [Vec2.by_value, :pointer, :int], PlaneSolverResult.by_value],
+      [:ClipVector, :b2ClipVector, [Vec2.by_value, :pointer, :int], Vec2.by_value],
     ]
     entries.each do |entry|
       api_name = if method_naming == :snake_case
