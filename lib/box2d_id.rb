@@ -120,6 +120,31 @@ module Box2D
     end
   end
 
+  class ContactId < FFI::Struct
+    layout(
+      :index1, :int,
+      :world0, :ushort,
+      :padding, :short,
+      :generation, :uint,
+    )
+    def index1 = self[:index1]
+    def index1=(v) self[:index1] = v end
+    def world0 = self[:world0]
+    def world0=(v) self[:world0] = v end
+    def padding = self[:padding]
+    def padding=(v) self[:padding] = v end
+    def generation = self[:generation]
+    def generation=(v) self[:generation] = v end
+    def self.create_as(_index1_, _world0_, _padding_, _generation_)
+      instance = ContactId.new
+      instance[:index1] = _index1_
+      instance[:world0] = _world0_
+      instance[:padding] = _padding_
+      instance[:generation] = _generation_
+      instance
+    end
+  end
+
 
   # Function
 

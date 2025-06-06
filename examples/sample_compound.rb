@@ -194,7 +194,7 @@ if __FILE__ == $PROGRAM_NAME
   version = Box2D.GetVersion()
   title = "Box2D Version #{version.major}.#{version.minor}.#{version.revision}"
 
-  SetWindowState(FLAG_WINDOW_RESIZABLE)
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE)
   screenWidth = 1280
   screenHeight = 720
   InitWindow(screenWidth, screenHeight, title)

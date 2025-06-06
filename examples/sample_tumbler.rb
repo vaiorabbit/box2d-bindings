@@ -48,11 +48,10 @@ class SampleTumbler < SampleBase
     @motorSpeed = 25.0
 
     jd = Box2D::DefaultRevoluteJointDef()
-    jd.bodyIdA = groundId
-    jd.bodyIdB = bodyId
-    jd.localAnchorA = Box2D::Vec2.create_as(0.0, y_pos)
-    jd.localAnchorB = Box2D::Vec2.create_as(0.0, 0.0)
-    jd.referenceAngle = 0.0
+    jd.base.bodyIdA = groundId
+    jd.base.bodyIdB = bodyId
+    jd.base.localFrameA.p = Box2D::Vec2.create_as(0.0, y_pos)
+    jd.base.localFrameB.p = Box2D::Vec2.create_as(0.0, 0.0)
     jd.motorSpeed = (Math::PI / 180.0) * @motorSpeed
     jd.maxMotorTorque = 1e8
     jd.enableMotor = true
@@ -86,7 +85,7 @@ if __FILE__ == $PROGRAM_NAME
   version = Box2D::GetVersion()
   title = "Box2D Version #{version.major}.#{version.minor}.#{version.revision}"
 
-  SetWindowState(FLAG_WINDOW_RESIZABLE)
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE)
   screenWidth = 1280
   screenHeight = 720
   InitWindow(screenWidth, screenHeight, title)

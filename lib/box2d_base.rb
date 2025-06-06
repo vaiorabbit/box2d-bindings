@@ -53,7 +53,6 @@ module Box2D
       [:GetByteCount, :b2GetByteCount, [], :int],
       [:SetAssertFcn, :b2SetAssertFcn, [:pointer], :void],
       [:GetVersion, :b2GetVersion, [], Version.by_value],
-      [:InternalAssertFcn, :b2InternalAssertFcn, [:pointer, :pointer, :int], :int],
       [:GetTicks, :b2GetTicks, [], :ulong_long],
       [:GetMilliseconds, :b2GetMilliseconds, [:ulong_long], :float],
       [:GetMillisecondsAndReset, :b2GetMillisecondsAndReset, [:pointer], :float],

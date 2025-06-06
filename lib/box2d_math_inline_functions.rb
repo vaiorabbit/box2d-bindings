@@ -60,6 +60,7 @@ module Box2D
       [:LengthSquared, :b2LengthSquared, [Vec2.by_value], :float],
       [:DistanceSquared, :b2DistanceSquared, [Vec2.by_value, Vec2.by_value], :float],
       [:MakeRot, :b2MakeRot, [:float], Rot.by_value],
+      [:MakeRotFromUnitVector, :b2MakeRotFromUnitVector, [Vec2.by_value], Rot.by_value],
       [:IsNormalizedRot, :b2IsNormalizedRot, [Rot.by_value], :bool],
       [:NLerp, :b2NLerp, [Rot.by_value, Rot.by_value, :float], Rot.by_value],
       [:ComputeAngularVelocity, :b2ComputeAngularVelocity, [Rot.by_value, Rot.by_value, :float], :float],
@@ -70,7 +71,6 @@ module Box2D
       [:InvMulRot, :b2InvMulRot, [Rot.by_value, Rot.by_value], Rot.by_value],
       [:RelativeAngle, :b2RelativeAngle, [Rot.by_value, Rot.by_value], :float],
       [:UnwindAngle, :b2UnwindAngle, [:float], :float],
-      [:UnwindLargeAngle, :b2UnwindLargeAngle, [:float], :float],
       [:RotateVector, :b2RotateVector, [Rot.by_value, Vec2.by_value], Vec2.by_value],
       [:InvRotateVector, :b2InvRotateVector, [Rot.by_value, Vec2.by_value], Vec2.by_value],
       [:TransformPoint, :b2TransformPoint, [Transform.by_value, Vec2.by_value], Vec2.by_value],
@@ -87,6 +87,7 @@ module Box2D
       [:AABB_Overlaps, :b2AABB_Overlaps, [AABB.by_value, AABB.by_value], :bool],
       [:MakeAABB, :b2MakeAABB, [:pointer, :int, :float], AABB.by_value],
       [:PlaneSeparation, :b2PlaneSeparation, [Plane.by_value, Vec2.by_value], :float],
+      [:SpringDamper, :b2SpringDamper, [:float, :float, :float, :float, :float], :float],
     ]
     entries.each do |entry|
       api_name = if method_naming == :snake_case

@@ -59,18 +59,18 @@ class Donut
     weldDef = Box2D::DefaultWeldJointDef()
     weldDef.angularHertz = 5.0
     weldDef.angularDampingRatio = 0.0
-    weldDef.localAnchorA = Box2D::Vec2.create_as(0.0, 0.5 * length)
-    weldDef.localAnchorB = Box2D::Vec2.create_as(0.0, -0.5 * length)
+    weldDef.base.localFrameA.p = Box2D::Vec2.create_as(0.0, 0.5 * length)
+    weldDef.base.localFrameB.p = Box2D::Vec2.create_as(0.0, -0.5 * length)
 
     prevBodyId = @body_ids[SIDES - 1]
     SIDES.times do |i|
-      weldDef.bodyIdA = prevBodyId
-      weldDef.bodyIdB = @body_ids[i]
-      rotA = Box2D::Body_GetRotation(prevBodyId)
-      rotB = Box2D::Body_GetRotation(@body_ids[i])
-      weldDef.referenceAngle = Box2D::RelativeAngle(rotB, rotA)
+      weldDef.base.bodyIdA = prevBodyId
+      weldDef.base.bodyIdB = @body_ids[i]
+      qA = Box2D::Body_GetRotation(prevBodyId)
+      qB = Box2D::Body_GetRotation(@body_ids[i])
+      weldDef.base.localFrameA.q = Box2D::InvMulRot(qA, qB)
       @joint_ids[i] = Box2D::CreateWeldJoint(worldId, weldDef)
-      prevBodyId = weldDef.bodyIdB
+      prevBodyId = weldDef.base.bodyIdB
     end
 
     @is_spawned = true
@@ -182,12 +182,13 @@ class SampleSoftbody < SampleBase
         @ground_body_id = Box2D::CreateBody(@worldId, bodyDef)
 
         mouseDef = Box2D::DefaultMouseJointDef()
-        mouseDef.bodyIdA = @ground_body_id
-        mouseDef.bodyIdB = queryContext.bodyId
-        mouseDef.target = world_pos
-        mouseDef.hertz = 5.0
+        mouseDef.base.bodyIdA = @ground_body_id
+        mouseDef.base.bodyIdB = queryContext.bodyId
+        mouseDef.base.localFrameA.p = world_pos
+        mouseDef.base.localFrameB.p = Box2D::Body_GetLocalPoint(queryContext.bodyId, world_pos)
+        mouseDef.hertz =7.5
         mouseDef.dampingRatio = 0.7
-        mouseDef.maxForce = 1000.0 * Box2D::Body_GetMass(queryContext.bodyId)
+        mouseDef.maxForce = 1000.0 * Box2D::Body_GetMass(queryContext.bodyId) * Box2D::Length(Box2D::World_GetGravity(@worldId))
         @mouse_joint_id = Box2D::CreateMouseJoint(@worldId, mouseDef)
 
         Box2D::Body_SetAwake(queryContext.bodyId, true)
@@ -215,7 +216,8 @@ class SampleSoftbody < SampleBase
       end
 
       if Box2D.id_non_null(@mouse_joint_id)
-        Box2D::MouseJoint_SetTarget(@mouse_joint_id, world_pos)
+        localFrameA = Box2D::Transform.create_as(world_pos, Box2D::Rot.create_as(1.0, 0.0))
+        Box2D::Joint_SetLocalFrameA(@mouse_joint_id, localFrameA)
         bodyIdB = Box2D::Joint_GetBodyB(@mouse_joint_id)
         Box2D::Body_SetAwake(bodyIdB, true)
       end
@@ -227,7 +229,7 @@ if __FILE__ == $PROGRAM_NAME
   version = Box2D::GetVersion()
   title = "Box2D Version #{version.major}.#{version.minor}.#{version.revision}"
 
-  SetWindowState(FLAG_WINDOW_RESIZABLE)
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE)
   screenWidth = 1280
   screenHeight = 720
   InitWindow(screenWidth, screenHeight, title)

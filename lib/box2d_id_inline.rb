@@ -24,6 +24,8 @@ module Box2D
 
   def self.setup_id_inline_symbols(method_naming: :original)
     entries = [
+      [:StoreWorldId, :b2StoreWorldId, [WorldId.by_value], :uint],
+      [:LoadWorldId, :b2LoadWorldId, [:uint], WorldId.by_value],
       [:StoreBodyId, :b2StoreBodyId, [BodyId.by_value], :ulong_long],
       [:LoadBodyId, :b2LoadBodyId, [:ulong_long], BodyId.by_value],
       [:StoreShapeId, :b2StoreShapeId, [ShapeId.by_value], :ulong_long],
@@ -32,6 +34,8 @@ module Box2D
       [:LoadChainId, :b2LoadChainId, [:ulong_long], ChainId.by_value],
       [:StoreJointId, :b2StoreJointId, [JointId.by_value], :ulong_long],
       [:LoadJointId, :b2LoadJointId, [:ulong_long], JointId.by_value],
+      [:StoreContactId, :b2StoreContactId, [ContactId.by_value, :pointer], :void],
+      [:LoadContactId, :b2LoadContactId, [:pointer], ContactId.by_value],
     ]
     entries.each do |entry|
       api_name = if method_naming == :snake_case

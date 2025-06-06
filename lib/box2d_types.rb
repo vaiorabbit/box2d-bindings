@@ -242,8 +242,6 @@ module Box2D
       :contactHertz, :float,
       :contactDampingRatio, :float,
       :maxContactPushSpeed, :float,
-      :jointHertz, :float,
-      :jointDampingRatio, :float,
       :maximumLinearSpeed, :float,
       :frictionCallback, :pointer,
       :restitutionCallback, :pointer,
@@ -268,10 +266,6 @@ module Box2D
     def contactDampingRatio=(v) self[:contactDampingRatio] = v end
     def maxContactPushSpeed = self[:maxContactPushSpeed]
     def maxContactPushSpeed=(v) self[:maxContactPushSpeed] = v end
-    def jointHertz = self[:jointHertz]
-    def jointHertz=(v) self[:jointHertz] = v end
-    def jointDampingRatio = self[:jointDampingRatio]
-    def jointDampingRatio=(v) self[:jointDampingRatio] = v end
     def maximumLinearSpeed = self[:maximumLinearSpeed]
     def maximumLinearSpeed=(v) self[:maximumLinearSpeed] = v end
     def frictionCallback = self[:frictionCallback]
@@ -294,7 +288,7 @@ module Box2D
     def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_gravity_, _restitutionThreshold_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _maxContactPushSpeed_, _jointHertz_, _jointDampingRatio_, _maximumLinearSpeed_, _frictionCallback_, _restitutionCallback_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _userData_, _internalValue_)
+    def self.create_as(_gravity_, _restitutionThreshold_, _hitEventThreshold_, _contactHertz_, _contactDampingRatio_, _maxContactPushSpeed_, _maximumLinearSpeed_, _frictionCallback_, _restitutionCallback_, _enableSleep_, _enableContinuous_, _workerCount_, _enqueueTask_, _finishTask_, _userTaskContext_, _userData_, _internalValue_)
       instance = WorldDef.new
       instance[:gravity] = _gravity_
       instance[:restitutionThreshold] = _restitutionThreshold_
@@ -302,8 +296,6 @@ module Box2D
       instance[:contactHertz] = _contactHertz_
       instance[:contactDampingRatio] = _contactDampingRatio_
       instance[:maxContactPushSpeed] = _maxContactPushSpeed_
-      instance[:jointHertz] = _jointHertz_
-      instance[:jointDampingRatio] = _jointDampingRatio_
       instance[:maximumLinearSpeed] = _maximumLinearSpeed_
       instance[:frictionCallback] = _frictionCallback_
       instance[:restitutionCallback] = _restitutionCallback_
@@ -592,6 +584,7 @@ module Box2D
       :storeImpulses, :float,
       :splitIslands, :float,
       :transforms, :float,
+      :jointEvents, :float,
       :hitEvents, :float,
       :refit, :float,
       :bullets, :float,
@@ -632,6 +625,8 @@ module Box2D
     def splitIslands=(v) self[:splitIslands] = v end
     def transforms = self[:transforms]
     def transforms=(v) self[:transforms] = v end
+    def jointEvents = self[:jointEvents]
+    def jointEvents=(v) self[:jointEvents] = v end
     def hitEvents = self[:hitEvents]
     def hitEvents=(v) self[:hitEvents] = v end
     def refit = self[:refit]
@@ -642,7 +637,7 @@ module Box2D
     def sleepIslands=(v) self[:sleepIslands] = v end
     def sensors = self[:sensors]
     def sensors=(v) self[:sensors] = v end
-    def self.create_as(_step_, _pairs_, _collide_, _solve_, _mergeIslands_, _prepareStages_, _solveConstraints_, _prepareConstraints_, _integrateVelocities_, _warmStart_, _solveImpulses_, _integratePositions_, _relaxImpulses_, _applyRestitution_, _storeImpulses_, _splitIslands_, _transforms_, _hitEvents_, _refit_, _bullets_, _sleepIslands_, _sensors_)
+    def self.create_as(_step_, _pairs_, _collide_, _solve_, _mergeIslands_, _prepareStages_, _solveConstraints_, _prepareConstraints_, _integrateVelocities_, _warmStart_, _solveImpulses_, _integratePositions_, _relaxImpulses_, _applyRestitution_, _storeImpulses_, _splitIslands_, _transforms_, _jointEvents_, _hitEvents_, _refit_, _bullets_, _sleepIslands_, _sensors_)
       instance = Profile.new
       instance[:step] = _step_
       instance[:pairs] = _pairs_
@@ -661,6 +656,7 @@ module Box2D
       instance[:storeImpulses] = _storeImpulses_
       instance[:splitIslands] = _splitIslands_
       instance[:transforms] = _transforms_
+      instance[:jointEvents] = _jointEvents_
       instance[:hitEvents] = _hitEvents_
       instance[:refit] = _refit_
       instance[:bullets] = _bullets_
@@ -723,12 +719,54 @@ module Box2D
     end
   end
 
-  class DistanceJointDef < FFI::Struct
+  class JointDef < FFI::Struct
     layout(
+      :userData, :pointer,
       :bodyIdA, BodyId,
       :bodyIdB, BodyId,
-      :localAnchorA, Vec2,
-      :localAnchorB, Vec2,
+      :localFrameA, Transform,
+      :localFrameB, Transform,
+      :forceThreshold, :float,
+      :torqueThreshold, :float,
+      :drawSize, :float,
+      :collideConnected, :bool,
+    )
+    def userData = self[:userData]
+    def userData=(v) self[:userData] = v end
+    def bodyIdA = self[:bodyIdA]
+    def bodyIdA=(v) self[:bodyIdA] = v end
+    def bodyIdB = self[:bodyIdB]
+    def bodyIdB=(v) self[:bodyIdB] = v end
+    def localFrameA = self[:localFrameA]
+    def localFrameA=(v) self[:localFrameA] = v end
+    def localFrameB = self[:localFrameB]
+    def localFrameB=(v) self[:localFrameB] = v end
+    def forceThreshold = self[:forceThreshold]
+    def forceThreshold=(v) self[:forceThreshold] = v end
+    def torqueThreshold = self[:torqueThreshold]
+    def torqueThreshold=(v) self[:torqueThreshold] = v end
+    def drawSize = self[:drawSize]
+    def drawSize=(v) self[:drawSize] = v end
+    def collideConnected = self[:collideConnected]
+    def collideConnected=(v) self[:collideConnected] = v end
+    def self.create_as(_userData_, _bodyIdA_, _bodyIdB_, _localFrameA_, _localFrameB_, _forceThreshold_, _torqueThreshold_, _drawSize_, _collideConnected_)
+      instance = JointDef.new
+      instance[:userData] = _userData_
+      instance[:bodyIdA] = _bodyIdA_
+      instance[:bodyIdB] = _bodyIdB_
+      instance[:localFrameA] = _localFrameA_
+      instance[:localFrameB] = _localFrameB_
+      instance[:forceThreshold] = _forceThreshold_
+      instance[:torqueThreshold] = _torqueThreshold_
+      instance[:drawSize] = _drawSize_
+      instance[:collideConnected] = _collideConnected_
+      instance
+    end
+  end
+
+  class DistanceJointDef < FFI::Struct
+    layout(
+      :base, JointDef,
       :length, :float,
       :enableSpring, :bool,
       :hertz, :float,
@@ -739,18 +777,10 @@ module Box2D
       :enableMotor, :bool,
       :maxMotorForce, :float,
       :motorSpeed, :float,
-      :collideConnected, :bool,
-      :userData, :pointer,
       :internalValue, :int,
     )
-    def bodyIdA = self[:bodyIdA]
-    def bodyIdA=(v) self[:bodyIdA] = v end
-    def bodyIdB = self[:bodyIdB]
-    def bodyIdB=(v) self[:bodyIdB] = v end
-    def localAnchorA = self[:localAnchorA]
-    def localAnchorA=(v) self[:localAnchorA] = v end
-    def localAnchorB = self[:localAnchorB]
-    def localAnchorB=(v) self[:localAnchorB] = v end
+    def base = self[:base]
+    def base=(v) self[:base] = v end
     def length = self[:length]
     def length=(v) self[:length] = v end
     def enableSpring = self[:enableSpring]
@@ -771,18 +801,11 @@ module Box2D
     def maxMotorForce=(v) self[:maxMotorForce] = v end
     def motorSpeed = self[:motorSpeed]
     def motorSpeed=(v) self[:motorSpeed] = v end
-    def collideConnected = self[:collideConnected]
-    def collideConnected=(v) self[:collideConnected] = v end
-    def userData = self[:userData]
-    def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_bodyIdA_, _bodyIdB_, _localAnchorA_, _localAnchorB_, _length_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _minLength_, _maxLength_, _enableMotor_, _maxMotorForce_, _motorSpeed_, _collideConnected_, _userData_, _internalValue_)
+    def self.create_as(_base_, _length_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _minLength_, _maxLength_, _enableMotor_, _maxMotorForce_, _motorSpeed_, _internalValue_)
       instance = DistanceJointDef.new
-      instance[:bodyIdA] = _bodyIdA_
-      instance[:bodyIdB] = _bodyIdB_
-      instance[:localAnchorA] = _localAnchorA_
-      instance[:localAnchorB] = _localAnchorB_
+      instance[:base] = _base_
       instance[:length] = _length_
       instance[:enableSpring] = _enableSpring_
       instance[:hertz] = _hertz_
@@ -793,8 +816,6 @@ module Box2D
       instance[:enableMotor] = _enableMotor_
       instance[:maxMotorForce] = _maxMotorForce_
       instance[:motorSpeed] = _motorSpeed_
-      instance[:collideConnected] = _collideConnected_
-      instance[:userData] = _userData_
       instance[:internalValue] = _internalValue_
       instance
     end
@@ -802,48 +823,28 @@ module Box2D
 
   class MotorJointDef < FFI::Struct
     layout(
-      :bodyIdA, BodyId,
-      :bodyIdB, BodyId,
-      :linearOffset, Vec2,
-      :angularOffset, :float,
+      :base, JointDef,
       :maxForce, :float,
       :maxTorque, :float,
       :correctionFactor, :float,
-      :collideConnected, :bool,
-      :userData, :pointer,
       :internalValue, :int,
     )
-    def bodyIdA = self[:bodyIdA]
-    def bodyIdA=(v) self[:bodyIdA] = v end
-    def bodyIdB = self[:bodyIdB]
-    def bodyIdB=(v) self[:bodyIdB] = v end
-    def linearOffset = self[:linearOffset]
-    def linearOffset=(v) self[:linearOffset] = v end
-    def angularOffset = self[:angularOffset]
-    def angularOffset=(v) self[:angularOffset] = v end
+    def base = self[:base]
+    def base=(v) self[:base] = v end
     def maxForce = self[:maxForce]
     def maxForce=(v) self[:maxForce] = v end
     def maxTorque = self[:maxTorque]
     def maxTorque=(v) self[:maxTorque] = v end
     def correctionFactor = self[:correctionFactor]
     def correctionFactor=(v) self[:correctionFactor] = v end
-    def collideConnected = self[:collideConnected]
-    def collideConnected=(v) self[:collideConnected] = v end
-    def userData = self[:userData]
-    def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_bodyIdA_, _bodyIdB_, _linearOffset_, _angularOffset_, _maxForce_, _maxTorque_, _correctionFactor_, _collideConnected_, _userData_, _internalValue_)
+    def self.create_as(_base_, _maxForce_, _maxTorque_, _correctionFactor_, _internalValue_)
       instance = MotorJointDef.new
-      instance[:bodyIdA] = _bodyIdA_
-      instance[:bodyIdB] = _bodyIdB_
-      instance[:linearOffset] = _linearOffset_
-      instance[:angularOffset] = _angularOffset_
+      instance[:base] = _base_
       instance[:maxForce] = _maxForce_
       instance[:maxTorque] = _maxTorque_
       instance[:correctionFactor] = _correctionFactor_
-      instance[:collideConnected] = _collideConnected_
-      instance[:userData] = _userData_
       instance[:internalValue] = _internalValue_
       instance
     end
@@ -851,44 +852,28 @@ module Box2D
 
   class MouseJointDef < FFI::Struct
     layout(
-      :bodyIdA, BodyId,
-      :bodyIdB, BodyId,
-      :target, Vec2,
+      :base, JointDef,
       :hertz, :float,
       :dampingRatio, :float,
       :maxForce, :float,
-      :collideConnected, :bool,
-      :userData, :pointer,
       :internalValue, :int,
     )
-    def bodyIdA = self[:bodyIdA]
-    def bodyIdA=(v) self[:bodyIdA] = v end
-    def bodyIdB = self[:bodyIdB]
-    def bodyIdB=(v) self[:bodyIdB] = v end
-    def target = self[:target]
-    def target=(v) self[:target] = v end
+    def base = self[:base]
+    def base=(v) self[:base] = v end
     def hertz = self[:hertz]
     def hertz=(v) self[:hertz] = v end
     def dampingRatio = self[:dampingRatio]
     def dampingRatio=(v) self[:dampingRatio] = v end
     def maxForce = self[:maxForce]
     def maxForce=(v) self[:maxForce] = v end
-    def collideConnected = self[:collideConnected]
-    def collideConnected=(v) self[:collideConnected] = v end
-    def userData = self[:userData]
-    def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_bodyIdA_, _bodyIdB_, _target_, _hertz_, _dampingRatio_, _maxForce_, _collideConnected_, _userData_, _internalValue_)
+    def self.create_as(_base_, _hertz_, _dampingRatio_, _maxForce_, _internalValue_)
       instance = MouseJointDef.new
-      instance[:bodyIdA] = _bodyIdA_
-      instance[:bodyIdB] = _bodyIdB_
-      instance[:target] = _target_
+      instance[:base] = _base_
       instance[:hertz] = _hertz_
       instance[:dampingRatio] = _dampingRatio_
       instance[:maxForce] = _maxForce_
-      instance[:collideConnected] = _collideConnected_
-      instance[:userData] = _userData_
       instance[:internalValue] = _internalValue_
       instance
     end
@@ -896,24 +881,16 @@ module Box2D
 
   class FilterJointDef < FFI::Struct
     layout(
-      :bodyIdA, BodyId,
-      :bodyIdB, BodyId,
-      :userData, :pointer,
+      :base, JointDef,
       :internalValue, :int,
     )
-    def bodyIdA = self[:bodyIdA]
-    def bodyIdA=(v) self[:bodyIdA] = v end
-    def bodyIdB = self[:bodyIdB]
-    def bodyIdB=(v) self[:bodyIdB] = v end
-    def userData = self[:userData]
-    def userData=(v) self[:userData] = v end
+    def base = self[:base]
+    def base=(v) self[:base] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_bodyIdA_, _bodyIdB_, _userData_, _internalValue_)
+    def self.create_as(_base_, _internalValue_)
       instance = FilterJointDef.new
-      instance[:bodyIdA] = _bodyIdA_
-      instance[:bodyIdB] = _bodyIdB_
-      instance[:userData] = _userData_
+      instance[:base] = _base_
       instance[:internalValue] = _internalValue_
       instance
     end
@@ -921,12 +898,8 @@ module Box2D
 
   class PrismaticJointDef < FFI::Struct
     layout(
-      :bodyIdA, BodyId,
-      :bodyIdB, BodyId,
-      :localAnchorA, Vec2,
-      :localAnchorB, Vec2,
-      :localAxisA, Vec2,
-      :referenceAngle, :float,
+      :base, JointDef,
+      :targetTranslation, :float,
       :enableSpring, :bool,
       :hertz, :float,
       :dampingRatio, :float,
@@ -936,22 +909,12 @@ module Box2D
       :enableMotor, :bool,
       :maxMotorForce, :float,
       :motorSpeed, :float,
-      :collideConnected, :bool,
-      :userData, :pointer,
       :internalValue, :int,
     )
-    def bodyIdA = self[:bodyIdA]
-    def bodyIdA=(v) self[:bodyIdA] = v end
-    def bodyIdB = self[:bodyIdB]
-    def bodyIdB=(v) self[:bodyIdB] = v end
-    def localAnchorA = self[:localAnchorA]
-    def localAnchorA=(v) self[:localAnchorA] = v end
-    def localAnchorB = self[:localAnchorB]
-    def localAnchorB=(v) self[:localAnchorB] = v end
-    def localAxisA = self[:localAxisA]
-    def localAxisA=(v) self[:localAxisA] = v end
-    def referenceAngle = self[:referenceAngle]
-    def referenceAngle=(v) self[:referenceAngle] = v end
+    def base = self[:base]
+    def base=(v) self[:base] = v end
+    def targetTranslation = self[:targetTranslation]
+    def targetTranslation=(v) self[:targetTranslation] = v end
     def enableSpring = self[:enableSpring]
     def enableSpring=(v) self[:enableSpring] = v end
     def hertz = self[:hertz]
@@ -970,20 +933,12 @@ module Box2D
     def maxMotorForce=(v) self[:maxMotorForce] = v end
     def motorSpeed = self[:motorSpeed]
     def motorSpeed=(v) self[:motorSpeed] = v end
-    def collideConnected = self[:collideConnected]
-    def collideConnected=(v) self[:collideConnected] = v end
-    def userData = self[:userData]
-    def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_bodyIdA_, _bodyIdB_, _localAnchorA_, _localAnchorB_, _localAxisA_, _referenceAngle_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _lowerTranslation_, _upperTranslation_, _enableMotor_, _maxMotorForce_, _motorSpeed_, _collideConnected_, _userData_, _internalValue_)
+    def self.create_as(_base_, _targetTranslation_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _lowerTranslation_, _upperTranslation_, _enableMotor_, _maxMotorForce_, _motorSpeed_, _internalValue_)
       instance = PrismaticJointDef.new
-      instance[:bodyIdA] = _bodyIdA_
-      instance[:bodyIdB] = _bodyIdB_
-      instance[:localAnchorA] = _localAnchorA_
-      instance[:localAnchorB] = _localAnchorB_
-      instance[:localAxisA] = _localAxisA_
-      instance[:referenceAngle] = _referenceAngle_
+      instance[:base] = _base_
+      instance[:targetTranslation] = _targetTranslation_
       instance[:enableSpring] = _enableSpring_
       instance[:hertz] = _hertz_
       instance[:dampingRatio] = _dampingRatio_
@@ -993,8 +948,6 @@ module Box2D
       instance[:enableMotor] = _enableMotor_
       instance[:maxMotorForce] = _maxMotorForce_
       instance[:motorSpeed] = _motorSpeed_
-      instance[:collideConnected] = _collideConnected_
-      instance[:userData] = _userData_
       instance[:internalValue] = _internalValue_
       instance
     end
@@ -1002,11 +955,8 @@ module Box2D
 
   class RevoluteJointDef < FFI::Struct
     layout(
-      :bodyIdA, BodyId,
-      :bodyIdB, BodyId,
-      :localAnchorA, Vec2,
-      :localAnchorB, Vec2,
-      :referenceAngle, :float,
+      :base, JointDef,
+      :targetAngle, :float,
       :enableSpring, :bool,
       :hertz, :float,
       :dampingRatio, :float,
@@ -1016,21 +966,12 @@ module Box2D
       :enableMotor, :bool,
       :maxMotorTorque, :float,
       :motorSpeed, :float,
-      :drawSize, :float,
-      :collideConnected, :bool,
-      :userData, :pointer,
       :internalValue, :int,
     )
-    def bodyIdA = self[:bodyIdA]
-    def bodyIdA=(v) self[:bodyIdA] = v end
-    def bodyIdB = self[:bodyIdB]
-    def bodyIdB=(v) self[:bodyIdB] = v end
-    def localAnchorA = self[:localAnchorA]
-    def localAnchorA=(v) self[:localAnchorA] = v end
-    def localAnchorB = self[:localAnchorB]
-    def localAnchorB=(v) self[:localAnchorB] = v end
-    def referenceAngle = self[:referenceAngle]
-    def referenceAngle=(v) self[:referenceAngle] = v end
+    def base = self[:base]
+    def base=(v) self[:base] = v end
+    def targetAngle = self[:targetAngle]
+    def targetAngle=(v) self[:targetAngle] = v end
     def enableSpring = self[:enableSpring]
     def enableSpring=(v) self[:enableSpring] = v end
     def hertz = self[:hertz]
@@ -1049,21 +990,12 @@ module Box2D
     def maxMotorTorque=(v) self[:maxMotorTorque] = v end
     def motorSpeed = self[:motorSpeed]
     def motorSpeed=(v) self[:motorSpeed] = v end
-    def drawSize = self[:drawSize]
-    def drawSize=(v) self[:drawSize] = v end
-    def collideConnected = self[:collideConnected]
-    def collideConnected=(v) self[:collideConnected] = v end
-    def userData = self[:userData]
-    def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_bodyIdA_, _bodyIdB_, _localAnchorA_, _localAnchorB_, _referenceAngle_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _lowerAngle_, _upperAngle_, _enableMotor_, _maxMotorTorque_, _motorSpeed_, _drawSize_, _collideConnected_, _userData_, _internalValue_)
+    def self.create_as(_base_, _targetAngle_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _lowerAngle_, _upperAngle_, _enableMotor_, _maxMotorTorque_, _motorSpeed_, _internalValue_)
       instance = RevoluteJointDef.new
-      instance[:bodyIdA] = _bodyIdA_
-      instance[:bodyIdB] = _bodyIdB_
-      instance[:localAnchorA] = _localAnchorA_
-      instance[:localAnchorB] = _localAnchorB_
-      instance[:referenceAngle] = _referenceAngle_
+      instance[:base] = _base_
+      instance[:targetAngle] = _targetAngle_
       instance[:enableSpring] = _enableSpring_
       instance[:hertz] = _hertz_
       instance[:dampingRatio] = _dampingRatio_
@@ -1073,9 +1005,6 @@ module Box2D
       instance[:enableMotor] = _enableMotor_
       instance[:maxMotorTorque] = _maxMotorTorque_
       instance[:motorSpeed] = _motorSpeed_
-      instance[:drawSize] = _drawSize_
-      instance[:collideConnected] = _collideConnected_
-      instance[:userData] = _userData_
       instance[:internalValue] = _internalValue_
       instance
     end
@@ -1083,29 +1012,15 @@ module Box2D
 
   class WeldJointDef < FFI::Struct
     layout(
-      :bodyIdA, BodyId,
-      :bodyIdB, BodyId,
-      :localAnchorA, Vec2,
-      :localAnchorB, Vec2,
-      :referenceAngle, :float,
+      :base, JointDef,
       :linearHertz, :float,
       :angularHertz, :float,
       :linearDampingRatio, :float,
       :angularDampingRatio, :float,
-      :collideConnected, :bool,
-      :userData, :pointer,
       :internalValue, :int,
     )
-    def bodyIdA = self[:bodyIdA]
-    def bodyIdA=(v) self[:bodyIdA] = v end
-    def bodyIdB = self[:bodyIdB]
-    def bodyIdB=(v) self[:bodyIdB] = v end
-    def localAnchorA = self[:localAnchorA]
-    def localAnchorA=(v) self[:localAnchorA] = v end
-    def localAnchorB = self[:localAnchorB]
-    def localAnchorB=(v) self[:localAnchorB] = v end
-    def referenceAngle = self[:referenceAngle]
-    def referenceAngle=(v) self[:referenceAngle] = v end
+    def base = self[:base]
+    def base=(v) self[:base] = v end
     def linearHertz = self[:linearHertz]
     def linearHertz=(v) self[:linearHertz] = v end
     def angularHertz = self[:angularHertz]
@@ -1114,25 +1029,15 @@ module Box2D
     def linearDampingRatio=(v) self[:linearDampingRatio] = v end
     def angularDampingRatio = self[:angularDampingRatio]
     def angularDampingRatio=(v) self[:angularDampingRatio] = v end
-    def collideConnected = self[:collideConnected]
-    def collideConnected=(v) self[:collideConnected] = v end
-    def userData = self[:userData]
-    def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_bodyIdA_, _bodyIdB_, _localAnchorA_, _localAnchorB_, _referenceAngle_, _linearHertz_, _angularHertz_, _linearDampingRatio_, _angularDampingRatio_, _collideConnected_, _userData_, _internalValue_)
+    def self.create_as(_base_, _linearHertz_, _angularHertz_, _linearDampingRatio_, _angularDampingRatio_, _internalValue_)
       instance = WeldJointDef.new
-      instance[:bodyIdA] = _bodyIdA_
-      instance[:bodyIdB] = _bodyIdB_
-      instance[:localAnchorA] = _localAnchorA_
-      instance[:localAnchorB] = _localAnchorB_
-      instance[:referenceAngle] = _referenceAngle_
+      instance[:base] = _base_
       instance[:linearHertz] = _linearHertz_
       instance[:angularHertz] = _angularHertz_
       instance[:linearDampingRatio] = _linearDampingRatio_
       instance[:angularDampingRatio] = _angularDampingRatio_
-      instance[:collideConnected] = _collideConnected_
-      instance[:userData] = _userData_
       instance[:internalValue] = _internalValue_
       instance
     end
@@ -1140,11 +1045,7 @@ module Box2D
 
   class WheelJointDef < FFI::Struct
     layout(
-      :bodyIdA, BodyId,
-      :bodyIdB, BodyId,
-      :localAnchorA, Vec2,
-      :localAnchorB, Vec2,
-      :localAxisA, Vec2,
+      :base, JointDef,
       :enableSpring, :bool,
       :hertz, :float,
       :dampingRatio, :float,
@@ -1154,20 +1055,10 @@ module Box2D
       :enableMotor, :bool,
       :maxMotorTorque, :float,
       :motorSpeed, :float,
-      :collideConnected, :bool,
-      :userData, :pointer,
       :internalValue, :int,
     )
-    def bodyIdA = self[:bodyIdA]
-    def bodyIdA=(v) self[:bodyIdA] = v end
-    def bodyIdB = self[:bodyIdB]
-    def bodyIdB=(v) self[:bodyIdB] = v end
-    def localAnchorA = self[:localAnchorA]
-    def localAnchorA=(v) self[:localAnchorA] = v end
-    def localAnchorB = self[:localAnchorB]
-    def localAnchorB=(v) self[:localAnchorB] = v end
-    def localAxisA = self[:localAxisA]
-    def localAxisA=(v) self[:localAxisA] = v end
+    def base = self[:base]
+    def base=(v) self[:base] = v end
     def enableSpring = self[:enableSpring]
     def enableSpring=(v) self[:enableSpring] = v end
     def hertz = self[:hertz]
@@ -1186,19 +1077,11 @@ module Box2D
     def maxMotorTorque=(v) self[:maxMotorTorque] = v end
     def motorSpeed = self[:motorSpeed]
     def motorSpeed=(v) self[:motorSpeed] = v end
-    def collideConnected = self[:collideConnected]
-    def collideConnected=(v) self[:collideConnected] = v end
-    def userData = self[:userData]
-    def userData=(v) self[:userData] = v end
     def internalValue = self[:internalValue]
     def internalValue=(v) self[:internalValue] = v end
-    def self.create_as(_bodyIdA_, _bodyIdB_, _localAnchorA_, _localAnchorB_, _localAxisA_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _lowerTranslation_, _upperTranslation_, _enableMotor_, _maxMotorTorque_, _motorSpeed_, _collideConnected_, _userData_, _internalValue_)
+    def self.create_as(_base_, _enableSpring_, _hertz_, _dampingRatio_, _enableLimit_, _lowerTranslation_, _upperTranslation_, _enableMotor_, _maxMotorTorque_, _motorSpeed_, _internalValue_)
       instance = WheelJointDef.new
-      instance[:bodyIdA] = _bodyIdA_
-      instance[:bodyIdB] = _bodyIdB_
-      instance[:localAnchorA] = _localAnchorA_
-      instance[:localAnchorB] = _localAnchorB_
-      instance[:localAxisA] = _localAxisA_
+      instance[:base] = _base_
       instance[:enableSpring] = _enableSpring_
       instance[:hertz] = _hertz_
       instance[:dampingRatio] = _dampingRatio_
@@ -1208,8 +1091,6 @@ module Box2D
       instance[:enableMotor] = _enableMotor_
       instance[:maxMotorTorque] = _maxMotorTorque_
       instance[:motorSpeed] = _motorSpeed_
-      instance[:collideConnected] = _collideConnected_
-      instance[:userData] = _userData_
       instance[:internalValue] = _internalValue_
       instance
     end
@@ -1307,18 +1188,22 @@ module Box2D
     layout(
       :shapeIdA, ShapeId,
       :shapeIdB, ShapeId,
+      :contactId, ContactId,
       :manifold, Manifold,
     )
     def shapeIdA = self[:shapeIdA]
     def shapeIdA=(v) self[:shapeIdA] = v end
     def shapeIdB = self[:shapeIdB]
     def shapeIdB=(v) self[:shapeIdB] = v end
+    def contactId = self[:contactId]
+    def contactId=(v) self[:contactId] = v end
     def manifold = self[:manifold]
     def manifold=(v) self[:manifold] = v end
-    def self.create_as(_shapeIdA_, _shapeIdB_, _manifold_)
+    def self.create_as(_shapeIdA_, _shapeIdB_, _contactId_, _manifold_)
       instance = ContactBeginTouchEvent.new
       instance[:shapeIdA] = _shapeIdA_
       instance[:shapeIdB] = _shapeIdB_
+      instance[:contactId] = _contactId_
       instance[:manifold] = _manifold_
       instance
     end
@@ -1328,15 +1213,19 @@ module Box2D
     layout(
       :shapeIdA, ShapeId,
       :shapeIdB, ShapeId,
+      :contactId, ContactId,
     )
     def shapeIdA = self[:shapeIdA]
     def shapeIdA=(v) self[:shapeIdA] = v end
     def shapeIdB = self[:shapeIdB]
     def shapeIdB=(v) self[:shapeIdB] = v end
-    def self.create_as(_shapeIdA_, _shapeIdB_)
+    def contactId = self[:contactId]
+    def contactId=(v) self[:contactId] = v end
+    def self.create_as(_shapeIdA_, _shapeIdB_, _contactId_)
       instance = ContactEndTouchEvent.new
       instance[:shapeIdA] = _shapeIdA_
       instance[:shapeIdB] = _shapeIdB_
+      instance[:contactId] = _contactId_
       instance
     end
   end
@@ -1441,6 +1330,40 @@ module Box2D
       instance = BodyEvents.new
       instance[:moveEvents] = _moveEvents_
       instance[:moveCount] = _moveCount_
+      instance
+    end
+  end
+
+  class JointEvent < FFI::Struct
+    layout(
+      :jointId, JointId,
+      :userData, :pointer,
+    )
+    def jointId = self[:jointId]
+    def jointId=(v) self[:jointId] = v end
+    def userData = self[:userData]
+    def userData=(v) self[:userData] = v end
+    def self.create_as(_jointId_, _userData_)
+      instance = JointEvent.new
+      instance[:jointId] = _jointId_
+      instance[:userData] = _userData_
+      instance
+    end
+  end
+
+  class JointEvents < FFI::Struct
+    layout(
+      :jointEvents, :pointer,
+      :count, :int,
+    )
+    def jointEvents = self[:jointEvents]
+    def jointEvents=(v) self[:jointEvents] = v end
+    def count = self[:count]
+    def count=(v) self[:count] = v end
+    def self.create_as(_jointEvents_, _count_)
+      instance = JointEvents.new
+      instance[:jointEvents] = _jointEvents_
+      instance[:count] = _count_
       instance
     end
   end

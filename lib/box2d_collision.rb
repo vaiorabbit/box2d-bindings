@@ -799,16 +799,16 @@ module Box2D
 
   class PlaneSolverResult < FFI::Struct
     layout(
-      :position, Vec2,
+      :translation, Vec2,
       :iterationCount, :int,
     )
-    def position = self[:position]
-    def position=(v) self[:position] = v end
+    def translation = self[:translation]
+    def translation=(v) self[:translation] = v end
     def iterationCount = self[:iterationCount]
     def iterationCount=(v) self[:iterationCount] = v end
-    def self.create_as(_position_, _iterationCount_)
+    def self.create_as(_translation_, _iterationCount_)
       instance = PlaneSolverResult.new
-      instance[:position] = _position_
+      instance[:translation] = _translation_
       instance[:iterationCount] = _iterationCount_
       instance
     end

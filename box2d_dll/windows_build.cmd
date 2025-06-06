@@ -13,7 +13,7 @@ setlocal enabledelayedexpansion
 call split_inline.cmd
 
 set CMAKE_EXE=%1
-if "%CMAKE_EXE%"=="" (
+if %CMAKE_EXE%=="" (
     set CMAKE_EXE="%PROGRAMFILES%\CMake\bin\cmake"
 )
 

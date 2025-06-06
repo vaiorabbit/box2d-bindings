@@ -143,14 +143,15 @@ module Box2D
 
   def self.setup_math_functions_symbols(method_naming: :original)
     entries = [
-      [:Atan2, :b2Atan2, [:float, :float], :float],
-      [:ComputeCosSin, :b2ComputeCosSin, [:float], CosSin.by_value],
-      [:ComputeRotationBetweenUnitVectors, :b2ComputeRotationBetweenUnitVectors, [Vec2.by_value, Vec2.by_value], Rot.by_value],
       [:IsValidFloat, :b2IsValidFloat, [:float], :bool],
       [:IsValidVec2, :b2IsValidVec2, [Vec2.by_value], :bool],
       [:IsValidRotation, :b2IsValidRotation, [Rot.by_value], :bool],
+      [:IsValidTransform, :b2IsValidTransform, [Transform.by_value], :bool],
       [:IsValidAABB, :b2IsValidAABB, [AABB.by_value], :bool],
       [:IsValidPlane, :b2IsValidPlane, [Plane.by_value], :bool],
+      [:Atan2, :b2Atan2, [:float, :float], :float],
+      [:ComputeCosSin, :b2ComputeCosSin, [:float], CosSin.by_value],
+      [:ComputeRotationBetweenUnitVectors, :b2ComputeRotationBetweenUnitVectors, [Vec2.by_value, Vec2.by_value], Rot.by_value],
       [:SetLengthUnitsPerMeter, :b2SetLengthUnitsPerMeter, [:float], :void],
       [:GetLengthUnitsPerMeter, :b2GetLengthUnitsPerMeter, [], :float],
     ]

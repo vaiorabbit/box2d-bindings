@@ -33,7 +33,7 @@ class RaylibDebugDraw
   @@scale = 1.0
 
   @@draw_polygon_fcn = FFI::Function.new(:void, %i[pointer int32 int32 pointer]) do |vertices, vertexCount, radius, color, context|
-    p 'polygon'
+    # p 'polygon'
   end
 
   @@draw_solid_polygon_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer, :int32, :float, :int32, :pointer]) do |transform, vertices, vertexCount, radius, color, context|
@@ -78,7 +78,7 @@ class RaylibDebugDraw
   end
 
   @@draw_transform_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer]) do |transform, context|
-    p 'transform'
+    # p 'transform'
   end
 
   @@draw_point_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :float, :int32, :pointer]) do |p, size, color, context|
@@ -86,7 +86,7 @@ class RaylibDebugDraw
   end
 
   @@draw_string_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :pointer, :pointer]) do |p, s, context|
-    p 'string'
+    # p 'string'
   end
 
   def initialize

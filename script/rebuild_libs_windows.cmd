@@ -11,7 +11,7 @@
 setlocal enabledelayedexpansion
 set CMAKE_EXE=%1
 if "%CMAKE_EXE%"=="" (
-    set CMAKE_EXE="%PROGRAMFILES%\CMake\bin\cmake"
+    set CMAKE_EXE="%PROGRAMFILES%\CMake\bin\cmake.exe"
 )
 
 pushd %~dp0
