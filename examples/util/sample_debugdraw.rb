@@ -102,9 +102,22 @@ class RaylibDebugDraw
     @debug_draw.DrawPointFcn = @@draw_point_fcn
     @debug_draw.DrawStringFcn = @@draw_string_fcn
 
-    @debug_draw.useDrawingBounds = false
+    # @debug_draw.drawBounds = false
+    # @debug_draw.drawShapes = true
+    # @debug_draw.drawJoints = true
+
     @debug_draw.drawShapes = true
     @debug_draw.drawJoints = true
+    @debug_draw.drawJointExtras = false
+    @debug_draw.drawBounds = false
+    @debug_draw.drawMass = false
+    @debug_draw.drawContacts = false
+    @debug_draw.drawGraphColors = false
+    @debug_draw.drawContactNormals = false
+    @debug_draw.drawContactImpulses = false
+    @debug_draw.drawContactFeatures = false
+    @debug_draw.drawFrictionImpulses = false
+    @debug_draw.drawIslands = false
   end
 end
 
