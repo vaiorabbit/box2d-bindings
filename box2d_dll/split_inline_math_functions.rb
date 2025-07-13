@@ -33,7 +33,9 @@ File.open(filename, 'r') do |math_functions_h|
     end
     if parsing
       current_body << original_line
-      if original_line.start_with? '}'
+      # "or original_line.start_with? '///'" was added to allow wrong indentation found in b2GetInverse22 definition.
+      # Ref.: https://github.com/erincatto/box2d/blob/fb8b81f03f126ff52db5ebd25c90928fb56528d5/include/box2d/math_functions.h#L570C1-L576C3
+      if original_line.start_with? '}' or original_line.start_with? '///'
         inline_functions[current_key] = current_body
         parsing = false
         next

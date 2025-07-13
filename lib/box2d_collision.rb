@@ -593,15 +593,23 @@ module Box2D
   class TOIOutput < FFI::Struct
     layout(
       :state, :int,
+      :point, Vec2,
+      :normal, Vec2,
       :fraction, :float,
     )
     def state = self[:state]
     def state=(v) self[:state] = v end
+    def point = self[:point]
+    def point=(v) self[:point] = v end
+    def normal = self[:normal]
+    def normal=(v) self[:normal] = v end
     def fraction = self[:fraction]
     def fraction=(v) self[:fraction] = v end
-    def self.create_as(_state_, _fraction_)
+    def self.create_as(_state_, _point_, _normal_, _fraction_)
       instance = TOIOutput.new
       instance[:state] = _state_
+      instance[:point] = _point_
+      instance[:normal] = _normal_
       instance[:fraction] = _fraction_
       instance
     end
@@ -836,9 +844,9 @@ module Box2D
       [:ComputeCapsuleAABB, :b2ComputeCapsuleAABB, [:pointer, Transform.by_value], AABB.by_value],
       [:ComputePolygonAABB, :b2ComputePolygonAABB, [:pointer, Transform.by_value], AABB.by_value],
       [:ComputeSegmentAABB, :b2ComputeSegmentAABB, [:pointer, Transform.by_value], AABB.by_value],
-      [:PointInCircle, :b2PointInCircle, [Vec2.by_value, :pointer], :bool],
-      [:PointInCapsule, :b2PointInCapsule, [Vec2.by_value, :pointer], :bool],
-      [:PointInPolygon, :b2PointInPolygon, [Vec2.by_value, :pointer], :bool],
+      [:PointInCircle, :b2PointInCircle, [:pointer, Vec2.by_value], :bool],
+      [:PointInCapsule, :b2PointInCapsule, [:pointer, Vec2.by_value], :bool],
+      [:PointInPolygon, :b2PointInPolygon, [:pointer, Vec2.by_value], :bool],
       [:RayCastCircle, :b2RayCastCircle, [:pointer, :pointer], CastOutput.by_value],
       [:RayCastCapsule, :b2RayCastCapsule, [:pointer, :pointer], CastOutput.by_value],
       [:RayCastSegment, :b2RayCastSegment, [:pointer, :pointer, :bool], CastOutput.by_value],

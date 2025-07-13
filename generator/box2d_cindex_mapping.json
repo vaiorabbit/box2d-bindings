@@ -56,6 +56,7 @@
     , "b2RayResult" : "TypeKind.RECORD"
     , "b2WorldDef" : "TypeKind.RECORD"
     , "b2BodyType" : "TypeKind.ENUM"
+    , "b2MotionLocks" : "TypeKind.RECORD"
     , "b2BodyDef" : "TypeKind.RECORD"
     , "b2Filter" : "TypeKind.RECORD"
     , "b2QueryFilter" : "TypeKind.RECORD"
