@@ -20,6 +20,7 @@ module Box2D
   typedef :pointer, :b2AllocFcn
   typedef :pointer, :b2FreeFcn
   typedef :pointer, :b2AssertFcn
+  typedef :pointer, :b2LogFcn
 
   # Struct
 
@@ -52,6 +53,7 @@ module Box2D
       [:SetAllocator, :b2SetAllocator, [:pointer, :pointer], :void],
       [:GetByteCount, :b2GetByteCount, [], :int],
       [:SetAssertFcn, :b2SetAssertFcn, [:pointer], :void],
+      [:SetLogFcn, :b2SetLogFcn, [:pointer], :void],
       [:GetVersion, :b2GetVersion, [], Version.by_value],
       [:GetTicks, :b2GetTicks, [], :ulong_long],
       [:GetMilliseconds, :b2GetMilliseconds, [:ulong_long], :float],

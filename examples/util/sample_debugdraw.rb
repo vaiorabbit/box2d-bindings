@@ -32,11 +32,21 @@ class RaylibDebugDraw
 
   @@scale = 1.0
 
-  @@draw_polygon_fcn = FFI::Function.new(:void, %i[pointer int32 int32 pointer]) do |vertices, vertexCount, radius, color, context|
+  @@draw_polygon_fcn = FFI::Function.new(:void, %i[pointer int32 int32 pointer]) do |vertices, vertexCount, color, context|
     # p 'polygon'
+    points = []
+    vertexCount.times do |i|
+      vert = Box2D::Vec2.new(vertices + i * Box2D::Vec2.size)
+      points << @@scale * vert.x
+      points << -@@scale * vert.y
+    end
+    points << points[0]
+    points << points[1]
+    Raylib::DrawLineStrip(points.pack('F*'), vertexCount + 1, Raylib::Color.from_u32(color))
   end
 
   @@draw_solid_polygon_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :pointer, :int32, :float, :int32, :pointer]) do |transform, vertices, vertexCount, radius, color, context|
+    # p 'solid polygon'
     points = []
     vertexCount.times do |i|
       vert = Box2D::Vec2.new(vertices + i * Box2D::Vec2.size)
@@ -49,10 +59,12 @@ class RaylibDebugDraw
   end
 
   @@draw_circle_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :float, :int32, :pointer]) do |center, radius, color, context|
+    # p 'circle'
     Raylib::DrawCircle(center.p.x * @@scale, -center.p.y * @@scale, radius * @@scale, Raylib::Color.from_u32(color))
   end
 
   @@draw_solid_circle_fcn = FFI::Function.new(:void, [Box2D::Transform.by_value, :float, :int32, :pointer]) do |center, radius, color, context|
+    # p 'solid circle'
     Raylib::DrawCircle(center.p.x * @@scale, -center.p.y * @@scale, radius * @@scale, Raylib::Color.from_u32(color))
   end
 
@@ -73,7 +85,8 @@ class RaylibDebugDraw
     Raylib::DrawLine(@@scale * (p1.x + side1dir_x), -@@scale * (p1.y + side1dir_y), @@scale * (p2.x + side1dir_x), -@@scale * (p2.y + side1dir_y), raylib_color)
   end
 
-  @@draw_segment_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :int32, :pointer]) do |p1, p2, color, context|
+  @@draw_line_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, Box2D::Vec2.by_value, :int32, :pointer]) do |p1, p2, color, context|
+    # p 'line'
     Raylib.DrawLine(p1.x * @@scale, -p1.y * @@scale, p2.x * @@scale, -p2.y * @@scale, Raylib::Color.from_u32(color))
   end
 
@@ -82,41 +95,43 @@ class RaylibDebugDraw
   end
 
   @@draw_point_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :float, :int32, :pointer]) do |p, size, color, context|
+    # p 'point'
     Raylib.DrawCircle(p.x * @@scale, -p.y * @@scale, 5.0, Raylib::Color.from_u32(color))
   end
 
-  @@draw_string_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :pointer, :pointer]) do |p, s, context|
-    # p 'string'
+  @@draw_string_fcn = FFI::Function.new(:void, [Box2D::Vec2.by_value, :pointer, :int32, :pointer]) do |p, str, color, context|
+    # puts str.read_string
   end
 
   def initialize
     @debug_draw = Box2D::DebugDraw.new
+    @debug_draw.drawingBounds.lowerBound.x = -100.0
+    @debug_draw.drawingBounds.lowerBound.y = -100.0
+    @debug_draw.drawingBounds.upperBound.x = 100.0
+    @debug_draw.drawingBounds.upperBound.y = 100.0
 
     @debug_draw.DrawPolygonFcn = @@draw_polygon_fcn
     @debug_draw.DrawSolidPolygonFcn = @@draw_solid_polygon_fcn
     @debug_draw.DrawCircleFcn = @@draw_circle_fcn
     @debug_draw.DrawSolidCircleFcn = @@draw_solid_circle_fcn
     @debug_draw.DrawSolidCapsuleFcn = @@draw_solid_capsule_fcn
-    @debug_draw.DrawSegmentFcn = @@draw_segment_fcn
+    @debug_draw.DrawLineFcn = @@draw_line_fcn
     @debug_draw.DrawTransformFcn = @@draw_transform_fcn
     @debug_draw.DrawPointFcn = @@draw_point_fcn
     @debug_draw.DrawStringFcn = @@draw_string_fcn
 
-    # @debug_draw.drawBounds = false
-    # @debug_draw.drawShapes = true
-    # @debug_draw.drawJoints = true
-
     @debug_draw.drawShapes = true
-    @debug_draw.drawJoints = true
+    @debug_draw.drawJoints = false
     @debug_draw.drawJointExtras = false
     @debug_draw.drawBounds = false
     @debug_draw.drawMass = false
-    @debug_draw.drawContacts = false
+	@debug_draw.drawBodyNames = false
+    @debug_draw.drawContactPoints = true
     @debug_draw.drawGraphColors = false
-    @debug_draw.drawContactNormals = false
-    @debug_draw.drawContactImpulses = false
     @debug_draw.drawContactFeatures = false
-    @debug_draw.drawFrictionImpulses = false
+    @debug_draw.drawContactNormals = false
+    @debug_draw.drawContactForces = false
+    @debug_draw.drawFrictionForces = false
     @debug_draw.drawIslands = false
   end
 end

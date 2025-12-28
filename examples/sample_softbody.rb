@@ -181,22 +181,22 @@ class SampleSoftbody < SampleBase
         bodyDef = Box2D::DefaultBodyDef()
         @ground_body_id = Box2D::CreateBody(@worldId, bodyDef)
 
-        mouseDef = Box2D::DefaultMouseJointDef()
+        mouseDef = Box2D::DefaultMotorJointDef()
         mouseDef.base.bodyIdA = @ground_body_id
         mouseDef.base.bodyIdB = queryContext.bodyId
         mouseDef.base.localFrameA.p = world_pos
         mouseDef.base.localFrameB.p = Box2D::Body_GetLocalPoint(queryContext.bodyId, world_pos)
-        mouseDef.hertz =7.5
-        mouseDef.dampingRatio = 0.7
-        mouseDef.maxForce = 1000.0 * Box2D::Body_GetMass(queryContext.bodyId) * Box2D::Length(Box2D::World_GetGravity(@worldId))
-        @mouse_joint_id = Box2D::CreateMouseJoint(@worldId, mouseDef)
+        mouseDef.linearHertz = 7.5
+        mouseDef.linearDampingRatio = 0.7
+        mouseDef.maxSpringForce = 1000.0 * Box2D::Body_GetMass(queryContext.bodyId) * Box2D::Length(Box2D::World_GetGravity(@worldId))
+        @mouse_joint_id = Box2D::CreateMotorJoint(@worldId, mouseDef)
 
         Box2D::Body_SetAwake(queryContext.bodyId, true)
       end
     elsif Raylib.IsMouseButtonReleased(Raylib::MOUSE_BUTTON_LEFT)
       # MouseUp
       if Box2D.id_non_null(@mouse_joint_id)
-        Box2D::DestroyJoint(@mouse_joint_id)
+        Box2D::DestroyJoint(@mouse_joint_id, true)
         @mouse_joint_id = Box2D::NULL_JOINTID
 
         Box2D::DestroyBody(@ground_body_id)

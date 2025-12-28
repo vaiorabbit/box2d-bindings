@@ -24,6 +24,7 @@ module Box2D
 
   def self.setup_id_inline_symbols(method_naming: :original)
     entries = [
+      [:StoreContactId, :b2StoreContactId, [ContactId.by_value, :pointer], :int],
     ]
     entries.each do |entry|
       api_name = if method_naming == :snake_case

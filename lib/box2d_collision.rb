@@ -885,6 +885,7 @@ module Box2D
       [:DynamicTree_SetCategoryBits, :b2DynamicTree_SetCategoryBits, [:pointer, :int, :ulong_long], :void],
       [:DynamicTree_GetCategoryBits, :b2DynamicTree_GetCategoryBits, [:pointer, :int], :ulong_long],
       [:DynamicTree_Query, :b2DynamicTree_Query, [:pointer, AABB.by_value, :ulong_long, :pointer, :pointer], TreeStats.by_value],
+      [:DynamicTree_QueryAll, :b2DynamicTree_QueryAll, [:pointer, AABB.by_value, :pointer, :pointer], TreeStats.by_value],
       [:DynamicTree_RayCast, :b2DynamicTree_RayCast, [:pointer, :pointer, :ulong_long, :pointer, :pointer], TreeStats.by_value],
       [:DynamicTree_ShapeCast, :b2DynamicTree_ShapeCast, [:pointer, :pointer, :ulong_long, :pointer, :pointer], TreeStats.by_value],
       [:DynamicTree_GetHeight, :b2DynamicTree_GetHeight, [:pointer], :int],

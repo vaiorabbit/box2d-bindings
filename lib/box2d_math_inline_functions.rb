@@ -62,6 +62,7 @@ module Box2D
       [:MakeRot, :b2MakeRot, [:float], Rot.by_value],
       [:MakeRotFromUnitVector, :b2MakeRotFromUnitVector, [Vec2.by_value], Rot.by_value],
       [:IsNormalizedRot, :b2IsNormalizedRot, [Rot.by_value], :bool],
+      [:InvertRot, :b2InvertRot, [Rot.by_value], Rot.by_value],
       [:NLerp, :b2NLerp, [Rot.by_value, Rot.by_value, :float], Rot.by_value],
       [:ComputeAngularVelocity, :b2ComputeAngularVelocity, [Rot.by_value, Rot.by_value, :float], :float],
       [:Rot_GetAngle, :b2Rot_GetAngle, [Rot.by_value], :float],
