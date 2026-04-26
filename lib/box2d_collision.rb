@@ -82,44 +82,6 @@ module Box2D
     end
   end
 
-  class SimplexCache < FFI::Struct
-    layout(
-      :count, :ushort,
-      :indexA, [:uchar, 3],
-      :indexB, [:uchar, 3],
-    )
-    def count = self[:count]
-    def count=(v) self[:count] = v end
-    def indexA = self[:indexA]
-    def indexA=(v) self[:indexA] = v end
-    def indexB = self[:indexB]
-    def indexB=(v) self[:indexB] = v end
-    def self.create_as(_count_, _indexA_, _indexB_)
-      instance = SimplexCache.new
-      instance[:count] = _count_
-      instance[:indexA] = _indexA_
-      instance[:indexB] = _indexB_
-      instance
-    end
-  end
-
-  class Hull < FFI::Struct
-    layout(
-      :points, [Vec2, 8],
-      :count, :int,
-    )
-    def points = self[:points]
-    def points=(v) self[:points] = v end
-    def count = self[:count]
-    def count=(v) self[:count] = v end
-    def self.create_as(_points_, _count_)
-      instance = Hull.new
-      instance[:points] = _points_
-      instance[:count] = _count_
-      instance
-    end
-  end
-
   class RayCastInput < FFI::Struct
     layout(
       :origin, Vec2,
@@ -346,6 +308,23 @@ module Box2D
     end
   end
 
+  class Hull < FFI::Struct
+    layout(
+      :points, [Vec2, 8],
+      :count, :int,
+    )
+    def points = self[:points]
+    def points=(v) self[:points] = v end
+    def count = self[:count]
+    def count=(v) self[:count] = v end
+    def self.create_as(_points_, _count_)
+      instance = Hull.new
+      instance[:points] = _points_
+      instance[:count] = _count_
+      instance
+    end
+  end
+
   class SegmentDistanceResult < FFI::Struct
     layout(
       :closest1, Vec2,
@@ -371,6 +350,27 @@ module Box2D
       instance[:fraction1] = _fraction1_
       instance[:fraction2] = _fraction2_
       instance[:distanceSquared] = _distanceSquared_
+      instance
+    end
+  end
+
+  class SimplexCache < FFI::Struct
+    layout(
+      :count, :ushort,
+      :indexA, [:uchar, 3],
+      :indexB, [:uchar, 3],
+    )
+    def count = self[:count]
+    def count=(v) self[:count] = v end
+    def indexA = self[:indexA]
+    def indexA=(v) self[:indexA] = v end
+    def indexB = self[:indexB]
+    def indexB=(v) self[:indexB] = v end
+    def self.create_as(_count_, _indexA_, _indexB_)
+      instance = SimplexCache.new
+      instance[:count] = _count_
+      instance[:indexA] = _indexA_
+      instance[:indexB] = _indexB_
       instance
     end
   end
@@ -617,10 +617,11 @@ module Box2D
 
   class ManifoldPoint < FFI::Struct
     layout(
-      :point, Vec2,
+      :clipPoint, Vec2,
       :anchorA, Vec2,
       :anchorB, Vec2,
       :separation, :float,
+      :baseSeparation, :float,
       :normalImpulse, :float,
       :tangentImpulse, :float,
       :totalNormalImpulse, :float,
@@ -628,14 +629,16 @@ module Box2D
       :id, :ushort,
       :persisted, :bool,
     )
-    def point = self[:point]
-    def point=(v) self[:point] = v end
+    def clipPoint = self[:clipPoint]
+    def clipPoint=(v) self[:clipPoint] = v end
     def anchorA = self[:anchorA]
     def anchorA=(v) self[:anchorA] = v end
     def anchorB = self[:anchorB]
     def anchorB=(v) self[:anchorB] = v end
     def separation = self[:separation]
     def separation=(v) self[:separation] = v end
+    def baseSeparation = self[:baseSeparation]
+    def baseSeparation=(v) self[:baseSeparation] = v end
     def normalImpulse = self[:normalImpulse]
     def normalImpulse=(v) self[:normalImpulse] = v end
     def tangentImpulse = self[:tangentImpulse]
@@ -648,12 +651,13 @@ module Box2D
     def id=(v) self[:id] = v end
     def persisted = self[:persisted]
     def persisted=(v) self[:persisted] = v end
-    def self.create_as(_point_, _anchorA_, _anchorB_, _separation_, _normalImpulse_, _tangentImpulse_, _totalNormalImpulse_, _normalVelocity_, _id_, _persisted_)
+    def self.create_as(_clipPoint_, _anchorA_, _anchorB_, _separation_, _baseSeparation_, _normalImpulse_, _tangentImpulse_, _totalNormalImpulse_, _normalVelocity_, _id_, _persisted_)
       instance = ManifoldPoint.new
-      instance[:point] = _point_
+      instance[:clipPoint] = _clipPoint_
       instance[:anchorA] = _anchorA_
       instance[:anchorB] = _anchorB_
       instance[:separation] = _separation_
+      instance[:baseSeparation] = _baseSeparation_
       instance[:normalImpulse] = _normalImpulse_
       instance[:tangentImpulse] = _tangentImpulse_
       instance[:totalNormalImpulse] = _totalNormalImpulse_

@@ -175,6 +175,11 @@ module Box2D
   HexColor_colorBox2DBlue = 3190463
   HexColor_colorBox2DGreen = 9226532
   HexColor_colorBox2DYellow = 16772748
+  ContactDrawType_drawContacts_None = 0
+  ContactDrawType_drawContacts_Clip = 1
+  ContactDrawType_drawContacts_AnchorA = 2
+  ContactDrawType_drawContacts_AnchorB = 3
+  ContactDrawType_drawContacts_Average = 4
 
   # Typedef
 
@@ -192,6 +197,7 @@ module Box2D
   typedef :pointer, :b2CastResultFcn
   typedef :pointer, :b2PlaneResultFcn
   typedef :int, :b2HexColor
+  typedef :int, :b2ContactDrawType
 
   # Struct
 
@@ -1449,13 +1455,13 @@ module Box2D
       :drawingBounds, AABB,
       :forceScale, :float,
       :jointScale, :float,
+      :contactDrawType, :int,
       :drawShapes, :bool,
       :drawJoints, :bool,
       :drawJointExtras, :bool,
       :drawBounds, :bool,
       :drawMass, :bool,
       :drawBodyNames, :bool,
-      :drawContactPoints, :bool,
       :drawGraphColors, :bool,
       :drawContactFeatures, :bool,
       :drawContactNormals, :bool,
@@ -1488,6 +1494,8 @@ module Box2D
     def forceScale=(v) self[:forceScale] = v end
     def jointScale = self[:jointScale]
     def jointScale=(v) self[:jointScale] = v end
+    def contactDrawType = self[:contactDrawType]
+    def contactDrawType=(v) self[:contactDrawType] = v end
     def drawShapes = self[:drawShapes]
     def drawShapes=(v) self[:drawShapes] = v end
     def drawJoints = self[:drawJoints]
@@ -1500,8 +1508,6 @@ module Box2D
     def drawMass=(v) self[:drawMass] = v end
     def drawBodyNames = self[:drawBodyNames]
     def drawBodyNames=(v) self[:drawBodyNames] = v end
-    def drawContactPoints = self[:drawContactPoints]
-    def drawContactPoints=(v) self[:drawContactPoints] = v end
     def drawGraphColors = self[:drawGraphColors]
     def drawGraphColors=(v) self[:drawGraphColors] = v end
     def drawContactFeatures = self[:drawContactFeatures]
@@ -1516,7 +1522,7 @@ module Box2D
     def drawIslands=(v) self[:drawIslands] = v end
     def context = self[:context]
     def context=(v) self[:context] = v end
-    def self.create_as(_DrawPolygonFcn_, _DrawSolidPolygonFcn_, _DrawCircleFcn_, _DrawSolidCircleFcn_, _DrawSolidCapsuleFcn_, _DrawLineFcn_, _DrawTransformFcn_, _DrawPointFcn_, _DrawStringFcn_, _drawingBounds_, _forceScale_, _jointScale_, _drawShapes_, _drawJoints_, _drawJointExtras_, _drawBounds_, _drawMass_, _drawBodyNames_, _drawContactPoints_, _drawGraphColors_, _drawContactFeatures_, _drawContactNormals_, _drawContactForces_, _drawFrictionForces_, _drawIslands_, _context_)
+    def self.create_as(_DrawPolygonFcn_, _DrawSolidPolygonFcn_, _DrawCircleFcn_, _DrawSolidCircleFcn_, _DrawSolidCapsuleFcn_, _DrawLineFcn_, _DrawTransformFcn_, _DrawPointFcn_, _DrawStringFcn_, _drawingBounds_, _forceScale_, _jointScale_, _contactDrawType_, _drawShapes_, _drawJoints_, _drawJointExtras_, _drawBounds_, _drawMass_, _drawBodyNames_, _drawGraphColors_, _drawContactFeatures_, _drawContactNormals_, _drawContactForces_, _drawFrictionForces_, _drawIslands_, _context_)
       instance = DebugDraw.new
       instance[:DrawPolygonFcn] = _DrawPolygonFcn_
       instance[:DrawSolidPolygonFcn] = _DrawSolidPolygonFcn_
@@ -1530,13 +1536,13 @@ module Box2D
       instance[:drawingBounds] = _drawingBounds_
       instance[:forceScale] = _forceScale_
       instance[:jointScale] = _jointScale_
+      instance[:contactDrawType] = _contactDrawType_
       instance[:drawShapes] = _drawShapes_
       instance[:drawJoints] = _drawJoints_
       instance[:drawJointExtras] = _drawJointExtras_
       instance[:drawBounds] = _drawBounds_
       instance[:drawMass] = _drawMass_
       instance[:drawBodyNames] = _drawBodyNames_
-      instance[:drawContactPoints] = _drawContactPoints_
       instance[:drawGraphColors] = _drawGraphColors_
       instance[:drawContactFeatures] = _drawContactFeatures_
       instance[:drawContactNormals] = _drawContactNormals_

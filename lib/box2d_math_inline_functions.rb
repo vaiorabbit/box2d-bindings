@@ -28,6 +28,7 @@ module Box2D
       [:MaxInt, :b2MaxInt, [:int, :int], :int],
       [:AbsInt, :b2AbsInt, [:int], :int],
       [:ClampInt, :b2ClampInt, [:int, :int, :int], :int],
+      [:CeilingInt, :b2CeilingInt, [:int, :int], :int],
       [:MinFloat, :b2MinFloat, [:float, :float], :float],
       [:MaxFloat, :b2MaxFloat, [:float, :float], :float],
       [:AbsFloat, :b2AbsFloat, [:float], :float],

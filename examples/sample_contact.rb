@@ -102,7 +102,7 @@ class SampleContact < SampleBase
             manifold = contact.manifold
             manifold.pointCount.times do |k|
               manifoldPoint = manifold.points[k]
-              @contacts << manifoldPoint.point
+              @contacts << manifoldPoint.clipPoint
             end
           end
         end
@@ -118,7 +118,7 @@ class SampleContact < SampleBase
             manifold = contact.manifold
             manifold.pointCount.times do |k|
               manifoldPoint = manifold.points[k]
-              @contacts << manifoldPoint.point
+              @contacts << manifoldPoint.clipPoint
             end
           end
         end

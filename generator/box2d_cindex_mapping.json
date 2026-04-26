@@ -95,5 +95,6 @@
     , "b2CastResultFcn" : "TypeKind.FUNCTIONPROTO"
     , "b2PlaneResultFcn" : "TypeKind.FUNCTIONPROTO"
     , "b2HexColor" : "TypeKind.ENUM"
+    , "b2ContactDrawType" : "TypeKind.ENUM"
     , "b2DebugDraw" : "TypeKind.RECORD"
 }

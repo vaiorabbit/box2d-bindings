@@ -126,7 +126,7 @@ class RaylibDebugDraw
     @debug_draw.drawBounds = false
     @debug_draw.drawMass = false
 	@debug_draw.drawBodyNames = false
-    @debug_draw.drawContactPoints = true
+    @debug_draw.contactDrawType = Box2D::ContactDrawType_drawContacts_AnchorA
     @debug_draw.drawGraphColors = false
     @debug_draw.drawContactFeatures = false
     @debug_draw.drawContactNormals = false
